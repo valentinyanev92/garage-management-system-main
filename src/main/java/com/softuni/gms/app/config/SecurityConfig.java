@@ -27,7 +27,7 @@ public class SecurityConfig {
         http
                 .authorizeHttpRequests(matchers -> matchers
                         .requestMatchers(PathRequest.toStaticResources().atCommonLocations()).permitAll()
-                        .requestMatchers("/index", "/login", "/register").permitAll()
+                        .requestMatchers("/", "/login", "/register").permitAll()
 
                         .anyRequest().authenticated())
                 .formLogin(form -> form

@@ -1,0 +1,225 @@
+/* Garage Management System - Index Page Styles */
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    user-select: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+}
+
+body {
+    font-family: 'Arial', sans-serif;
+    background-image: url('/images/background.png');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    min-height: 100vh;
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    cursor: default;
+}
+
+.container {
+    text-align: center;
+    padding: 40px;
+}
+
+.logo {
+    max-width: 400px;
+    width: 100%;
+    height: auto;
+    margin-top: 0vh;
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.right-side-text {
+    position: fixed;
+    bottom: 60px;
+    right: 60px;
+    text-align: center;
+    color: white;
+}
+
+.looking-text {
+    font-size: 20px;
+    font-weight: bold;
+    margin-bottom: 10px;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+    text-align: center;
+}
+
+.repair-text {
+    font-size: 40px;
+    font-weight: bold;
+    color: #FFD700;
+    margin-bottom: 20px;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+}
+
+.appointment-button {
+    background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%);
+    color: #333;
+    padding: 18px 36px;
+    border: none;
+    border-radius: 25px;
+    text-decoration: none;
+    font-size: 20px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(255, 215, 0, 0.3);
+    display: inline-block;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+    animation: pulse 2s infinite;
+}
+
+.appointment-button::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+    transition: left 0.5s;
+}
+
+.appointment-button:hover::before {
+    left: 100%;
+}
+
+.appointment-button:hover {
+    transform: translateY(-3px) scale(1.05);
+    box-shadow: 0 8px 25px rgba(255, 215, 0, 0.5);
+    background: linear-gradient(135deg, #FFA500 0%, #FFD700 100%);
+    animation: none;
+}
+
+.appointment-button:active {
+    transform: translateY(-1px) scale(1.02);
+}
+
+@keyframes pulse {
+    0% {
+        box-shadow: 0 4px 15px rgba(255, 215, 0, 0.3);
+    }
+    50% {
+        box-shadow: 0 4px 20px rgba(255, 215, 0, 0.6);
+    }
+    100% {
+        box-shadow: 0 4px 15px rgba(255, 215, 0, 0.3);
+    }
+}
+
+.footer {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: transparent;
+    color: white;
+    text-align: center;
+    padding: 10px 0;
+    font-size: 12px;
+    font-weight: 300;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.footer p {
+    margin: 0;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+}
+
+.subtitle {
+    color: #666;
+    font-size: 16px;
+    font-weight: 300;
+    margin-bottom: 30px;
+    text-shadow: 0 1px 2px rgba(255, 255, 255, 0.6);
+}
+
+.navigation {
+    display: flex;
+    gap: 20px;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.nav-button {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 12px 24px;
+    border: none;
+    border-radius: 25px;
+    text-decoration: none;
+    font-size: 16px;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+}
+
+.nav-button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+    background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
+}
+
+.nav-button:active {
+    transform: translateY(0);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .container {
+        margin: 20px;
+        padding: 30px 20px;
+    }
+    
+    .logo {
+        max-width: 300px;
+    }
+    
+    .welcome-text {
+        font-size: 20px;
+    }
+    
+    .subtitle {
+        font-size: 14px;
+    }
+    
+    .navigation {
+        flex-direction: column;
+        align-items: center;
+    }
+    
+    .nav-button {
+        width: 200px;
+    }
+}
+
+@media (max-width: 480px) {
+    .container {
+        margin: 10px;
+        padding: 20px 15px;
+    }
+    
+    .logo {
+        max-width: 250px;
+    }
+    
+    .welcome-text {
+        font-size: 18px;
+    }
+    
+    .subtitle {
+        font-size: 12px;
+    }
+}

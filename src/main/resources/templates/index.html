@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="bg" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Garage Management System</title>
+    <link rel="stylesheet" th:href="@{/css/index.css}">
+</head>
+<body>
+    <div class="container">
+        <img src="/images/full-logo.png" alt="GMS Logo" class="logo">
+    </div>
+    
+    <div class="right-side-text">
+        <p class="looking-text">Looking for</p>
+        <h2 class="repair-text">Repair service ?</h2>
+        <a href="/login" class="appointment-button">Appointment now</a>
+    </div>
+    
+    <div th:replace="fragments/footer :: footer"></div>
+</body>
+</html>
