@@ -1,15 +1,14 @@
 package com.softuni.gms.app.web;
 
+import com.softuni.gms.app.security.AuthenticationMetadata;
 import com.softuni.gms.app.user.model.User;
 import com.softuni.gms.app.user.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.ModelAndView;
-
-import java.security.Principal;
-import java.util.UUID;
 
 @Controller
 @RequestMapping("/dashboard")
@@ -23,13 +22,16 @@ public class DashboardController {
     }
 
     @GetMapping
-    public ModelAndView getDashboardPage(Principal principal) {
+    public ModelAndView getDashboardPage(@AuthenticationPrincipal AuthenticationMetadata authenticationMetadata) {
 
         ModelAndView modelAndView = new ModelAndView();
 
-        User user = userService.findUserById(UUID.fromString(principal.getName()));
+        User user = userService.findUserById(authenticationMetadata.getUserId());
         modelAndView.setViewName("dashboard");
         modelAndView.addObject("user", user);
+
+        modelAndView.addObject("carList", user.getCars());
+        modelAndView.addObject("repairList", user.getRepairOrders());
 
         return  modelAndView;
     }

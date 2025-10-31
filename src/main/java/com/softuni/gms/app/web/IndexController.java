@@ -1,6 +1,5 @@
 package com.softuni.gms.app.web;
 
-import com.softuni.gms.app.user.model.User;
 import com.softuni.gms.app.user.service.UserService;
 import com.softuni.gms.app.web.dto.RegisterRequest;
 import jakarta.validation.Valid;
@@ -29,13 +28,17 @@ public class IndexController {
     }
 
     @GetMapping("/login")
-    public ModelAndView getLoginPage(@RequestParam(required = false) String registered) {
+    public ModelAndView getLoginPage(@RequestParam(required = false) String registered,
+                                     @RequestParam(required = false) String error) {
 
         ModelAndView modelAndView = new ModelAndView();
         modelAndView.setViewName("login");
         
         if ("true".equals(registered)) {
             modelAndView.addObject("successMessage", "Registration successful!");
+        }
+        if (error != null) {
+            modelAndView.addObject("errorMessage", "Wrong username or password");
         }
 
         return modelAndView;
@@ -61,8 +64,7 @@ public class IndexController {
             return modelAndView;
         }
 
-        User user = userService.registerUser(registerRequest);
-
+        userService.registerUser(registerRequest);
         return  new ModelAndView("redirect:/login?registered=true");
     }
 }

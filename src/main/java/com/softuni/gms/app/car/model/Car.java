@@ -5,6 +5,7 @@ import com.softuni.gms.app.user.model.User;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -39,5 +40,17 @@ public class Car {
 
     @OneToMany(mappedBy = "car")
     private List<RepairOrder> repairOrders = new ArrayList<>();
+
+    @Column(nullable = false)
+    private String pictureUrl;
+
+    @Column(nullable = false)
+    private LocalDateTime createdAt;
+
+    @Column(nullable = false)
+    private LocalDateTime updatedAt;
+
+    @Column(nullable = false)
+    private boolean isDeleted = false;
 
 }

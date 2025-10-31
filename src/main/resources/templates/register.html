@@ -14,11 +14,17 @@
                 <div class="form-row">
                     <div class="form-group">
                         <label for="firstName">First Name</label>
+                        <div class="help-text" th:classappend="${#fields.hasErrors('firstName')} ? 'show-help' : ''">
+                            Must be between 2 and 50 characters
+                        </div>
                         <input type="text" id="firstName" th:field="*{firstName}" placeholder="Enter your first name" required>
                         <div th:if="${#fields.hasErrors('firstName')}" class="error-message" th:errors="*{firstName}"></div>
                     </div>
                     <div class="form-group">
                         <label for="lastName">Last Name</label>
+                        <div class="help-text" th:classappend="${#fields.hasErrors('lastName')} ? 'show-help' : ''">
+                            Must be between 2 and 50 characters
+                        </div>
                         <input type="text" id="lastName" th:field="*{lastName}" placeholder="Enter your last name" required>
                         <div th:if="${#fields.hasErrors('lastName')}" class="error-message" th:errors="*{lastName}"></div>
                     </div>
@@ -26,12 +32,18 @@
                 
                 <div class="form-group">
                     <label for="username">Username</label>
+                    <div class="help-text" th:classappend="${#fields.hasErrors('username')} ? 'show-help' : ''">
+                        Must be 3-50 characters, only letters, numbers and underscores
+                    </div>
                     <input type="text" id="username" th:field="*{username}" placeholder="Enter your username" required>
                     <div th:if="${#fields.hasErrors('username')}" class="error-message" th:errors="*{username}"></div>
                 </div>
                 
                 <div class="form-group">
                     <label for="password">Password</label>
+                    <div class="help-text" th:classappend="${#fields.hasErrors('password')} ? 'show-help' : ''">
+                        Must be between 4 and 100 characters
+                    </div>
                     <div class="password-container">
                         <input type="password" id="password" th:field="*{password}" placeholder="Enter your password" required>
                         <div class="password-strength" id="passwordStrength">
@@ -46,12 +58,18 @@
                 
                 <div class="form-group">
                     <label for="email">Email</label>
+                    <div class="help-text" th:classappend="${#fields.hasErrors('email')} ? 'show-help' : ''">
+                        Must be a valid email address (max 100 characters)
+                    </div>
                     <input type="email" id="email" th:field="*{email}" placeholder="Enter your email" required>
                     <div th:if="${#fields.hasErrors('email')}" class="error-message" th:errors="*{email}"></div>
                 </div>
                 
                 <div class="form-group">
                     <label for="phoneNumber">Phone Number</label>
+                    <div class="help-text" th:classappend="${#fields.hasErrors('phoneNumber')} ? 'show-help' : ''">
+                        Bulgarian format: +359123456789 or 0123456789
+                    </div>
                     <input type="tel" id="phoneNumber" th:field="*{phoneNumber}" placeholder="Enter your phone number" required>
                     <div th:if="${#fields.hasErrors('phoneNumber')}" class="error-message" th:errors="*{phoneNumber}"></div>
                 </div>

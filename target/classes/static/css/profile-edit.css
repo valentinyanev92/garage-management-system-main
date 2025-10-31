@@ -1,4 +1,4 @@
-/* Register Page Styles */
+/* Profile Edit Page Styles */
 
 * {
     margin: 0;
@@ -23,15 +23,16 @@ body {
     justify-content: center;
     cursor: default;
     padding: 20px 0;
+    padding-bottom: 80px;
 }
 
-.register-container {
+.profile-edit-container {
     width: 100%;
     max-width: 600px;
     padding: 20px;
 }
 
-.register-form {
+.profile-edit-form {
     background: rgba(255, 255, 255, 0.1);
     border-radius: 20px;
     padding: 40px;
@@ -39,8 +40,8 @@ body {
     border: 1px solid rgba(255, 255, 255, 0.2);
 }
 
-.register-title {
-    color: white;
+.profile-edit-title {
+    color: #FFD700;
     font-size: 32px;
     font-weight: 300;
     text-align: center;
@@ -68,47 +69,9 @@ body {
     text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
 }
 
-.password-container {
-    position: relative;
-}
-
-.password-strength {
-    position: absolute;
-    right: 10px;
-    top: 50%;
-    transform: translateY(-50%);
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    pointer-events: none;
-}
-
-.strength-text {
-    font-size: 12px;
-    font-weight: 500;
-    color: #666;
-    white-space: nowrap;
-}
-
-.strength-bar {
-    width: 40px;
-    height: 4px;
-    background: rgba(255, 255, 255, 0.2);
-    border-radius: 2px;
-    overflow: hidden;
-}
-
-.strength-fill {
-    height: 100%;
-    width: 0%;
-    transition: all 0.3s ease;
-    border-radius: 2px;
-}
-
 .form-group input {
     width: 100%;
     padding: 12px 16px;
-    padding-right: 120px; /* Space for strength indicator */
     border: 1px solid rgba(255, 255, 255, 0.3);
     border-radius: 10px;
     background: rgba(255, 255, 255, 0.1);
@@ -168,7 +131,7 @@ body {
     text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
 }
 
-.register-button {
+.profile-edit-button {
     width: 100%;
     background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%);
     color: #333;
@@ -186,7 +149,7 @@ body {
     animation: pulse 2s infinite;
 }
 
-.register-button::before {
+.profile-edit-button::before {
     content: '';
     position: absolute;
     top: 0;
@@ -197,18 +160,18 @@ body {
     transition: left 0.5s;
 }
 
-.register-button:hover::before {
+.profile-edit-button:hover::before {
     left: 100%;
 }
 
-.register-button:hover {
+.profile-edit-button:hover {
     transform: translateY(-3px) scale(1.02);
     box-shadow: 0 8px 25px rgba(255, 215, 0, 0.5);
     background: linear-gradient(135deg, #FFA500 0%, #FFD700 100%);
     animation: none;
 }
 
-.register-button:active {
+.profile-edit-button:active {
     transform: translateY(-1px) scale(1.01);
 }
 
@@ -224,7 +187,7 @@ body {
     }
 }
 
-.register-links {
+.profile-edit-links {
     text-align: center;
 }
 
@@ -263,16 +226,16 @@ body {
 
 /* Responsive Design */
 @media (max-width: 768px) {
-    .register-container {
+    .profile-edit-container {
         margin: 20px;
         max-width: none;
     }
     
-    .register-form {
+    .profile-edit-form {
         padding: 30px 20px;
     }
     
-    .register-title {
+    .profile-edit-title {
         font-size: 28px;
     }
     
@@ -283,15 +246,16 @@ body {
 }
 
 @media (max-width: 480px) {
-    .register-container {
+    .profile-edit-container {
         margin: 10px;
     }
     
-    .register-form {
+    .profile-edit-form {
         padding: 20px 15px;
     }
     
-    .register-title {
+    .profile-edit-title {
         font-size: 24px;
     }
 }
+

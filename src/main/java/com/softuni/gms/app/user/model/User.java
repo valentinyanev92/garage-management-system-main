@@ -57,7 +57,7 @@ public class User {
 
     private BigDecimal hourlyRate;
 
-    @OneToMany
+    @OneToMany(mappedBy = "owner", fetch = FetchType.EAGER)
     private List<Car> cars = new ArrayList<>();
 
     @OneToMany

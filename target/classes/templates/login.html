@@ -15,6 +15,10 @@
                 <span th:text="${successMessage}"></span>
             </div>
             
+            <div th:if="${errorMessage}" class="error-message">
+                <span th:text="${errorMessage}"></span>
+            </div>
+            
             <form th:action="@{/login}" method="post">
                 <div class="form-group">
                     <label for="username">Username</label>

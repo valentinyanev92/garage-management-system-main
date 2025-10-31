@@ -11,7 +11,7 @@ import lombok.*;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class CarRegisterRequest {
+public class CarEditRequest {
 
     @NotNull(message = "Brand is required")
     @NotBlank(message = "Brand cannot be blank")
@@ -34,4 +34,8 @@ public class CarRegisterRequest {
     @Size(min = 4, max = 20, message = "Plate number must be between 4 and 20 characters")
     private String plateNumber;
 
+    @NotNull(message = "Picture URL is required")
+    @NotBlank(message = "Picture URL cannot be blank")
+    private String pictureUrl;
 }
+

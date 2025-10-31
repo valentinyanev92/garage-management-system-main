@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="bg" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manage Cars - Garage Management System</title>
+    <link rel="stylesheet" th:href="@{/css/dashboard.css}">
+</head>
+<body>
+    <div class="dashboard-wrapper">
+        <!-- Left Sidebar -->
+        <aside class="sidebar">
+            <nav class="sidebar-nav">
+                <a href="/dashboard" class="nav-button">
+                    <span>Dashboard</span>
+                </a>
+                <a href="/profile/edit" class="nav-button">
+                    <span>Edit Profile</span>
+                </a>
+                <a th:href="@{/cars}" class="nav-button active">
+                    <span>Manage Cars</span>
+                </a>
+                <!-- Spacer to push buttons to bottom -->
+                <div class="nav-spacer"></div>
+                <!-- Bottom section with role-based buttons and logout -->
+                <div class="nav-bottom-section">
+                    <!-- Mechanic Panel - visible for MECHANIC and ADMIN -->
+                    <a th:href="@{/dashboard/mechanic}" 
+                       class="nav-button mechanic-button"
+                       th:if="${user.role.name().equals('MECHANIC') or user.role.name().equals('ADMIN')}">
+                        <span>Mechanic Panel</span>
+                    </a>
+                    <!-- Admin Panel - visible only for ADMIN -->
+                    <a th:href="@{/dashboard/admin}" 
+                       class="nav-button admin-button"
+                       th:if="${user.role.name().equals('ADMIN')}">
+                        <span>Admin Panel</span>
+                    </a>
+                    <a th:href="@{/logout}" class="nav-button logout-button">
+                        <span>Logout</span>
+                    </a>
+                </div>
+            </nav>
+        </aside>
+
+        <!-- Main Content -->
+        <div class="dashboard-container">
+            <header class="dashboard-header">
+                <h1 class="dashboard-title">Manage Cars</h1>
+            </header>
+
+            <main class="dashboard-content">
+                <!-- Cars Section -->
+                <section class="section cars-section">
+                    <div class="section-header">
+                        <h2 class="section-title">All Cars</h2>
+                        <a href="/cars/add" class="add-button">Add New Car</a>
+                    </div>
+                    <div class="cards-container" th:if="${carList != null and !carList.isEmpty()}">
+                        <div class="card car-card" th:each="car : ${carList}">
+                            <div class="card-image-container">
+                                <img th:src="${car.pictureUrl}" alt="Car image" class="card-image">
+                            </div>
+                            <div class="card-content">
+                                <div class="card-info">
+                                    <div class="card-header">
+                                        <h3 class="card-title" th:text="|${car.brand} ${car.model}|"></h3>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="card-detail">
+                                            <span class="label">VIN:</span>
+                                            <span class="value" th:text="${car.vin}"></span>
+                                        </div>
+                                        <div class="card-detail">
+                                            <span class="label">Plate Number:</span>
+                                            <span class="value" th:text="${car.plateNumber}"></span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="card-actions">
+                                    <a th:href="@{/cars/edit/{id}(id=${car.id})}" class="edit-car-button">Edit Car</a>
+                                    <form th:action="@{/cars/delete/{id}(id=${car.id})}" method="post" style="display: inline;">
+                                        <button type="submit" class="delete-car-button" onclick="return confirm('Are you sure you want to delete this car?')">Delete Car</button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="empty-state" th:if="${carList == null or carList.isEmpty()}">
+                        <p>You have no registered cars</p>
+                    </div>
+                </section>
+            </main>
+        </div>
+    </div>
+    
+    <div th:replace="fragments/footer :: footer"></div>
+</body>
+</html>
+

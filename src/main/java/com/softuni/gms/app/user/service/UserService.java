@@ -6,6 +6,7 @@ import com.softuni.gms.app.user.model.User;
 import com.softuni.gms.app.user.model.UserRole;
 import com.softuni.gms.app.user.repository.UserRepository;
 import com.softuni.gms.app.web.dto.RegisterRequest;
+import com.softuni.gms.app.web.dto.UserEditRequest;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -61,7 +62,15 @@ public class UserService implements UserDetailsService {
         return userRepository.findById(id).orElseThrow(() -> new NotFoundException("User not found"));
     }
 
-    public User findByUsername(String name) {
-        return userRepository.findByUsername(name).orElseThrow(() -> new NotFoundException("User not found"));
+    public User updateUser(UUID userId, UserEditRequest userEditRequest) {
+        User user = findUserById(userId);
+        
+        user.setFirstName(userEditRequest.getFirstName());
+        user.setLastName(userEditRequest.getLastName());
+        user.setEmail(userEditRequest.getEmail());
+        user.setPhoneNumber(userEditRequest.getPhoneNumber());
+        user.setUpdatedAt(LocalDateTime.now());
+        
+        return userRepository.save(user);
     }
 }

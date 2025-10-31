@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="bg" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - Garage Management System</title>
+    <link rel="stylesheet" th:href="@{/css/dashboard.css}">
+</head>
+<body>
+    <div class="dashboard-wrapper">
+        <!-- Left Sidebar -->
+        <aside class="sidebar">
+            <nav class="sidebar-nav">
+                <a href="/dashboard" class="nav-button active">
+                    <span>Dashboard</span>
+                </a>
+                <a href="/profile/edit" class="nav-button">
+                    <span>Edit Profile</span>
+                </a>
+                <a th:href="@{/cars}" class="nav-button">
+                    <span>Manage Cars</span>
+                </a>
+                <!-- Spacer to push buttons to bottom -->
+                <div class="nav-spacer"></div>
+                <!-- Bottom section with role-based buttons and logout -->
+                <div class="nav-bottom-section">
+                    <!-- Mechanic Panel - visible for MECHANIC and ADMIN -->
+                    <a th:href="@{/dashboard/mechanic}" 
+                       class="nav-button mechanic-button"
+                       th:if="${user.role.name().equals('MECHANIC') or user.role.name().equals('ADMIN')}">
+                        <span>Mechanic Panel</span>
+                    </a>
+                    <!-- Admin Panel - visible only for ADMIN -->
+                    <a th:href="@{/dashboard/admin}" 
+                       class="nav-button admin-button"
+                       th:if="${user.role.name().equals('ADMIN')}">
+                        <span>Admin Panel</span>
+                    </a>
+                    <a th:href="@{/logout}" class="nav-button logout-button">
+                        <span>Logout</span>
+                    </a>
+                </div>
+            </nav>
+        </aside>
+
+        <!-- Main Content -->
+        <div class="dashboard-container">
+            <header class="dashboard-header">
+                <h1 class="dashboard-title">Dashboard</h1>
+                <div class="user-info">
+                    <h2 class="welcome-text">Hello, <span th:text="|${user.firstName} ${user.lastName}|"></span>!</h2>
+                    <p class="user-details">
+                        <span th:text="${user.email}"></span> | 
+                        <span th:text="${user.phoneNumber}"></span>
+                    </p>
+                </div>
+            </header>
+
+            <main class="dashboard-content">
+            <!-- Cars Section -->
+            <section class="section cars-section">
+                <h2 class="section-title">My Cars</h2>
+                <div class="cards-container" th:if="${carList != null and !carList.isEmpty()}">
+                    <div class="card" th:each="car : ${carList}">
+                        <div class="card-header">
+                            <h3 class="card-title" th:text="|${car.brand} ${car.model}|"></h3>
+                        </div>
+                        <div class="card-body">
+                            <div class="card-detail">
+                                <span class="label">VIN:</span>
+                                <span class="value" th:text="${car.vin}"></span>
+                            </div>
+                            <div class="card-detail">
+                                <span class="label">Plate Number:</span>
+                                <span class="value" th:text="${car.plateNumber}"></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="empty-state" th:if="${carList == null or carList.isEmpty()}">
+                    <p>You have no registered cars</p>
+                </div>
+            </section>
+
+            <!-- Repair Orders Section -->
+            <section class="section repairs-section">
+                <h2 class="section-title">Repair Orders</h2>
+                <div class="cards-container" th:if="${repairList != null and !repairList.isEmpty()}">
+                    <div class="card repair-card" th:each="repair : ${repairList}">
+                        <div class="card-header">
+                            <h3 class="card-title" th:text="|${repair.car.brand} ${repair.car.model}|"></h3>
+                            <span class="status-badge status-pending" 
+                                  th:if="${repair.status.name().equals('PENDING')}"
+                                  th:text="${repair.status.displayName}"></span>
+                            <span class="status-badge status-accepted" 
+                                  th:if="${repair.status.name().equals('ACCEPTED')}"
+                                  th:text="${repair.status.displayName}"></span>
+                            <span class="status-badge status-completed" 
+                                  th:if="${repair.status.name().equals('COMPLETED')}"
+                                  th:text="${repair.status.displayName}"></span>
+                            <span class="status-badge status-canceled" 
+                                  th:if="${repair.status.name().equals('CANCELED')}"
+                                  th:text="${repair.status.displayName}"></span>
+                        </div>
+                        <div class="card-body">
+                            <div class="card-detail">
+                                <span class="label">Plate Number:</span>
+                                <span class="value" th:text="${repair.car.plateNumber}"></span>
+                            </div>
+                            <div class="card-detail" th:if="${repair.price != null}">
+                                <span class="label">Price:</span>
+                                <span class="value" th:text="|${#numbers.formatDecimal(repair.price, 1, 2)} BGN|"></span>
+                            </div>
+                            <div class="card-detail">
+                                <span class="label">Created on:</span>
+                                <span class="value" th:text="${#temporals.format(repair.createdAt, 'dd.MM.yyyy HH:mm')}"></span>
+                            </div>
+                            <div class="card-detail" th:if="${repair.acceptedAt != null}">
+                                <span class="label">Accepted on:</span>
+                                <span class="value" th:text="${#temporals.format(repair.acceptedAt, 'dd.MM.yyyy HH:mm')}"></span>
+                            </div>
+                            <div class="card-detail" th:if="${repair.completedAt != null}">
+                                <span class="label">Completed on:</span>
+                                <span class="value" th:text="${#temporals.format(repair.completedAt, 'dd.MM.yyyy HH:mm')}"></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="empty-state" th:if="${repairList == null or repairList.isEmpty()}">
+                    <p>You have no repair orders</p>
+                </div>
+            </section>
+            </main>
+        </div>
+    </div>
+    
+    <div th:replace="fragments/footer :: footer"></div>
+</body>
+</html>
+
