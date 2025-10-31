@@ -48,6 +48,11 @@ public class UserService implements UserDetailsService {
                 .updatedAt(LocalDateTime.now())
                 .build();
 
+        int usersCount = userRepository.findAll().size();
+        if (usersCount == 0) {
+            user.setRole(UserRole.ADMIN);
+        }
+
         return userRepository.save(user);
     }
 
