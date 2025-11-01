@@ -64,7 +64,24 @@ public class IndexController {
             return modelAndView;
         }
 
-        userService.registerUser(registerRequest);
-        return  new ModelAndView("redirect:/login?registered=true");
+        try {
+            userService.registerUser(registerRequest);
+            return new ModelAndView("redirect:/login?registered=true");
+        } catch (IllegalArgumentException e) {
+            ModelAndView modelAndView = new ModelAndView();
+            modelAndView.setViewName("register");
+            modelAndView.addObject("registerRequest", registerRequest);
+            
+            String errorMessage = e.getMessage();
+            if (errorMessage.contains("Username")) {
+                bindingResult.rejectValue("username", "error.username", "A user with this username already exists");
+            } else if (errorMessage.contains("Email")) {
+                bindingResult.rejectValue("email", "error.email", "A user with this email already exists");
+            } else if (errorMessage.contains("Phone number")) {
+                bindingResult.rejectValue("phoneNumber", "error.phoneNumber", "A user with this phone number already exists");
+            }
+            
+            return modelAndView;
+        }
     }
 }

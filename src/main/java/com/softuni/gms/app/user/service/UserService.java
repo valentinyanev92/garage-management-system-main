@@ -1,6 +1,7 @@
 package com.softuni.gms.app.user.service;
 
 import com.softuni.gms.app.exeption.NotFoundException;
+import com.softuni.gms.app.exeption.UserAlreadyExistException;
 import com.softuni.gms.app.security.AuthenticationMetadata;
 import com.softuni.gms.app.user.model.User;
 import com.softuni.gms.app.user.model.UserRole;
@@ -38,6 +39,18 @@ public class UserService implements UserDetailsService {
 
     public User registerUser(RegisterRequest registerRequest) {
 
+        if (userRepository.findByUsername(registerRequest.getUsername()).isPresent()) {
+            throw new UserAlreadyExistException("Username already exists");
+        }
+
+        if (userRepository.findByEmail(registerRequest.getEmail()).isPresent()) {
+            throw new UserAlreadyExistException("Email already exists");
+        }
+
+        if (userRepository.findByPhoneNumber(registerRequest.getPhoneNumber()).isPresent()) {
+            throw new UserAlreadyExistException("Phone number already exists");
+        }
+
         User user = User.builder()
                 .username(registerRequest.getUsername())
                 .password(passwordEncoder.encode(registerRequest.getPassword()))
@@ -65,6 +78,7 @@ public class UserService implements UserDetailsService {
     }
 
     public User updateUser(UUID userId, UserEditRequest userEditRequest) {
+
         User user = findUserById(userId);
         
         user.setFirstName(userEditRequest.getFirstName());
@@ -77,10 +91,12 @@ public class UserService implements UserDetailsService {
     }
 
     public List<User> findAllUsers() {
+
         return userRepository.findAll();
     }
 
     public void toggleUserActiveStatus(UUID userId) {
+
         User user = findUserById(userId);
         user.setIsActive(!user.getIsActive());
         user.setUpdatedAt(LocalDateTime.now());
@@ -88,6 +104,7 @@ public class UserService implements UserDetailsService {
     }
 
     public User updateUserByAdmin(UUID userId, UserAdminEditRequest userAdminEditRequest) {
+
         User user = findUserById(userId);
         user.setRole(userAdminEditRequest.getRole());
         user.setHourlyRate(userAdminEditRequest.getHourlyRate());
