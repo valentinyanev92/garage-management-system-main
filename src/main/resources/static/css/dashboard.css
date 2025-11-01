@@ -279,6 +279,405 @@ body {
     transform: scale(1.05);
 }
 
+.repair-card {
+    display: flex;
+    gap: 20px;
+    padding: 0;
+    overflow: hidden;
+}
+
+.repair-card .card-image-container {
+    width: 300px;
+    min-width: 300px;
+    height: 180px;
+    margin: 0;
+    border-radius: 0;
+    border-top-left-radius: 15px;
+    border-bottom-left-radius: 15px;
+    overflow: hidden;
+    background: rgba(0, 0, 0, 0.2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.repair-card .card-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.3s ease;
+}
+
+.repair-card:hover .card-image {
+    transform: scale(1.05);
+}
+
+.repair-card .card-content {
+    flex: 1;
+    padding: 20px;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    gap: 20px;
+}
+
+.repair-card .card-info {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.repair-card .card-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    align-items: stretch;
+    flex-shrink: 0;
+}
+
+.view-details-button {
+    display: inline-block;
+    background: linear-gradient(135deg, #0096FF 0%, #0066CC 100%);
+    color: white;
+    padding: 12px 24px;
+    border: none;
+    border-radius: 10px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(0, 150, 255, 0.3);
+    text-align: center;
+    white-space: nowrap;
+    width: 100%;
+}
+
+.view-details-button:hover {
+    transform: translateY(-2px) scale(1.02);
+    box-shadow: 0 6px 20px rgba(0, 150, 255, 0.5);
+    background: linear-gradient(135deg, #0066CC 0%, #0096FF 100%);
+}
+
+.delete-repair-button {
+    display: inline-block;
+    background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);
+    color: white;
+    padding: 12px 24px;
+    border: none;
+    border-radius: 10px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(220, 53, 69, 0.3);
+    text-align: center;
+    white-space: nowrap;
+    width: 100%;
+}
+
+.delete-repair-button:hover {
+    transform: translateY(-2px) scale(1.02);
+    box-shadow: 0 6px 20px rgba(220, 53, 69, 0.5);
+    background: linear-gradient(135deg, #c82333 0%, #dc3545 100%);
+}
+
+/* Repair Details Page Styles */
+.repair-details-container {
+    max-width: 1400px;
+    width: 100%;
+    margin: 0 auto;
+    padding: 20px;
+    box-sizing: border-box;
+}
+
+.repair-details-layout {
+    display: grid;
+    grid-template-columns: 400px 1fr;
+    gap: 30px;
+    margin-bottom: 30px;
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+}
+
+@media (max-width: 1024px) {
+    .repair-details-layout {
+        grid-template-columns: 1fr;
+    }
+}
+
+.repair-details-left,
+.repair-details-right {
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
+    min-width: 0;
+    box-sizing: border-box;
+}
+
+.repair-details-left {
+    width: 400px;
+    max-width: 400px;
+    flex-shrink: 0;
+    flex-grow: 0;
+}
+
+.repair-details-right {
+    min-width: 0;
+    overflow: hidden;
+    width: 100%;
+}
+
+.details-section {
+    margin-bottom: 0;
+}
+
+.details-card {
+    background: rgba(255, 255, 255, 0.15);
+    border-radius: 15px;
+    padding: 25px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.car-image-container {
+    width: 100%;
+    height: 300px;
+    margin-bottom: 20px;
+    border-radius: 15px;
+    overflow: hidden;
+    background: rgba(0, 0, 0, 0.2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.car-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.details-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 20px;
+}
+
+.detail-item {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    padding: 15px;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 10px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.detail-label {
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 14px;
+    font-weight: 400;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.detail-value {
+    color: white;
+    font-size: 16px;
+    font-weight: 500;
+}
+
+.problem-description {
+    padding: 20px;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 10px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.problem-description p {
+    color: white;
+    font-size: 16px;
+    line-height: 1.6;
+    margin: 0;
+}
+
+.parts-table {
+    overflow-x: auto;
+}
+
+.parts-table table {
+    width: 100%;
+    border-collapse: collapse;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.parts-table thead {
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.parts-table th {
+    padding: 15px;
+    text-align: left;
+    color: white;
+    font-weight: 600;
+    text-transform: uppercase;
+    font-size: 14px;
+    letter-spacing: 0.5px;
+    border-bottom: 2px solid rgba(255, 255, 255, 0.2);
+}
+
+.parts-table td {
+    padding: 15px;
+    color: rgba(255, 255, 255, 0.9);
+    font-size: 15px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.parts-table tbody tr:hover {
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.parts-table tbody tr:last-child td {
+    border-bottom: none;
+}
+
+.details-actions {
+    margin-top: 40px;
+    text-align: center;
+}
+
+.back-button {
+    display: inline-block;
+    background: linear-gradient(135deg, #6c757d 0%, #5a6268 100%);
+    color: white;
+    padding: 12px 30px;
+    border: none;
+    border-radius: 10px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(108, 117, 125, 0.3);
+}
+
+.back-button:hover {
+    transform: translateY(-2px) scale(1.02);
+    box-shadow: 0 6px 20px rgba(108, 117, 125, 0.5);
+    background: linear-gradient(135deg, #5a6268 0%, #6c757d 100%);
+}
+
+/* Mechanic Panel Styles */
+.accepted-order-section {
+    margin-bottom: 30px;
+}
+
+.accepted-order-card {
+    border: 2px solid rgba(68, 255, 68, 0.5);
+    box-shadow: 0 6px 25px rgba(68, 255, 68, 0.3);
+}
+
+.accept-order-button {
+    display: inline-block;
+    background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+    color: white;
+    padding: 12px 24px;
+    border: none;
+    border-radius: 10px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(40, 167, 69, 0.3);
+    text-align: center;
+    white-space: nowrap;
+    width: 100%;
+    margin-bottom: 10px;
+}
+
+.accept-order-button:hover {
+    transform: translateY(-2px) scale(1.02);
+    box-shadow: 0 6px 20px rgba(40, 167, 69, 0.5);
+    background: linear-gradient(135deg, #20c997 0%, #28a745 100%);
+}
+
+.work-on-order-button {
+    display: inline-block;
+    background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+    color: white;
+    padding: 12px 24px;
+    border: none;
+    border-radius: 10px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(40, 167, 69, 0.3);
+    text-align: center;
+    white-space: nowrap;
+    width: 100%;
+}
+
+.work-on-order-button:hover {
+    transform: translateY(-2px) scale(1.02);
+    box-shadow: 0 6px 20px rgba(40, 167, 69, 0.5);
+    background: linear-gradient(135deg, #20c997 0%, #28a745 100%);
+}
+
+.submit-work-button {
+    display: inline-block;
+    background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+    color: white;
+    padding: 12px 30px;
+    border: none;
+    border-radius: 10px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(40, 167, 69, 0.3);
+}
+
+.submit-work-button:hover {
+    transform: translateY(-2px) scale(1.02);
+    box-shadow: 0 6px 20px rgba(40, 167, 69, 0.5);
+    background: linear-gradient(135deg, #20c997 0%, #28a745 100%);
+}
+
+.complete-order-button {
+    display: inline-block;
+    background: linear-gradient(135deg, #17a2b8 0%, #138496 100%);
+    color: white;
+    padding: 12px 24px;
+    border: none;
+    border-radius: 10px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(23, 162, 184, 0.3);
+    text-align: center;
+    white-space: nowrap;
+    width: 100%;
+}
+
+.complete-order-button:hover {
+    transform: translateY(-2px) scale(1.02);
+    box-shadow: 0 6px 20px rgba(23, 162, 184, 0.5);
+    background: linear-gradient(135deg, #138496 0%, #17a2b8 100%);
+}
+
 .car-card .card-content {
     flex: 1;
     padding: 20px;
@@ -438,6 +837,30 @@ body {
 
 .already-requested-button:hover {
     opacity: 0.8;
+}
+
+.cancel-request-button {
+    display: inline-block;
+    background: linear-gradient(135deg, #ff6b6b 0%, #ee5a52 100%);
+    color: white;
+    padding: 12px 24px;
+    border: none;
+    border-radius: 10px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(255, 107, 107, 0.3);
+    text-align: center;
+    white-space: nowrap;
+    width: 100%;
+}
+
+.cancel-request-button:hover {
+    transform: translateY(-2px) scale(1.02);
+    box-shadow: 0 6px 20px rgba(255, 107, 107, 0.5);
+    background: linear-gradient(135deg, #ee5a52 0%, #ff6b6b 100%);
 }
 
 .card-detail {

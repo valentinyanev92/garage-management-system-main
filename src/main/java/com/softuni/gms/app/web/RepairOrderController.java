@@ -67,5 +67,54 @@ public class RepairOrderController {
         
         return new ModelAndView("redirect:/dashboard");
     }
+
+    @PostMapping("/cancel/{carId}")
+    public ModelAndView cancelRepairRequest(@PathVariable UUID carId,
+                                           @AuthenticationPrincipal AuthenticationMetadata authenticationMetadata) {
+        
+        User user = userService.findUserById(authenticationMetadata.getUserId());
+        
+        try {
+            repairOrderService.cancelRepairRequestByCarId(carId, user);
+        } catch (Exception e) {
+            return new ModelAndView("redirect:/dashboard");
+        }
+        
+        return new ModelAndView("redirect:/dashboard");
+    }
+
+    @GetMapping("/details/{id}")
+    public ModelAndView getRepairOrderDetails(@PathVariable UUID id,
+                                             @AuthenticationPrincipal AuthenticationMetadata authenticationMetadata) {
+        
+        User user = userService.findUserById(authenticationMetadata.getUserId());
+        var repairOrder = repairOrderService.findRepairOrderById(id);
+
+        if (!repairOrder.getUser().getId().equals(user.getId())) {
+            return new ModelAndView("redirect:/dashboard");
+        }
+        
+        ModelAndView modelAndView = new ModelAndView();
+        modelAndView.setViewName("repair-details");
+        modelAndView.addObject("repairOrder", repairOrder);
+        modelAndView.addObject("user", user);
+        
+        return modelAndView;
+    }
+
+    @PostMapping("/delete/{id}")
+    public ModelAndView deleteRepairOrder(@PathVariable UUID id,
+                                         @AuthenticationPrincipal AuthenticationMetadata authenticationMetadata) {
+        
+        User user = userService.findUserById(authenticationMetadata.getUserId());
+        
+        try {
+            repairOrderService.deleteRepairOrder(id, user);
+        } catch (Exception e) {
+            return new ModelAndView("redirect:/dashboard");
+        }
+        
+        return new ModelAndView("redirect:/dashboard");
+    }
 }
 

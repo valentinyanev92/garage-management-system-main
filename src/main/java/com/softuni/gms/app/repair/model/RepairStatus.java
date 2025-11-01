@@ -7,7 +7,8 @@ public enum RepairStatus {
     PENDING("Pending"),
     ACCEPTED("Accepted"),
     COMPLETED("Completed"),
-    CANCELED("Canceled");
+    CANCELED("Canceled"),
+    USER_CANCELED("Canceled by user");
 
     private final String displayName;
 

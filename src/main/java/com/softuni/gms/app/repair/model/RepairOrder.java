@@ -44,6 +44,9 @@ public class RepairOrder {
 
     private LocalDateTime completedAt;
 
+    @Column(nullable = false)
+    private LocalDateTime updatedAt;
+
     private BigDecimal price;
 
     @OneToMany(mappedBy = "repairOrder", orphanRemoval = true)
@@ -52,4 +55,7 @@ public class RepairOrder {
     @Column(nullable = false)
     private String problemDescription;
 
+    @Column(nullable = false)
+    @Builder.Default
+    private boolean isDeleted = false;
 }

@@ -1,7 +1,6 @@
 package com.softuni.gms.app.web;
 
 import com.softuni.gms.app.repair.model.RepairOrder;
-import com.softuni.gms.app.repair.model.RepairStatus;
 import com.softuni.gms.app.security.AuthenticationMetadata;
 import com.softuni.gms.app.user.model.User;
 import com.softuni.gms.app.user.service.UserService;
@@ -15,34 +14,32 @@ import org.springframework.web.servlet.ModelAndView;
 import java.util.List;
 
 @Controller
-@RequestMapping("/dashboard")
-public class DashboardController {
+@RequestMapping("/orders")
+public class OrdersController {
 
     private final UserService userService;
 
     @Autowired
-    public DashboardController(UserService userService) {
+    public OrdersController(UserService userService) {
         this.userService = userService;
     }
 
     @GetMapping
-    public ModelAndView getDashboardPage(@AuthenticationPrincipal AuthenticationMetadata authenticationMetadata) {
-
-        ModelAndView modelAndView = new ModelAndView();
+    public ModelAndView getOrdersPage(@AuthenticationPrincipal AuthenticationMetadata authenticationMetadata) {
 
         User user = userService.findUserById(authenticationMetadata.getUserId());
-        modelAndView.setViewName("dashboard");
-        modelAndView.addObject("user", user);
-
-        modelAndView.addObject("carList", user.getCars());
-
+        
         List<RepairOrder> repairList = user.getRepairOrders().stream()
                 .filter(repairOrder -> !repairOrder.isDeleted())
-                .filter(repairOrder -> repairOrder.getStatus() == RepairStatus.PENDING 
-                        || repairOrder.getStatus() == RepairStatus.ACCEPTED)
+                .sorted((a, b) -> b.getCreatedAt().compareTo(a.getCreatedAt()))
                 .toList();
+        
+        ModelAndView modelAndView = new ModelAndView();
+        modelAndView.setViewName("orders");
+        modelAndView.addObject("user", user);
         modelAndView.addObject("repairList", repairList);
 
-        return  modelAndView;
+        return modelAndView;
     }
 }
+
