@@ -44,7 +44,7 @@ public class UserService implements UserDetailsService {
                 .email(registerRequest.getEmail())
                 .phoneNumber(registerRequest.getPhoneNumber())
                 .role(UserRole.USER)
-                .isActive(true)
+                .isActive(Boolean.TRUE)
                 .createdAt(LocalDateTime.now())
                 .updatedAt(LocalDateTime.now())
                 .build();

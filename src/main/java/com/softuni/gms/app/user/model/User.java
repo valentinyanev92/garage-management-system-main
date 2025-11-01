@@ -60,10 +60,10 @@ public class User {
     @OneToMany(mappedBy = "owner", fetch = FetchType.EAGER)
     private List<Car> cars = new ArrayList<>();
 
-    @OneToMany
+    @OneToMany(mappedBy = "user", fetch = FetchType.EAGER)
     private List<RepairOrder> repairOrders = new ArrayList<>();
 
-    @OneToMany
+    @OneToMany(mappedBy = "mechanic", fetch = FetchType.LAZY)
     private List<RepairOrder> mechanicOrders = new ArrayList<>();
 
 }

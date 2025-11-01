@@ -49,4 +49,7 @@ public class RepairOrder {
     @OneToMany(mappedBy = "repairOrder", orphanRemoval = true)
     private List<UsedPart> usedParts = new ArrayList<>();
 
+    @Column(nullable = false)
+    private String problemDescription;
+
 }

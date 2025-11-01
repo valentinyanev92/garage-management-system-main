@@ -1,6 +1,7 @@
 package com.softuni.gms.app.car.model;
 
 import com.softuni.gms.app.repair.model.RepairOrder;
+import com.softuni.gms.app.repair.model.RepairStatus;
 import com.softuni.gms.app.user.model.User;
 import jakarta.persistence.*;
 import lombok.*;
@@ -38,7 +39,7 @@ public class Car {
     @ManyToOne(optional = false)
     private User owner;
 
-    @OneToMany(mappedBy = "car")
+    @OneToMany(mappedBy = "car", fetch = FetchType.EAGER)
     private List<RepairOrder> repairOrders = new ArrayList<>();
 
     @Column(nullable = false)
@@ -52,5 +53,14 @@ public class Car {
 
     @Column(nullable = false)
     private boolean isDeleted = false;
+
+    @Transient
+    public boolean hasActiveRepairRequest() {
+        if (repairOrders == null || repairOrders.isEmpty()) {
+            return false;
+        }
+        return repairOrders.stream()
+                .anyMatch(order -> order.getStatus() == RepairStatus.PENDING || order.getStatus() == RepairStatus.ACCEPTED);
+    }
 
 }

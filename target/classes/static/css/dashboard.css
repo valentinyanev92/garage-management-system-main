@@ -395,6 +395,51 @@ body {
     background: linear-gradient(135deg, #c82333 0%, #dc3545 100%);
 }
 
+.request-repair-button {
+    display: inline-block;
+    background: linear-gradient(135deg, #0096FF 0%, #0066CC 100%);
+    color: white;
+    padding: 12px 24px;
+    border: none;
+    border-radius: 10px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(0, 150, 255, 0.3);
+    text-align: center;
+    white-space: nowrap;
+}
+
+.request-repair-button:hover {
+    transform: translateY(-2px) scale(1.02);
+    box-shadow: 0 6px 20px rgba(0, 150, 255, 0.5);
+    background: linear-gradient(135deg, #0066CC 0%, #0096FF 100%);
+}
+
+.already-requested-button {
+    display: inline-block;
+    background: linear-gradient(135deg, #6c757d 0%, #5a6268 100%);
+    color: white;
+    padding: 12px 24px;
+    border: none;
+    border-radius: 10px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: not-allowed;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(108, 117, 125, 0.3);
+    text-align: center;
+    white-space: nowrap;
+    opacity: 0.7;
+}
+
+.already-requested-button:hover {
+    opacity: 0.8;
+}
+
 .card-detail {
     display: flex;
     justify-content: space-between;
