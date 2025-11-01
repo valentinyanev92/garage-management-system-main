@@ -234,9 +234,19 @@
         </div>
     </div>
     
-    <script>
+    <script th:inline="javascript">
         let partRowIndex = 0;
-        const parts = /*[[${parts}]]*/ [];
+        
+        // Build parts array from Thymeleaf
+        const parts = [
+            /*[# th:each="part : ${parts}"]*/
+            {
+                id: /*[[${part.id}]]*/ '',
+                name: /*[[${part.name}]]*/ '',
+                price: /*[[${part.price}]]*/ 0
+            }/*[(${partStat.last} ? '' : ',')]*/
+            /*[/]*/
+        ];
 
         function addPartRow() {
             const partsList = document.getElementById('partsList');
@@ -244,10 +254,16 @@
             row.className = 'part-item';
             row.setAttribute('data-index', partRowIndex);
             
+            let optionsHtml = '<option value="">Select Part</option>';
+            if (parts && parts.length > 0) {
+                parts.forEach(function(part) {
+                    optionsHtml += '<option value="' + part.id + '">' + part.name + ' - ' + parseFloat(part.price).toFixed(2) + ' BGN</option>';
+                });
+            }
+            
             row.innerHTML = `
                 <select name="partIds" required>
-                    <option value="">Select Part</option>
-                    ${parts.map(p => `<option value="${p.id}">${p.name} - ${p.price} BGN</option>`).join('')}
+                    ${optionsHtml}
                 </select>
                 <input type="number" name="quantities" min="1" value="1" required placeholder="Quantity">
                 <button type="button" class="remove-part-button" onclick="removePartRow(this)">Remove</button>

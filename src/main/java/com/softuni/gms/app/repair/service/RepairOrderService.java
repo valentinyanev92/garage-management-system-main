@@ -14,6 +14,8 @@ import com.softuni.gms.app.web.dto.WorkOrderRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
+import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
@@ -121,7 +123,22 @@ public class RepairOrderService {
         repairOrder.setStatus(RepairStatus.COMPLETED);
         repairOrder.setCompletedAt(LocalDateTime.now());
         repairOrder.setUpdatedAt(LocalDateTime.now());
+
+        BigDecimal priceForWork = calculatePriceForWork(repairOrder, mechanic);
+        repairOrder.setPrice(priceForWork);
+
         repairOrderRepository.save(repairOrder);
+    }
+
+    private BigDecimal calculatePriceForWork(RepairOrder repairOrder, User mechanic) {
+        LocalDateTime acceptedAt = repairOrder.getAcceptedAt();
+        LocalDateTime completedAt = repairOrder.getCompletedAt();
+
+        Duration duration = Duration.between(acceptedAt, completedAt);
+        long minutes = duration.toMinutes();
+        long hours = (long) Math.ceil(minutes / 60.0);
+
+        return BigDecimal.valueOf(hours).multiply(mechanic.getHourlyRate());
     }
 
     public RepairOrder findAcceptedRepairOrderByMechanic(User mechanic) {
