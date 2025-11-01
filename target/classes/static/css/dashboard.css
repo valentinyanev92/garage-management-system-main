@@ -42,8 +42,11 @@ body {
     display: flex;
     flex-direction: column;
     height: calc(100vh - 100px);
+    min-height: calc(100vh - 100px);
+    max-height: calc(100vh - 100px);
     position: sticky;
     top: 20px;
+    overflow: hidden;
 }
 
 .sidebar-nav {
@@ -51,15 +54,18 @@ body {
     flex-direction: column;
     gap: 10px;
     flex: 1;
+    min-height: 0;
 }
 
 .nav-spacer {
     flex: 1;
+    min-height: 0;
 }
 
 .nav-bottom-section {
     display: flex;
     flex-direction: column;
+    flex-shrink: 0;
     gap: 10px;
 }
 
@@ -676,6 +682,153 @@ body {
     transform: translateY(-2px) scale(1.02);
     box-shadow: 0 6px 20px rgba(23, 162, 184, 0.5);
     background: linear-gradient(135deg, #138496 0%, #17a2b8 100%);
+}
+
+/* Admin Panel Styles */
+.admin-card-link {
+    text-decoration: none;
+    display: block;
+}
+
+.admin-card-link:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+}
+
+.admin-card-content-blur {
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    min-height: 100px;
+}
+
+.add-part-header-button {
+    display: inline-block;
+    background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+    color: white;
+    padding: 12px 30px;
+    border: none;
+    border-radius: 10px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(40, 167, 69, 0.3);
+}
+
+.add-part-header-button:hover {
+    transform: translateY(-2px) scale(1.02);
+    box-shadow: 0 6px 20px rgba(40, 167, 69, 0.5);
+    background: linear-gradient(135deg, #20c997 0%, #28a745 100%);
+}
+
+.part-card {
+    margin-bottom: 20px;
+}
+
+.part-card .card-content {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    gap: 20px;
+}
+
+.edit-button {
+    display: inline-block;
+    background: linear-gradient(135deg, #007bff 0%, #0056b3 100%);
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(0, 123, 255, 0.3);
+    white-space: nowrap;
+}
+
+.edit-button:hover {
+    transform: translateY(-2px) scale(1.02);
+    box-shadow: 0 6px 20px rgba(0, 123, 255, 0.5);
+    background: linear-gradient(135deg, #0056b3 0%, #007bff 100%);
+}
+
+.edit-user-button {
+    display: inline-block;
+    background: linear-gradient(135deg, #007bff 0%, #0056b3 100%);
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(0, 123, 255, 0.3);
+    text-align: center;
+    min-width: 100px;
+}
+
+.edit-user-button:hover {
+    transform: translateY(-2px) scale(1.02);
+    box-shadow: 0 6px 20px rgba(0, 123, 255, 0.5);
+    background: linear-gradient(135deg, #0056b3 0%, #007bff 100%);
+}
+
+.toggle-user-button {
+    display: inline-block;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    text-align: center;
+    min-width: 100px;
+}
+
+.activate-button {
+    background: linear-gradient(135deg, #28a745 0%, #1e7e34 100%);
+    color: white;
+    box-shadow: 0 4px 15px rgba(40, 167, 69, 0.3);
+}
+
+.activate-button:hover {
+    transform: translateY(-2px) scale(1.02);
+    box-shadow: 0 6px 20px rgba(40, 167, 69, 0.5);
+    background: linear-gradient(135deg, #1e7e34 0%, #28a745 100%);
+}
+
+.deactivate-button {
+    background: linear-gradient(135deg, #ffc107 0%, #e0a800 100%);
+    color: #333;
+    box-shadow: 0 4px 15px rgba(255, 193, 7, 0.3);
+}
+
+.deactivate-button:hover {
+    transform: translateY(-2px) scale(1.02);
+    box-shadow: 0 6px 20px rgba(255, 193, 7, 0.5);
+    background: linear-gradient(135deg, #e0a800 0%, #ffc107 100%);
+}
+
+.status-active {
+    color: #28a745;
+    font-weight: 600;
+}
+
+.status-inactive {
+    color: #dc3545;
+    font-weight: 600;
 }
 
 .car-card .card-content {

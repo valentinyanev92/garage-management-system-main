@@ -5,6 +5,7 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -26,9 +27,21 @@ public class Part {
     private String name;
 
     @Column(nullable = false)
+    private String manufacturer;
+
+    @Column(nullable = false)
     private BigDecimal price;
 
     @Column(nullable = false)
     @OneToMany(mappedBy = "part")
     private List<UsedPart> usedParts = new ArrayList<>();
+
+    @Column(nullable = false)
+    private LocalDateTime createdAt;
+
+    @Column(nullable = false)
+    private LocalDateTime updatedAt;
+
+    @Column(nullable = false)
+    private boolean isDeleted;
 }

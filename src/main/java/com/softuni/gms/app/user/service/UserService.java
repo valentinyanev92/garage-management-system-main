@@ -7,6 +7,7 @@ import com.softuni.gms.app.user.model.UserRole;
 import com.softuni.gms.app.user.repository.UserRepository;
 import com.softuni.gms.app.web.dto.RegisterRequest;
 import com.softuni.gms.app.web.dto.UserEditRequest;
+import com.softuni.gms.app.web.dto.UserAdminEditRequest;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -14,6 +15,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -71,6 +73,25 @@ public class UserService implements UserDetailsService {
         user.setPhoneNumber(userEditRequest.getPhoneNumber());
         user.setUpdatedAt(LocalDateTime.now());
         
+        return userRepository.save(user);
+    }
+
+    public List<User> findAllUsers() {
+        return userRepository.findAll();
+    }
+
+    public void toggleUserActiveStatus(UUID userId) {
+        User user = findUserById(userId);
+        user.setIsActive(!user.getIsActive());
+        user.setUpdatedAt(LocalDateTime.now());
+        userRepository.save(user);
+    }
+
+    public User updateUserByAdmin(UUID userId, UserAdminEditRequest userAdminEditRequest) {
+        User user = findUserById(userId);
+        user.setRole(userAdminEditRequest.getRole());
+        user.setHourlyRate(userAdminEditRequest.getHourlyRate());
+        user.setUpdatedAt(LocalDateTime.now());
         return userRepository.save(user);
     }
 }
