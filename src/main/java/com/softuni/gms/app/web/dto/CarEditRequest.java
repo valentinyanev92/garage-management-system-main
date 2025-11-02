@@ -5,6 +5,7 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import lombok.*;
+import org.hibernate.validator.constraints.URL;
 
 @Builder
 @Getter
@@ -34,8 +35,7 @@ public class CarEditRequest {
     @Size(min = 4, max = 20, message = "Plate number must be between 4 and 20 characters")
     private String plateNumber;
 
-    @NotNull(message = "Picture URL is required")
-    @NotBlank(message = "Picture URL cannot be blank")
+    @URL(message = "Picture should be URL!")
     private String pictureUrl;
 }
 

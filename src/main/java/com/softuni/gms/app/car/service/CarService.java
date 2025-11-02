@@ -45,12 +45,17 @@ public class CarService {
 
     public Car updateCar(UUID carId, CarEditRequest carEditRequest) {
         Car car = findCarById(carId);
-        
+
+        String imageUrl = "/images/car-no-photo-available.png";
+        if (!carEditRequest.getPictureUrl().isBlank()) {
+            imageUrl = carEditRequest.getPictureUrl();
+        }
+
         car.setBrand(carEditRequest.getBrand());
         car.setModel(carEditRequest.getModel());
         car.setVin(carEditRequest.getVin());
         car.setPlateNumber(carEditRequest.getPlateNumber());
-        car.setPictureUrl(carEditRequest.getPictureUrl());
+        car.setPictureUrl(imageUrl);
         car.setUpdatedAt(LocalDateTime.now());
         
         return carRepository.save(car);

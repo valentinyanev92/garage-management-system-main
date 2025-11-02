@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.ModelAndView;
 
+import java.util.List;
 import java.util.UUID;
 
 @Controller
@@ -41,7 +42,7 @@ public class CarController {
     public ModelAndView getCarsPage(@AuthenticationPrincipal AuthenticationMetadata authenticationMetadata) {
 
         User user = userService.findUserById(authenticationMetadata.getUserId());
-        var carList = carRepository.findByOwnerAndIsDeletedFalse(user);
+        List<Car> carList = carRepository.findByOwnerAndIsDeletedFalse(user);
         
         ModelAndView modelAndView = new ModelAndView();
         modelAndView.setViewName("cars");

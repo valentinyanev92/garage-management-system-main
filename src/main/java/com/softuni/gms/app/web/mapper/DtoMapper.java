@@ -42,12 +42,20 @@ public class DtoMapper {
 
     public static CarEditRequest mapCarToCarEditRequest(Car car) {
 
+        String imageUrl;
+        if (car.getPictureUrl().equals("/images/car-no-photo-available.png")) {
+            imageUrl = "";
+        }else {
+            imageUrl = car.getPictureUrl();
+        }
+
+
         return CarEditRequest.builder()
                 .brand(car.getBrand())
                 .model(car.getModel())
                 .vin(car.getVin())
                 .plateNumber(car.getPlateNumber())
-                .pictureUrl(car.getPictureUrl())
+                .pictureUrl(imageUrl)
                 .build();
     }
 

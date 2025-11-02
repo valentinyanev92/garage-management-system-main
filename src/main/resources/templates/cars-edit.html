@@ -54,7 +54,7 @@
                     <div class="help-text" th:classappend="${#fields.hasErrors('pictureUrl')} ? 'show-help' : ''">
                         Enter a valid image URL
                     </div>
-                    <input type="url" id="pictureUrl" th:field="*{pictureUrl}" placeholder="Enter picture URL" required>
+                    <input type="url" id="pictureUrl" th:field="*{pictureUrl}" placeholder="Enter picture URL">
                     <div th:if="${#fields.hasErrors('pictureUrl')}" class="error-message" th:errors="*{pictureUrl}"></div>
                 </div>
                 
