@@ -71,7 +71,10 @@ public class IndexController {
             ModelAndView modelAndView = new ModelAndView();
             modelAndView.setViewName("register");
             modelAndView.addObject("registerRequest", registerRequest);
-            
+
+            //TODO: properly handling for duplicate phoneNumber !!! whatsUp modification - from 0898888243 to 359898888243!!!
+
+
             String errorMessage = e.getMessage();
             if (errorMessage.contains("Username")) {
                 bindingResult.rejectValue("username", "error.username", "A user with this username already exists");

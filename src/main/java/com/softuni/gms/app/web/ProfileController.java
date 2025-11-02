@@ -45,11 +45,11 @@ public class ProfileController {
             ModelAndView modelAndView = new ModelAndView();
             modelAndView.setViewName("profile-edit");
             modelAndView.addObject("userDetails", userDetails);
+
             return modelAndView;
         }
 
         userService.updateUser(authenticationMetadata.getUserId(), userDetails);
-
         return new ModelAndView("redirect:/dashboard");
     }
 }

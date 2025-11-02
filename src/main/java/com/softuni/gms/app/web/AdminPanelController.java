@@ -9,6 +9,7 @@ import com.softuni.gms.app.user.service.UserService;
 import com.softuni.gms.app.web.dto.PartAddRequest;
 import com.softuni.gms.app.web.dto.PartEditRequest;
 import com.softuni.gms.app.web.dto.UserAdminEditRequest;
+import com.softuni.gms.app.web.mapper.DtoMapper;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -87,6 +88,7 @@ public class AdminPanelController {
             modelAndView.setViewName("admin-parts-add");
             modelAndView.addObject("user", admin);
             modelAndView.addObject("partAddRequest", partAddRequest);
+
             return modelAndView;
         }
 
@@ -101,17 +103,11 @@ public class AdminPanelController {
         User admin = userService.findUserById(authenticationMetadata.getUserId());
         Part part = partService.findPartById(id);
 
-        PartEditRequest partEditRequest = PartEditRequest.builder()
-                .name(part.getName())
-                .manufacturer(part.getManufacturer())
-                .price(part.getPrice())
-                .build();
-
         ModelAndView modelAndView = new ModelAndView();
         modelAndView.setViewName("admin-parts-edit");
         modelAndView.addObject("user", admin);
         modelAndView.addObject("part", part);
-        modelAndView.addObject("partEditRequest", partEditRequest);
+        modelAndView.addObject("partEditRequest", DtoMapper.mapPartToPartEditRequest(part));
 
         return modelAndView;
     }
@@ -141,6 +137,7 @@ public class AdminPanelController {
     @PostMapping("/parts/delete/{id}")
     public ModelAndView deletePart(@PathVariable UUID id,
                                    @AuthenticationPrincipal AuthenticationMetadata authenticationMetadata) {
+
         partService.deletePart(id);
         return new ModelAndView("redirect:/dashboard/admin/parts");
     }
@@ -162,6 +159,7 @@ public class AdminPanelController {
     @PostMapping("/users/toggle/{id}")
     public ModelAndView toggleUserActiveStatus(@PathVariable UUID id,
                                               @AuthenticationPrincipal AuthenticationMetadata authenticationMetadata) {
+
         userService.toggleUserActiveStatus(id);
         return new ModelAndView("redirect:/dashboard/admin/users");
     }
@@ -173,16 +171,11 @@ public class AdminPanelController {
         User admin = userService.findUserById(authenticationMetadata.getUserId());
         User userToEdit = userService.findUserById(id);
 
-        UserAdminEditRequest userAdminEditRequest = UserAdminEditRequest.builder()
-                .role(userToEdit.getRole())
-                .hourlyRate(userToEdit.getHourlyRate())
-                .build();
-
         ModelAndView modelAndView = new ModelAndView();
         modelAndView.setViewName("admin-users-edit");
         modelAndView.addObject("user", admin);
         modelAndView.addObject("userToEdit", userToEdit);
-        modelAndView.addObject("userAdminEditRequest", userAdminEditRequest);
+        modelAndView.addObject("userAdminEditRequest", DtoMapper.mapUserToUserAdminEditRequest(userToEdit));
         modelAndView.addObject("roles", UserRole.values());
 
         return modelAndView;

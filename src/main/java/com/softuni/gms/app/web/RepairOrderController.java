@@ -2,6 +2,7 @@ package com.softuni.gms.app.web;
 
 import com.softuni.gms.app.car.model.Car;
 import com.softuni.gms.app.car.service.CarService;
+import com.softuni.gms.app.repair.model.RepairOrder;
 import com.softuni.gms.app.repair.service.RepairOrderService;
 import com.softuni.gms.app.security.AuthenticationMetadata;
 import com.softuni.gms.app.user.model.User;
@@ -64,7 +65,6 @@ public class RepairOrderController {
         }
         
         repairOrderService.createRepairOrder(carId, user, problemDescription);
-        
         return new ModelAndView("redirect:/dashboard");
     }
 
@@ -88,7 +88,7 @@ public class RepairOrderController {
                                              @AuthenticationPrincipal AuthenticationMetadata authenticationMetadata) {
         
         User user = userService.findUserById(authenticationMetadata.getUserId());
-        var repairOrder = repairOrderService.findRepairOrderById(id);
+        RepairOrder repairOrder = repairOrderService.findRepairOrderById(id);
 
         if (!repairOrder.getUser().getId().equals(user.getId())) {
             return new ModelAndView("redirect:/dashboard");
@@ -117,4 +117,3 @@ public class RepairOrderController {
         return new ModelAndView("redirect:/dashboard");
     }
 }
-

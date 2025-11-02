@@ -8,6 +8,7 @@ import com.softuni.gms.app.user.model.User;
 import com.softuni.gms.app.user.service.UserService;
 import com.softuni.gms.app.web.dto.CarEditRequest;
 import com.softuni.gms.app.web.dto.CarRegisterRequest;
+import com.softuni.gms.app.web.mapper.DtoMapper;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -52,9 +53,11 @@ public class CarController {
 
     @GetMapping("/add")
     public ModelAndView getAddCarPage() {
+
         ModelAndView modelAndView = new ModelAndView();
         modelAndView.setViewName("cars-add");
         modelAndView.addObject("carRegisterRequest", new CarRegisterRequest());
+
         return modelAndView;
     }
 
@@ -85,19 +88,12 @@ public class CarController {
         if (!car.getOwner().getId().equals(authenticationMetadata.getUserId())) {
             return new ModelAndView("redirect:/cars");
         }
-        
-        CarEditRequest carEditRequest = CarEditRequest.builder()
-                .brand(car.getBrand())
-                .model(car.getModel())
-                .vin(car.getVin())
-                .plateNumber(car.getPlateNumber())
-                .pictureUrl(car.getPictureUrl())
-                .build();
-        
+
         ModelAndView modelAndView = new ModelAndView();
         modelAndView.setViewName("cars-edit");
-        modelAndView.addObject("carEditRequest", carEditRequest);
+        modelAndView.addObject("carEditRequest", DtoMapper.mapCarToCarEditRequest(car));
         modelAndView.addObject("carId", id);
+
         return modelAndView;
     }
 

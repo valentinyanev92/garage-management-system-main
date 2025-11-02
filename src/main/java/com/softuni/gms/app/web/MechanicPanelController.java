@@ -8,6 +8,7 @@ import com.softuni.gms.app.security.AuthenticationMetadata;
 import com.softuni.gms.app.user.model.User;
 import com.softuni.gms.app.user.service.UserService;
 import com.softuni.gms.app.web.dto.WorkOrderRequest;
+import com.softuni.gms.app.web.mapper.DtoMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
@@ -41,9 +42,7 @@ public class MechanicPanelController {
     public ModelAndView getMechanicPanelPage(@AuthenticationPrincipal AuthenticationMetadata authenticationMetadata) {
 
         User mechanic = userService.findUserById(authenticationMetadata.getUserId());
-
         RepairOrder acceptedOrder = repairOrderService.findAcceptedRepairOrderByMechanic(mechanic);
-
         List<RepairOrder> pendingOrders = repairOrderService.findPendingRepairOrders();
 
         ModelAndView modelAndView = new ModelAndView();
@@ -118,20 +117,16 @@ public class MechanicPanelController {
         User mechanic = userService.findUserById(authenticationMetadata.getUserId());
 
         try {
-            WorkOrderRequest workOrderRequest = WorkOrderRequest.builder()
-                    .workDescription(workDescription)
-                    .build();
+            WorkOrderRequest workOrderRequest = DtoMapper.mapWorkDescriptionToWorkOrderRequest(workDescription);
 
             if (partIds != null && quantities != null && partIds.size() == quantities.size()) {
                 List<WorkOrderRequest.PartUsageRequest> parts = new java.util.ArrayList<>();
                 for (int i = 0; i < partIds.size(); i++) {
                     if (partIds.get(i) != null && quantities.get(i) != null && quantities.get(i) > 0) {
-                        parts.add(WorkOrderRequest.PartUsageRequest.builder()
-                                .partId(partIds.get(i))
-                                .quantity(quantities.get(i))
-                                .build());
+                        parts.add(DtoMapper.mapPartUsageRequestToPartUsageRequest(partIds.get(i), quantities.get(i)));
                     }
                 }
+
                 workOrderRequest.setParts(parts);
             }
 
