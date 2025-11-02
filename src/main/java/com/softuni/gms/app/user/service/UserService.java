@@ -51,13 +51,15 @@ public class UserService implements UserDetailsService {
             throw new UserAlreadyExistException("Phone number already exists");
         }
 
+        String phoneNumber = "359" + registerRequest.getPhoneNumber().substring(1);
+
         User user = User.builder()
                 .username(registerRequest.getUsername())
                 .password(passwordEncoder.encode(registerRequest.getPassword()))
                 .firstName(registerRequest.getFirstName())
                 .lastName(registerRequest.getLastName())
                 .email(registerRequest.getEmail())
-                .phoneNumber(registerRequest.getPhoneNumber())
+                .phoneNumber(phoneNumber)
                 .role(UserRole.USER)
                 .isActive(Boolean.TRUE)
                 .createdAt(LocalDateTime.now())
@@ -80,11 +82,13 @@ public class UserService implements UserDetailsService {
     public User updateUser(UUID userId, UserEditRequest userEditRequest) {
 
         User user = findUserById(userId);
+
+        String phoneNumber = "359" + userEditRequest.getPhoneNumber().substring(1);
         
         user.setFirstName(userEditRequest.getFirstName());
         user.setLastName(userEditRequest.getLastName());
         user.setEmail(userEditRequest.getEmail());
-        user.setPhoneNumber(userEditRequest.getPhoneNumber());
+        user.setPhoneNumber(phoneNumber);
         user.setUpdatedAt(LocalDateTime.now());
         
         return userRepository.save(user);

@@ -1,6 +1,7 @@
 package com.softuni.gms.app.web;
 
 import com.softuni.gms.app.security.AuthenticationMetadata;
+import com.softuni.gms.app.user.model.User;
 import com.softuni.gms.app.user.service.UserService;
 import com.softuni.gms.app.web.dto.UserEditRequest;
 import com.softuni.gms.app.web.mapper.DtoMapper;
@@ -26,7 +27,7 @@ public class ProfileController {
     @GetMapping("/edit")
     public ModelAndView editProfile(@AuthenticationPrincipal AuthenticationMetadata authenticationMetadata) {
 
-        var user = userService.findUserById(authenticationMetadata.getUserId());
+        User user = userService.findUserById(authenticationMetadata.getUserId());
         ModelAndView modelAndView = new ModelAndView();
         modelAndView.setViewName("profile-edit");
 
