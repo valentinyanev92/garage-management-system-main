@@ -168,4 +168,9 @@ public class RepairOrderService {
         repairOrder.setUpdatedAt(LocalDateTime.now());
         repairOrderRepository.save(repairOrder);
     }
+
+    public RepairOrder findById(UUID id) {
+
+        return repairOrderRepository.findById(id).orElseThrow(() -> new NotFoundException("Repair not found!"));
+    }
 }
