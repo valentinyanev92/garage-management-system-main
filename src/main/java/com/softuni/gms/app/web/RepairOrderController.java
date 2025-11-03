@@ -2,19 +2,21 @@ package com.softuni.gms.app.web;
 
 import com.softuni.gms.app.car.model.Car;
 import com.softuni.gms.app.car.service.CarService;
+import com.softuni.gms.app.web.dto.InvoiceRequest;
+import com.softuni.gms.app.client.PdfService;
 import com.softuni.gms.app.repair.model.RepairOrder;
 import com.softuni.gms.app.repair.service.RepairOrderService;
 import com.softuni.gms.app.security.AuthenticationMetadata;
 import com.softuni.gms.app.user.model.User;
 import com.softuni.gms.app.user.service.UserService;
+import com.softuni.gms.app.web.mapper.DtoMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
 import java.util.UUID;
@@ -26,12 +28,14 @@ public class RepairOrderController {
     private final RepairOrderService repairOrderService;
     private final UserService userService;
     private final CarService carService;
+    private final PdfService pdfService;
 
     @Autowired
-    public RepairOrderController(RepairOrderService repairOrderService, UserService userService, CarService carService) {
+    public RepairOrderController(RepairOrderService repairOrderService, UserService userService, CarService carService, PdfService pdfService) {
         this.repairOrderService = repairOrderService;
         this.userService = userService;
         this.carService = carService;
+        this.pdfService = pdfService;
     }
 
     @GetMapping("/request/{carId}")
@@ -115,5 +119,24 @@ public class RepairOrderController {
         }
         
         return new ModelAndView("redirect:/dashboard");
+    }
+
+    @GetMapping("/{id}/invoice")
+    public ResponseEntity<byte[]> downloadInvoice(@PathVariable UUID id,
+                                                  @AuthenticationPrincipal AuthenticationMetadata authenticationMetadata) {
+
+        User user = userService.findUserById(authenticationMetadata.getUserId());
+        RepairOrder repairOrder = repairOrderService.findById(id);
+
+        if (!repairOrder.getUser().getId().equals(user.getId())) {
+            return ResponseEntity.status(403).build();
+        }
+
+        InvoiceRequest invoiceRequest = DtoMapper.mapRepairOrderToInvoiceRequest(repairOrder);
+        byte[] pdf = pdfService.generateInvoice(invoiceRequest);
+        return ResponseEntity.ok()
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=invoice-" + id + ".pdf")
+                .contentType(MediaType.APPLICATION_PDF)
+                .body(pdf);
     }
 }
