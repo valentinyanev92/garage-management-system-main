@@ -6,6 +6,8 @@ import com.softuni.gms.app.part.repository.PartRepository;
 import com.softuni.gms.app.web.dto.PartAddRequest;
 import com.softuni.gms.app.web.dto.PartEditRequest;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -27,10 +29,12 @@ public class PartService {
                 .orElseThrow(() -> new NotFoundException("Part not found"));
     }
 
+    @Cacheable(value = "parts")
     public List<Part> findAllParts() {
         return partRepository.findByIsDeletedFalse();
     }
 
+    @CacheEvict(value = "parts", allEntries = true)
     public Part createPart(PartAddRequest partAddRequest) {
         LocalDateTime now = LocalDateTime.now();
         
@@ -46,6 +50,7 @@ public class PartService {
         return partRepository.save(part);
     }
 
+    @CacheEvict(value = "parts", allEntries = true)
     public Part updatePart(UUID partId, PartEditRequest partEditRequest) {
         Part part = findPartById(partId);
 
@@ -57,6 +62,7 @@ public class PartService {
         return partRepository.save(part);
     }
 
+    @CacheEvict(value = "parts", allEntries = true)
     public void deletePart(UUID partId) {
         Part part = findPartById(partId);
         part.setDeleted(true);

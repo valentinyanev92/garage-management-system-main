@@ -7,8 +7,10 @@ import com.softuni.gms.app.user.model.User;
 import com.softuni.gms.app.user.model.UserRole;
 import com.softuni.gms.app.user.repository.UserRepository;
 import com.softuni.gms.app.web.dto.RegisterRequest;
-import com.softuni.gms.app.web.dto.UserEditRequest;
 import com.softuni.gms.app.web.dto.UserAdminEditRequest;
+import com.softuni.gms.app.web.dto.UserEditRequest;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -37,6 +39,7 @@ public class UserService implements UserDetailsService {
         this.passwordEncoder = passwordEncoder;
     }
 
+    @CacheEvict(value = "users", allEntries = true)
     public User registerUser(RegisterRequest registerRequest) {
 
         if (userRepository.findByUsername(registerRequest.getUsername()).isPresent()) {
@@ -79,6 +82,7 @@ public class UserService implements UserDetailsService {
         return userRepository.findById(id).orElseThrow(() -> new NotFoundException("User not found"));
     }
 
+    @CacheEvict(value = "users", allEntries = true)
     public User updateUser(UUID userId, UserEditRequest userEditRequest) {
 
         User user = findUserById(userId);
@@ -94,11 +98,14 @@ public class UserService implements UserDetailsService {
         return userRepository.save(user);
     }
 
+    @Cacheable(value = "users")
     public List<User> findAllUsers() {
 
+        System.out.println("Loaded from db");
         return userRepository.findAll();
     }
 
+    @CacheEvict(value = "users", allEntries = true)
     public void toggleUserActiveStatus(UUID userId) {
 
         User user = findUserById(userId);
@@ -107,6 +114,7 @@ public class UserService implements UserDetailsService {
         userRepository.save(user);
     }
 
+    @CacheEvict(value = "users", allEntries = true)
     public User updateUserByAdmin(UUID userId, UserAdminEditRequest userAdminEditRequest) {
 
         User user = findUserById(userId);

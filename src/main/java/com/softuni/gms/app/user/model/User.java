@@ -1,5 +1,6 @@
 package com.softuni.gms.app.user.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.softuni.gms.app.car.model.Car;
 import com.softuni.gms.app.repair.model.RepairOrder;
 import jakarta.persistence.*;
@@ -58,12 +59,15 @@ public class User {
     private BigDecimal hourlyRate;
 
     @OneToMany(mappedBy = "owner", fetch = FetchType.EAGER)
+    @JsonIgnore
     private List<Car> cars = new ArrayList<>();
 
     @OneToMany(mappedBy = "user", fetch = FetchType.EAGER)
+    @JsonIgnore
     private List<RepairOrder> repairOrders = new ArrayList<>();
 
     @OneToMany(mappedBy = "mechanic", fetch = FetchType.LAZY)
+    @JsonIgnore
     private List<RepairOrder> mechanicOrders = new ArrayList<>();
 
 }
