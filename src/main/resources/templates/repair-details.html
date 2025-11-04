@@ -223,7 +223,7 @@
 
                     <!-- Action Buttons -->
                     <div class="details-actions">
-                        <a th:href="@{/repairs/details/{id}/download(id=${repairOrder.id})}" 
+                        <a th:href="@{/repairs/{id}/invoice(id=${repairOrder.id})}" 
                            class="invoice-button"
                            th:if="${repairOrder.status.name().equals('COMPLETED')}">Generate Invoice</a>
                         <a href="/dashboard" class="back-button">Back to Dashboard</a>
