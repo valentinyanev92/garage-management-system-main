@@ -101,7 +101,6 @@ public class UserService implements UserDetailsService {
     @Cacheable(value = "users")
     public List<User> findAllUsers() {
 
-        System.out.println("Loaded from db");
         return userRepository.findAll();
     }
 
