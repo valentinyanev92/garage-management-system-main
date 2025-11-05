@@ -140,4 +140,15 @@ public class DtoMapper {
                 .message(message)
                 .build();
     }
+
+    public static RepairCompletionRequest maprepairordertorepaircompletitionrequest(RepairOrder repairOrder) {
+
+        return RepairCompletionRequest.builder()
+                .carBrand(repairOrder.getCar().getBrand())
+                .carModel(repairOrder.getCar().getModel())
+                .mechanicFistName(repairOrder.getMechanic().getFirstName())
+                .mechanicLastName(repairOrder.getMechanic().getLastName())
+                .phoneNumber(repairOrder.getUser().getPhoneNumber())
+                .build();
+    }
 }

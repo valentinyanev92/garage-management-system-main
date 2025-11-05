@@ -1,5 +1,6 @@
 package com.softuni.gms.app.web;
 
+import com.softuni.gms.app.client.RepairCompletionNotificationService;
 import com.softuni.gms.app.part.model.Part;
 import com.softuni.gms.app.part.service.PartService;
 import com.softuni.gms.app.repair.model.RepairOrder;
@@ -29,13 +30,15 @@ public class MechanicPanelController {
     private final UserService userService;
     private final RepairOrderService repairOrderService;
     private final PartService partService;
+    private final RepairCompletionNotificationService repairNotificationService;
 
     @Autowired
     public MechanicPanelController(UserService userService, RepairOrderService repairOrderService,
-                                  PartService partService) {
+                                   PartService partService, RepairCompletionNotificationService repairNotificationService) {
         this.userService = userService;
         this.repairOrderService = repairOrderService;
         this.partService = partService;
+        this.repairNotificationService = repairNotificationService;
     }
 
     @GetMapping
@@ -80,6 +83,9 @@ public class MechanicPanelController {
         } catch (Exception e) {
             return new ModelAndView("redirect:/dashboard/mechanic");
         }
+
+        RepairOrder repairOrder = repairOrderService.findRepairOrderById(id);
+        repairNotificationService.sendMessageForCompletion(DtoMapper.maprepairordertorepaircompletitionrequest(repairOrder));
 
         return new ModelAndView("redirect:/dashboard/mechanic");
     }
