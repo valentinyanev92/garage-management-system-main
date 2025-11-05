@@ -2,6 +2,7 @@ package com.softuni.gms.app.repair.service;
 
 import com.softuni.gms.app.car.model.Car;
 import com.softuni.gms.app.car.service.CarService;
+import com.softuni.gms.app.event.RepairEventPublisher;
 import com.softuni.gms.app.exeption.CarOwnershipException;
 import com.softuni.gms.app.exeption.NotFoundException;
 import com.softuni.gms.app.part.model.Part;
@@ -28,14 +29,16 @@ public class RepairOrderService {
     private final CarService carService;
     private final PartService partService;
     private final UsedPartService usedPartService;
+    private final RepairEventPublisher eventPublisher;
 
     @Autowired
     public RepairOrderService(RepairOrderRepository repairOrderRepository, CarService carService,
-                             PartService partService, UsedPartService usedPartService) {
+                              PartService partService, UsedPartService usedPartService, RepairEventPublisher eventPublisher) {
         this.repairOrderRepository = repairOrderRepository;
         this.carService = carService;
         this.partService = partService;
         this.usedPartService = usedPartService;
+        this.eventPublisher = eventPublisher;
     }
 
     public RepairOrder createRepairOrder(UUID carId, User user, String problemDescription) {
@@ -68,7 +71,9 @@ public class RepairOrderService {
         if (!repairOrder.getUser().getId().equals(user.getId())) {
             throw new CarOwnershipException("User does not own this repair order");
         }
-        
+
+        eventPublisher.publishRepairStatusChanged(repairOrder, repairOrder.getStatus().getDisplayName(), RepairStatus.USER_CANCELED.getDisplayName());
+
         repairOrder.setStatus(RepairStatus.USER_CANCELED);
         repairOrder.setUpdatedAt(LocalDateTime.now());
         repairOrderRepository.save(repairOrder);
@@ -101,6 +106,8 @@ public class RepairOrderService {
         if (repairOrder.getStatus() != RepairStatus.PENDING) {
             throw new IllegalStateException("Only PENDING repair orders can be accepted");
         }
+
+        eventPublisher.publishRepairStatusChanged(repairOrder, repairOrder.getStatus().getDisplayName(), RepairStatus.ACCEPTED.getDisplayName());
 
         repairOrder.setStatus(RepairStatus.ACCEPTED);
         repairOrder.setMechanic(mechanic);

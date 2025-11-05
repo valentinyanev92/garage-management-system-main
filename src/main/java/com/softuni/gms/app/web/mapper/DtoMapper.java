@@ -1,9 +1,11 @@
 package com.softuni.gms.app.web.mapper;
 
 import com.softuni.gms.app.car.model.Car;
+import com.softuni.gms.app.event.RepairStatusChangedEvent;
 import com.softuni.gms.app.part.model.Part;
 import com.softuni.gms.app.repair.model.RepairOrder;
 import com.softuni.gms.app.repair.model.UsedPart;
+import com.softuni.gms.app.shared.kafka.dto.RepairKafkaEventRequest;
 import com.softuni.gms.app.user.model.User;
 import com.softuni.gms.app.web.dto.*;
 import lombok.experimental.UtilityClass;
@@ -49,7 +51,7 @@ public class DtoMapper {
         String imageUrl;
         if (car.getPictureUrl().equals("/images/car-no-photo-available.png")) {
             imageUrl = "";
-        }else {
+        } else {
             imageUrl = car.getPictureUrl();
         }
 
@@ -81,13 +83,13 @@ public class DtoMapper {
     public static InvoiceRequest mapRepairOrderToInvoiceRequest(RepairOrder repairOrder) {
         BigDecimal partsTotal = repairOrder.getUsedParts() != null && !repairOrder.getUsedParts().isEmpty()
                 ? repairOrder.getUsedParts().stream()
-                    .map(UsedPart::getTotalPrice)
-                    .reduce(BigDecimal.ZERO, BigDecimal::add)
+                .map(UsedPart::getTotalPrice)
+                .reduce(BigDecimal.ZERO, BigDecimal::add)
                 : BigDecimal.ZERO;
-        
+
         BigDecimal serviceFee = repairOrder.getPrice() != null ? repairOrder.getPrice() : BigDecimal.ZERO;
         BigDecimal totalPrice = partsTotal.add(serviceFee);
-        
+
         return InvoiceRequest.builder()
                 .repairId(repairOrder.getId())
                 .createdAt(repairOrder.getCreatedAt())
@@ -104,8 +106,8 @@ public class DtoMapper {
                 .totalPrice(totalPrice)
                 .usedParts(repairOrder.getUsedParts() != null && !repairOrder.getUsedParts().isEmpty()
                         ? repairOrder.getUsedParts().stream()
-                            .map(DtoMapper::mapPartToUsedPartRequest)
-                            .collect(Collectors.toList())
+                        .map(DtoMapper::mapPartToUsedPartRequest)
+                        .collect(Collectors.toList())
                         : java.util.Collections.emptyList())
                 .build();
     }
@@ -117,6 +119,25 @@ public class DtoMapper {
                 .unitPrice(usedPart.getPart().getPrice())
                 .quantity(usedPart.getQuantity())
                 .totalPrice(usedPart.getTotalPrice())
+                .build();
+    }
+
+    public static RepairKafkaEventRequest mapRepairOrderForKafka(RepairStatusChangedEvent event) {
+
+        RepairOrder order = event.getRepairOrder();
+        String phoneNumber = order.getUser().getPhoneNumber();
+        String message = String.format("Repair order for %s %s status changed from \"%s\" to \"%s\""
+                , order.getCar().getBrand()
+                , order.getCar().getModel()
+                , event.getOldStatus()
+                , event.getNewStatus());
+
+        return RepairKafkaEventRequest.builder()
+                .repairOrderId(order.getId())
+                .oldStatus(event.getOldStatus())
+                .newStatus(event.getNewStatus())
+                .phoneNumber(phoneNumber)
+                .message(message)
                 .build();
     }
 }

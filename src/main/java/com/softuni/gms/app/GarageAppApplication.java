@@ -5,7 +5,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cloud.openfeign.EnableFeignClients;
 
 @SpringBootApplication
-@EnableFeignClients(basePackages = "com.softuni.gms.app.client")
+@EnableFeignClients
 public class GarageAppApplication {
 
 	public static void main(String[] args) {

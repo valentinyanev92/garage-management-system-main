@@ -14,6 +14,7 @@ public class PdfService {
         this.pdfClient = pdfClient;
     }
 
+    //TODO FIX TRY-CATCH??
     public byte[] generateInvoice(InvoiceRequest invoiceRequest) {
         return pdfClient.generateInvoice(invoiceRequest);
     }
