@@ -1,6 +1,7 @@
 package com.softuni.gms.app.web;
 
 import com.softuni.gms.app.client.RepairCompletionNotificationService;
+import com.softuni.gms.app.exeption.MicroserviceDontRespond;
 import com.softuni.gms.app.part.model.Part;
 import com.softuni.gms.app.part.service.PartService;
 import com.softuni.gms.app.repair.model.RepairOrder;
@@ -85,7 +86,11 @@ public class MechanicPanelController {
         }
 
         RepairOrder repairOrder = repairOrderService.findRepairOrderById(id);
-        repairNotificationService.sendMessageForCompletion(DtoMapper.maprepairordertorepaircompletitionrequest(repairOrder));
+        try {
+            repairNotificationService.sendMessageForCompletion(DtoMapper.maprepairordertorepaircompletitionrequest(repairOrder));
+        } catch (Exception e) {
+            throw new MicroserviceDontRespond(e.getMessage());
+        }
 
         return new ModelAndView("redirect:/dashboard/mechanic");
     }
