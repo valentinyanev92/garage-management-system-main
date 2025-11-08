@@ -584,6 +584,19 @@ body {
     background: linear-gradient(135deg, #0056b3 0%, #007bff 100%);
 }
 
+.invoice-button.disabled {
+    background: linear-gradient(135deg, #6c757d 0%, #495057 100%);
+    cursor: not-allowed;
+    box-shadow: none;
+    pointer-events: none;
+}
+
+.invoice-button.disabled:hover {
+    transform: none;
+    box-shadow: none;
+    background: linear-gradient(135deg, #6c757d 0%, #495057 100%);
+}
+
 .back-button {
     display: inline-block;
     background: linear-gradient(135deg, #6c757d 0%, #5a6268 100%);

@@ -21,6 +21,7 @@ import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Service
 public class RepairOrderService {
@@ -51,6 +52,7 @@ public class RepairOrderService {
                 .createdAt(LocalDateTime.now())
                 .updatedAt(LocalDateTime.now())
                 .problemDescription(problemDescription)
+                .invoiceGenerated(false)
                 .build();
         
         return repairOrderRepository.save(repairOrder);
@@ -179,5 +181,19 @@ public class RepairOrderService {
     public RepairOrder findById(UUID id) {
 
         return repairOrderRepository.findById(id).orElseThrow(() -> new NotFoundException("Repair not found!"));
+    }
+
+    public List<RepairOrder> findAllCompletedWithoutInvoice() {
+
+        return repairOrderRepository.findAllByStatusAndInvoiceGeneratedFalse(RepairStatus.COMPLETED)
+                .stream()
+                .distinct()
+                .collect(Collectors.toList());
+    }
+
+    public void changeStatusForGenerateInvoice(RepairOrder repairOrder) {
+
+        repairOrder.setInvoiceGenerated(true);
+        repairOrderRepository.save(repairOrder);
     }
 }

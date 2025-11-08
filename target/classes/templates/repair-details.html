@@ -8,7 +8,6 @@
 </head>
 <body>
     <div class="dashboard-wrapper">
-        <!-- Left Sidebar -->
         <aside class="sidebar">
             <nav class="sidebar-nav">
                 <a href="/dashboard" class="nav-button">
@@ -23,17 +22,13 @@
                 <a th:href="@{/orders}" class="nav-button">
                     <span>Manage Orders</span>
                 </a>
-                <!-- Spacer to push buttons to bottom -->
                 <div class="nav-spacer"></div>
-                <!-- Bottom section with role-based buttons and logout -->
                 <div class="nav-bottom-section">
-                    <!-- Mechanic Panel - visible for MECHANIC and ADMIN -->
                     <a th:href="@{/dashboard/mechanic}" 
                        class="nav-button mechanic-button"
                        th:if="${user.role.name().equals('MECHANIC') or user.role.name().equals('ADMIN')}">
                         <span>Mechanic Panel</span>
                     </a>
-                    <!-- Admin Panel - visible only for ADMIN -->
                     <a th:href="@{/dashboard/admin}" 
                        class="nav-button admin-button"
                        th:if="${user.role.name().equals('ADMIN')}">
@@ -46,7 +41,6 @@
             </nav>
         </aside>
 
-        <!-- Main Content -->
         <div class="dashboard-container">
             <header class="dashboard-header">
                 <h1 class="dashboard-title">Repair Order Details</h1>
@@ -55,7 +49,6 @@
             <main class="dashboard-content">
                 <div class="repair-details-container">
                     <div class="repair-details-layout">
-                        <!-- Left Column: Car Information -->
                         <div class="repair-details-left">
                             <section class="details-section">
                                 <h2 class="section-title">Car Information</h2>
@@ -85,7 +78,6 @@
                             </section>
                         </div>
 
-                        <!-- Right Column: Repair Order Information -->
                         <div class="repair-details-right">
                             <section class="details-section">
                                 <h2 class="section-title">Repair Order Information</h2>
@@ -126,7 +118,6 @@
                                 </div>
                             </section>
 
-                            <!-- Problem Description -->
                             <section class="details-section">
                                 <h2 class="section-title">Problem Description</h2>
                                 <div class="details-card">
@@ -138,7 +129,6 @@
                         </div>
                     </div>
 
-                    <!-- Mechanic Information -->
                     <section class="details-section" th:if="${repairOrder.mechanic != null}">
                         <h2 class="section-title">Assigned Mechanic</h2>
                         <div class="details-card">
@@ -159,7 +149,6 @@
                         </div>
                     </section>
 
-                    <!-- Used Parts -->
                     <section class="details-section" th:if="${repairOrder.usedParts != null and !repairOrder.usedParts.isEmpty()}">
                         <h2 class="section-title">Used Parts</h2>
                         <div class="details-card">
@@ -192,7 +181,6 @@
                         </div>
                     </section>
 
-                    <!-- Total Price Summary -->
                     <section class="details-section" th:if="${repairOrder.status.name().equals('COMPLETED')}">
                         <h2 class="section-title">Total Price</h2>
                         <div class="details-card">
@@ -221,11 +209,14 @@
                         </div>
                     </section>
 
-                    <!-- Action Buttons -->
                     <div class="details-actions">
                         <a th:href="@{/repairs/{id}/invoice(id=${repairOrder.id})}" 
                            class="invoice-button"
-                           th:if="${repairOrder.status.name().equals('COMPLETED')}">Generate Invoice</a>
+                           th:if="${repairOrder.status.name().equals('COMPLETED') and repairOrder.invoiceGenerated}">Download Invoice</a>
+                        <span class="invoice-button disabled"
+                              th:if="${repairOrder.status.name().equals('COMPLETED') and !repairOrder.invoiceGenerated}">
+                            Invoice not ready yet
+                        </span>
                         <a href="/dashboard" class="back-button">Back to Dashboard</a>
                     </div>
                 </div>

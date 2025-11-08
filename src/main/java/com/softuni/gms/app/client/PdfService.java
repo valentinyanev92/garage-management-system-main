@@ -17,4 +17,8 @@ public class PdfService {
     public byte[] generateInvoice(InvoiceRequest invoiceRequest) {
         return pdfClient.generateInvoice(invoiceRequest);
     }
+
+    public byte[] downloadLatestInvoice(java.util.UUID repairId) {
+        return pdfClient.downloadLatestInvoice(repairId);
+    }
 }

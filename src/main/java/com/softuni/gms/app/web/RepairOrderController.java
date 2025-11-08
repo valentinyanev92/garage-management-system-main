@@ -2,14 +2,12 @@ package com.softuni.gms.app.web;
 
 import com.softuni.gms.app.car.model.Car;
 import com.softuni.gms.app.car.service.CarService;
-import com.softuni.gms.app.web.dto.InvoiceRequest;
 import com.softuni.gms.app.client.PdfService;
 import com.softuni.gms.app.repair.model.RepairOrder;
 import com.softuni.gms.app.repair.service.RepairOrderService;
 import com.softuni.gms.app.security.AuthenticationMetadata;
 import com.softuni.gms.app.user.model.User;
 import com.softuni.gms.app.user.service.UserService;
-import com.softuni.gms.app.web.mapper.DtoMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -132,11 +130,20 @@ public class RepairOrderController {
             return ResponseEntity.status(403).build();
         }
 
-        InvoiceRequest invoiceRequest = DtoMapper.mapRepairOrderToInvoiceRequest(repairOrder);
-        byte[] pdf = pdfService.generateInvoice(invoiceRequest);
-        return ResponseEntity.ok()
-                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=invoice-" + id + ".pdf")
-                .contentType(MediaType.APPLICATION_PDF)
-                .body(pdf);
+        try {
+            byte[] pdf = pdfService.downloadLatestInvoice(id);
+            if (pdf == null || pdf.length == 0) {
+                return ResponseEntity.notFound().build();
+            }
+
+            HttpHeaders headers = new HttpHeaders();
+            headers.set(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=invoice-" + id + ".pdf");
+            headers.setContentType(MediaType.APPLICATION_PDF);
+            return ResponseEntity.ok()
+                    .headers(headers)
+                    .body(pdf);
+        } catch (Exception ex) {
+            return ResponseEntity.status(502).build();
+        }
     }
 }

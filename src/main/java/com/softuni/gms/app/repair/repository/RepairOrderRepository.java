@@ -4,6 +4,7 @@ import com.softuni.gms.app.car.model.Car;
 import com.softuni.gms.app.repair.model.RepairOrder;
 import com.softuni.gms.app.repair.model.RepairStatus;
 import com.softuni.gms.app.user.model.User;
+import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -19,4 +20,7 @@ public interface RepairOrderRepository extends JpaRepository<RepairOrder, UUID> 
     List<RepairOrder> findByStatusAndIsDeletedFalseOrderByCreatedAtDesc(RepairStatus status);
 
     Optional<RepairOrder> findFirstByStatusAndMechanicAndIsDeletedFalseOrderByAcceptedAtDesc(RepairStatus status, User mechanic);
+
+    @EntityGraph(attributePaths = {"usedParts", "usedParts.part", "car", "user", "mechanic"})
+    List<RepairOrder> findAllByStatusAndInvoiceGeneratedFalse(RepairStatus status);
 }

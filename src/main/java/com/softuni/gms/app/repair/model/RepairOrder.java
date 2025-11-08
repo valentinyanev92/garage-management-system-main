@@ -58,4 +58,7 @@ public class RepairOrder {
     @Column(nullable = false)
     @Builder.Default
     private boolean isDeleted = false;
+
+    @Column(nullable = false)
+    private boolean invoiceGenerated = false;
 }
