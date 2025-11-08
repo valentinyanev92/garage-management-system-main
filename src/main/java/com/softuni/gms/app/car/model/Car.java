@@ -1,5 +1,6 @@
 package com.softuni.gms.app.car.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.softuni.gms.app.repair.model.RepairOrder;
 import com.softuni.gms.app.repair.model.RepairStatus;
 import com.softuni.gms.app.user.model.User;
@@ -39,7 +40,8 @@ public class Car {
     @ManyToOne(optional = false)
     private User owner;
 
-    @OneToMany(mappedBy = "car", fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "car", fetch = FetchType.LAZY)
+    @JsonIgnore
     private List<RepairOrder> repairOrders = new ArrayList<>();
 
     @Column(nullable = false)

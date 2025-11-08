@@ -113,7 +113,11 @@
             <section class="section repairs-section">
                 <h2 class="section-title">Repair Orders</h2>
                 <div class="cards-container" th:if="${repairList != null and !repairList.isEmpty()}">
-                    <div class="card repair-card" th:each="repair : ${repairList}">
+                    <div class="card repair-card"
+                         th:each="repair : ${repairList}"
+                         th:with="statusObj=${repair.status},
+                                  statusName=${statusObj instanceof T(com.softuni.gms.app.repair.model.RepairStatus) ? statusObj.name() : statusObj},
+                                  statusLabel=${statusObj instanceof T(com.softuni.gms.app.repair.model.RepairStatus) ? statusObj.displayName : statusObj}">
                         <div class="card-image-container">
                             <img th:src="${repair.car.pictureUrl}" alt="Car image" class="card-image">
                         </div>
@@ -121,18 +125,18 @@
                             <div class="card-info">
                                 <div class="card-header">
                                     <h3 class="card-title" th:text="|${repair.car.brand} ${repair.car.model}|"></h3>
-                                    <span class="status-badge status-pending" 
-                                          th:if="${repair.status.name().equals('PENDING')}"
-                                          th:text="${repair.status.displayName}"></span>
-                                    <span class="status-badge status-accepted" 
-                                          th:if="${repair.status.name().equals('ACCEPTED')}"
-                                          th:text="${repair.status.displayName}"></span>
-                                    <span class="status-badge status-completed" 
-                                          th:if="${repair.status.name().equals('COMPLETED')}"
-                                          th:text="${repair.status.displayName}"></span>
-                                    <span class="status-badge status-canceled" 
-                                          th:if="${repair.status.name().equals('CANCELED') or repair.status.name().equals('USER_CANCELED')}"
-                                          th:text="${repair.status.displayName}"></span>
+                                    <span class="status-badge status-pending"
+                                          th:if="${statusName == 'PENDING'}"
+                                          th:text="${statusLabel}"></span>
+                                    <span class="status-badge status-accepted"
+                                          th:if="${statusName == 'ACCEPTED'}"
+                                          th:text="${statusLabel}"></span>
+                                    <span class="status-badge status-completed"
+                                          th:if="${statusName == 'COMPLETED'}"
+                                          th:text="${statusLabel}"></span>
+                                    <span class="status-badge status-canceled"
+                                          th:if="${statusName == 'CANCELED' or statusName == 'USER_CANCELED'}"
+                                          th:text="${statusLabel}"></span>
                                 </div>
                                 <div class="card-body">
                                     <div class="card-detail">
@@ -143,17 +147,26 @@
                                         <span class="label">Price:</span>
                                         <span class="value" th:text="|${#numbers.formatDecimal(repair.price, 1, 2)} BGN|"></span>
                                     </div>
-                                    <div class="card-detail">
+                                    <div class="card-detail"
+                                         th:with="createdAt=${repair.createdAt},
+                                                  createdAtValue=${createdAt instanceof T(java.time.temporal.TemporalAccessor) ? createdAt : null}">
                                         <span class="label">Created on:</span>
-                                        <span class="value" th:text="${#temporals.format(repair.createdAt, 'dd.MM.yyyy HH:mm')}"></span>
+                                        <span class="value"
+                                              th:text="${createdAtValue != null ? #temporals.format(createdAtValue, 'dd.MM.yyyy HH:mm') : createdAt}"></span>
                                     </div>
-                                    <div class="card-detail" th:if="${repair.acceptedAt != null}">
+                                    <div class="card-detail" th:if="${repair.acceptedAt != null}"
+                                         th:with="acceptedAt=${repair.acceptedAt},
+                                                  acceptedAtValue=${acceptedAt instanceof T(java.time.temporal.TemporalAccessor) ? acceptedAt : null}">
                                         <span class="label">Accepted on:</span>
-                                        <span class="value" th:text="${#temporals.format(repair.acceptedAt, 'dd.MM.yyyy HH:mm')}"></span>
+                                        <span class="value"
+                                              th:text="${acceptedAtValue != null ? #temporals.format(acceptedAtValue, 'dd.MM.yyyy HH:mm') : acceptedAt}"></span>
                                     </div>
-                                    <div class="card-detail" th:if="${repair.completedAt != null}">
+                                    <div class="card-detail" th:if="${repair.completedAt != null}"
+                                         th:with="completedAt=${repair.completedAt},
+                                                  completedAtValue=${completedAt instanceof T(java.time.temporal.TemporalAccessor) ? completedAt : null}">
                                         <span class="label">Completed on:</span>
-                                        <span class="value" th:text="${#temporals.format(repair.completedAt, 'dd.MM.yyyy HH:mm')}"></span>
+                                        <span class="value"
+                                              th:text="${completedAtValue != null ? #temporals.format(completedAtValue, 'dd.MM.yyyy HH:mm') : completedAt}"></span>
                                     </div>
                                 </div>
                             </div>
@@ -162,7 +175,7 @@
                                 <form th:action="@{/repairs/delete/{id}(id=${repair.id})}" 
                                       method="post" 
                                       style="display: inline; width: 100%;"
-                                      th:if="${repair.status.name().equals('CANCELED') or repair.status.name().equals('USER_CANCELED')}">
+                                      th:if="${statusName == 'CANCELED' or statusName == 'USER_CANCELED'}">
                                     <button type="submit" class="delete-repair-button" onclick="return confirm('Are you sure you want to delete this repair order?')">Delete Order</button>
                                 </form>
                             </div>

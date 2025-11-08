@@ -81,34 +81,46 @@
                         <div class="repair-details-right">
                             <section class="details-section">
                                 <h2 class="section-title">Repair Order Information</h2>
-                                <div class="details-card">
+                                <div class="details-card"
+                                     th:with="statusObj=${repairOrder.status},
+                                              statusName=${statusObj instanceof T(com.softuni.gms.app.repair.model.RepairStatus) ? statusObj.name() : statusObj},
+                                              statusLabel=${statusObj instanceof T(com.softuni.gms.app.repair.model.RepairStatus) ? statusObj.displayName : statusObj}">
                                     <div class="details-grid">
                                         <div class="detail-item">
                                             <span class="detail-label">Status:</span>
                                             <span class="status-badge status-pending" 
-                                                  th:if="${repairOrder.status.name().equals('PENDING')}"
-                                                  th:text="${repairOrder.status.displayName}"></span>
+                                                  th:if="${statusName == 'PENDING'}"
+                                                  th:text="${statusLabel}"></span>
                                             <span class="status-badge status-accepted" 
-                                                  th:if="${repairOrder.status.name().equals('ACCEPTED')}"
-                                                  th:text="${repairOrder.status.displayName}"></span>
+                                                  th:if="${statusName == 'ACCEPTED'}"
+                                                  th:text="${statusLabel}"></span>
                                             <span class="status-badge status-completed" 
-                                                  th:if="${repairOrder.status.name().equals('COMPLETED')}"
-                                                  th:text="${repairOrder.status.displayName}"></span>
+                                                  th:if="${statusName == 'COMPLETED'}"
+                                                  th:text="${statusLabel}"></span>
                                             <span class="status-badge status-canceled" 
-                                                  th:if="${repairOrder.status.name().equals('CANCELED') or repairOrder.status.name().equals('USER_CANCELED')}"
-                                                  th:text="${repairOrder.status.displayName}"></span>
+                                                  th:if="${statusName == 'CANCELED' or statusName == 'USER_CANCELED'}"
+                                                  th:text="${statusLabel}"></span>
                                         </div>
-                                        <div class="detail-item">
+                                        <div class="detail-item"
+                                             th:with="createdAt=${repairOrder.createdAt},
+                                                      createdAtValue=${createdAt instanceof T(java.time.temporal.TemporalAccessor) ? createdAt : null}">
                                             <span class="detail-label">Created on:</span>
-                                            <span class="detail-value" th:text="${#temporals.format(repairOrder.createdAt, 'dd.MM.yyyy HH:mm')}"></span>
+                                            <span class="detail-value"
+                                                  th:text="${createdAtValue != null ? #temporals.format(createdAtValue, 'dd.MM.yyyy HH:mm') : createdAt}"></span>
                                         </div>
-                                        <div class="detail-item" th:if="${repairOrder.acceptedAt != null}">
+                                        <div class="detail-item" th:if="${repairOrder.acceptedAt != null}"
+                                             th:with="acceptedAt=${repairOrder.acceptedAt},
+                                                      acceptedAtValue=${acceptedAt instanceof T(java.time.temporal.TemporalAccessor) ? acceptedAt : null}">
                                             <span class="detail-label">Accepted on:</span>
-                                            <span class="detail-value" th:text="${#temporals.format(repairOrder.acceptedAt, 'dd.MM.yyyy HH:mm')}"></span>
+                                            <span class="detail-value"
+                                                  th:text="${acceptedAtValue != null ? #temporals.format(acceptedAtValue, 'dd.MM.yyyy HH:mm') : acceptedAt}"></span>
                                         </div>
-                                        <div class="detail-item" th:if="${repairOrder.completedAt != null}">
+                                        <div class="detail-item" th:if="${repairOrder.completedAt != null}"
+                                             th:with="completedAt=${repairOrder.completedAt},
+                                                      completedAtValue=${completedAt instanceof T(java.time.temporal.TemporalAccessor) ? completedAt : null}">
                                             <span class="detail-label">Completed on:</span>
-                                            <span class="detail-value" th:text="${#temporals.format(repairOrder.completedAt, 'dd.MM.yyyy HH:mm')}"></span>
+                                            <span class="detail-value"
+                                                  th:text="${completedAtValue != null ? #temporals.format(completedAtValue, 'dd.MM.yyyy HH:mm') : completedAt}"></span>
                                         </div>
                                         <div class="detail-item" th:if="${repairOrder.price != null}">
                                             <span class="detail-label">Service Fee:</span>

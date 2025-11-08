@@ -65,7 +65,8 @@
                                 <div class="card-info">
                                     <div class="card-header">
                                         <h3 class="card-title" th:text="|${acceptedOrder.car.brand} ${acceptedOrder.car.model}|"></h3>
-                                        <span class="status-badge status-accepted" th:text="${acceptedOrder.status.displayName}"></span>
+                                        <span class="status-badge status-accepted"
+                                              th:text="${acceptedOrder.status instanceof T(com.softuni.gms.app.repair.model.RepairStatus) ? acceptedOrder.status.displayName : acceptedOrder.status}"></span>
                                     </div>
                                     <div class="card-body">
                                         <div class="card-detail">
@@ -88,13 +89,20 @@
                                             <span class="label">Customer Phone:</span>
                                             <span class="value" th:text="${acceptedOrder.user.phoneNumber}"></span>
                                         </div>
-                                        <div class="card-detail">
+                                        <div class="card-detail"
+                                             th:with="createdAt=${acceptedOrder.createdAt},
+                                                      createdAtValue=${createdAt instanceof T(java.time.temporal.TemporalAccessor) ? createdAt : null}">
                                             <span class="label">Created on:</span>
-                                            <span class="value" th:text="${#temporals.format(acceptedOrder.createdAt, 'dd.MM.yyyy HH:mm')}"></span>
+                                            <span class="value"
+                                                  th:text="${createdAtValue != null ? #temporals.format(createdAtValue, 'dd.MM.yyyy HH:mm') : createdAt}"></span>
                                         </div>
-                                        <div class="card-detail" th:if="${acceptedOrder.acceptedAt != null}">
+                                        <div class="card-detail"
+                                             th:if="${acceptedOrder.acceptedAt != null}"
+                                             th:with="acceptedAt=${acceptedOrder.acceptedAt},
+                                                      acceptedAtValue=${acceptedAt instanceof T(java.time.temporal.TemporalAccessor) ? acceptedAt : null}">
                                             <span class="label">Accepted on:</span>
-                                            <span class="value" th:text="${#temporals.format(acceptedOrder.acceptedAt, 'dd.MM.yyyy HH:mm')}"></span>
+                                            <span class="value"
+                                                  th:text="${acceptedAtValue != null ? #temporals.format(acceptedAtValue, 'dd.MM.yyyy HH:mm') : acceptedAt}"></span>
                                         </div>
                                     </div>
                                 </div>
@@ -121,7 +129,8 @@
                                 <div class="card-info">
                                     <div class="card-header">
                                         <h3 class="card-title" th:text="|${repair.car.brand} ${repair.car.model}|"></h3>
-                                        <span class="status-badge status-pending" th:text="${repair.status.displayName}"></span>
+                                        <span class="status-badge status-pending"
+                                              th:text="${repair.status instanceof T(com.softuni.gms.app.repair.model.RepairStatus) ? repair.status.displayName : repair.status}"></span>
                                     </div>
                                     <div class="card-body">
                                         <div class="card-detail">
@@ -144,9 +153,12 @@
                                             <span class="label">Customer Phone:</span>
                                             <span class="value" th:text="${repair.user.phoneNumber}"></span>
                                         </div>
-                                        <div class="card-detail">
+                                        <div class="card-detail"
+                                             th:with="createdAt=${repair.createdAt},
+                                                      createdAtValue=${createdAt instanceof T(java.time.temporal.TemporalAccessor) ? createdAt : null}">
                                             <span class="label">Created on:</span>
-                                            <span class="value" th:text="${#temporals.format(repair.createdAt, 'dd.MM.yyyy HH:mm')}"></span>
+                                            <span class="value"
+                                                  th:text="${createdAtValue != null ? #temporals.format(createdAtValue, 'dd.MM.yyyy HH:mm') : createdAt}"></span>
                                         </div>
                                     </div>
                                 </div>
