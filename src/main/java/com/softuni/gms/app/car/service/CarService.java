@@ -6,12 +6,14 @@ import com.softuni.gms.app.exeption.NotFoundException;
 import com.softuni.gms.app.user.model.User;
 import com.softuni.gms.app.web.dto.CarEditRequest;
 import com.softuni.gms.app.web.dto.CarRegisterRequest;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
 
+@Slf4j
 @Service
 public class CarService {
 
@@ -35,6 +37,7 @@ public class CarService {
                 .updatedAt(LocalDateTime.now())
                 .build();
 
+        log.info("Successfully registerer {} {} with plate number {}", car.getBrand(), car.getModel(), car.getPlateNumber());
         return carRepository.save(car);
     }
 
@@ -57,14 +60,18 @@ public class CarService {
         car.setPlateNumber(carEditRequest.getPlateNumber());
         car.setPictureUrl(imageUrl);
         car.setUpdatedAt(LocalDateTime.now());
-        
+
+        log.info("Successfully updated {} {} with plate number {}", car.getBrand(), car.getModel(), car.getPlateNumber());
         return carRepository.save(car);
     }
 
     public void deleteCar(UUID carId) {
+
         Car car = findCarById(carId);
         car.setDeleted(true);
         car.setUpdatedAt(LocalDateTime.now());
+
+        log.info("Successfully deleted {} {} with plate number {}", car.getBrand(), car.getModel(), car.getPlateNumber());
         carRepository.save(car);
     }
 }

@@ -163,9 +163,19 @@
                                     </div>
                                 </div>
                                 <div class="card-actions">
-                                    <form th:action="@{/dashboard/mechanic/accept/{id}(id=${repair.id})}" method="post" style="display: inline; width: 100%;">
-                                        <button type="submit" class="accept-order-button" onclick="return confirm('Are you sure you want to accept this repair order?')">Accept Order</button>
+                                    <form th:action="@{/dashboard/mechanic/accept/{id}(id=${repair.id})}"
+                                          method="post"
+                                          style="display: inline; width: 100%;"
+                                          th:if="${acceptedOrder == null}">
+                                        <button type="submit" class="accept-order-button"
+                                                onclick="return confirm('Are you sure you want to accept this repair order?')">Accept Order</button>
                                     </form>
+                                    <button type="button"
+                                            class="accept-order-button disabled"
+                                            th:if="${acceptedOrder != null}"
+                                            disabled>
+                                        Finish current order first
+                                    </button>
                                     <a th:href="@{/repairs/details/{id}(id=${repair.id})}" class="view-details-button">View Details</a>
                                 </div>
                             </div>

@@ -1,5 +1,6 @@
 package com.softuni.gms.app.repair.model;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.softuni.gms.app.car.model.Car;
 import com.softuni.gms.app.user.model.User;
 import jakarta.persistence.*;
@@ -50,6 +51,7 @@ public class RepairOrder {
     private BigDecimal price;
 
     @OneToMany(mappedBy = "repairOrder", orphanRemoval = true)
+    @JsonManagedReference
     private List<UsedPart> usedParts = new ArrayList<>();
 
     @Column(nullable = false)

@@ -1,5 +1,6 @@
 package com.softuni.gms.app.repair.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.softuni.gms.app.part.model.Part;
 import jakarta.persistence.*;
 import lombok.*;
@@ -22,6 +23,7 @@ public class UsedPart {
 
     @ManyToOne(optional = false)
     @JoinColumn(name = "repair_order_id")
+    @JsonBackReference
     private RepairOrder repairOrder;
 
     @ManyToOne(optional = false)

@@ -26,6 +26,7 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
+//@Slf4j
 public class RepairOrderService {
 
     private final RepairOrderRepository repairOrderRepository;
@@ -57,7 +58,8 @@ public class RepairOrderService {
                 .problemDescription(problemDescription)
                 .invoiceGenerated(false)
                 .build();
-        
+
+//        log.info("RepairOrder for {} {} created", repairOrder.getCar().getBrand(), repairOrder.getCar().getModel());
         return repairOrderRepository.save(repairOrder);
     }
 
@@ -82,6 +84,8 @@ public class RepairOrderService {
 
         repairOrder.setStatus(RepairStatus.USER_CANCELED);
         repairOrder.setUpdatedAt(LocalDateTime.now());
+
+//        log.info("RepairOrder cancelled: {} for {} {}", repairOrder.getId(), repairOrder.getCar().getBrand(), repairOrder.getCar().getModel());
         repairOrderRepository.save(repairOrder);
     }
 
@@ -100,6 +104,8 @@ public class RepairOrderService {
         
         repairOrder.setDeleted(true);
         repairOrder.setUpdatedAt(LocalDateTime.now());
+
+//        log.info("RepairOrder deleted: {} for {} {}", repairOrder.getId(), repairOrder.getCar().getBrand(), repairOrder.getCar().getModel());
         repairOrderRepository.save(repairOrder);
     }
 
@@ -116,12 +122,19 @@ public class RepairOrderService {
             throw new IllegalStateException("Only PENDING repair orders can be accepted");
         }
 
+        RepairOrder existingAccepted = findAcceptedRepairOrderByMechanic(mechanic);
+        if (existingAccepted != null) {
+            throw new IllegalStateException("Mechanic already has an accepted repair order");
+        }
+
         eventPublisher.publishRepairStatusChanged(repairOrder, repairOrder.getStatus().getDisplayName(), RepairStatus.ACCEPTED.getDisplayName());
 
         repairOrder.setStatus(RepairStatus.ACCEPTED);
         repairOrder.setMechanic(mechanic);
         repairOrder.setAcceptedAt(LocalDateTime.now());
         repairOrder.setUpdatedAt(LocalDateTime.now());
+
+//        log.info("RepairOrder accepted: {} for {} {}", repairOrder.getId(), repairOrder.getCar().getBrand(), repairOrder.getCar().getModel());
         repairOrderRepository.save(repairOrder);
     }
 
@@ -144,6 +157,7 @@ public class RepairOrderService {
         BigDecimal priceForWork = calculatePriceForWork(repairOrder, mechanic);
         repairOrder.setPrice(priceForWork);
 
+//        log.info("RepairOrder completed: {} for {} {}", repairOrder.getId(), repairOrder.getCar().getBrand(), repairOrder.getCar().getModel());
         repairOrderRepository.save(repairOrder);
     }
 
@@ -155,10 +169,10 @@ public class RepairOrderService {
         long minutes = duration.toMinutes();
         long hours = (long) Math.ceil(minutes / 60.0);
 
+//        log.info("{} minutes and {} hours for repair {}", hours, minutes, repairOrder.getId());
         return BigDecimal.valueOf(hours).multiply(mechanic.getHourlyRate());
     }
 
-    @Cacheable(value = "acceptedRepairByMechanic", key = "#mechanic.id", unless = "#result == null")
     public RepairOrder findAcceptedRepairOrderByMechanic(User mechanic) {
         return repairOrderRepository
                 .findFirstByStatusAndMechanicAndIsDeletedFalseOrderByAcceptedAtDesc(RepairStatus.ACCEPTED, mechanic)
@@ -184,6 +198,7 @@ public class RepairOrderService {
         }
 
         repairOrder.setUpdatedAt(LocalDateTime.now());
+//        log.info("Added parts for repair {}", repairOrder.getId());
         repairOrderRepository.save(repairOrder);
     }
 
@@ -205,6 +220,7 @@ public class RepairOrderService {
     public void changeStatusForGenerateInvoice(RepairOrder repairOrder) {
 
         repairOrder.setInvoiceGenerated(true);
+//        log.info("Invoice generated for repairOrder {} for {} {}", repairOrder.getId(), repairOrder.getCar().getBrand(), repairOrder.getCar().getModel());
         repairOrderRepository.save(repairOrder);
     }
 }

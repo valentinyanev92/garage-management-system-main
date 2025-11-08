@@ -66,7 +66,7 @@ public class User {
     @JsonIgnore
     private List<RepairOrder> repairOrders = new ArrayList<>();
 
-    @OneToMany(mappedBy = "mechanic", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "mechanic", fetch = FetchType.EAGER)
     @JsonIgnore
     private List<RepairOrder> mechanicOrders = new ArrayList<>();
 

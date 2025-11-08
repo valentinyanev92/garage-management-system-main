@@ -653,6 +653,19 @@ body {
     background: linear-gradient(135deg, #20c997 0%, #28a745 100%);
 }
 
+.accept-order-button.disabled {
+    background: linear-gradient(135deg, #6c757d 0%, #495057 100%);
+    cursor: not-allowed;
+    box-shadow: none;
+    pointer-events: none;
+}
+
+.accept-order-button.disabled:hover {
+    transform: none;
+    box-shadow: none;
+    background: linear-gradient(135deg, #6c757d 0%, #495057 100%);
+}
+
 .work-on-order-button {
     display: inline-block;
     background: linear-gradient(135deg, #28a745 0%, #20c997 100%);

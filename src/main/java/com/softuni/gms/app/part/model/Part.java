@@ -1,5 +1,6 @@
 package com.softuni.gms.app.part.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.softuni.gms.app.repair.model.UsedPart;
 import jakarta.persistence.*;
 import lombok.*;
@@ -34,6 +35,7 @@ public class Part {
 
     @Column(nullable = false)
     @OneToMany(mappedBy = "part")
+    @JsonIgnore
     private List<UsedPart> usedParts = new ArrayList<>();
 
     @Column(nullable = false)
