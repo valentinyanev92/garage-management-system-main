@@ -158,7 +158,7 @@ public class RepairOrderService {
         return BigDecimal.valueOf(hours).multiply(mechanic.getHourlyRate());
     }
 
-    @Cacheable(value = "acceptedRepairByMechanic", key = "#mechanic.id")
+    @Cacheable(value = "acceptedRepairByMechanic", key = "#mechanic.id", unless = "#result == null")
     public RepairOrder findAcceptedRepairOrderByMechanic(User mechanic) {
         return repairOrderRepository
                 .findFirstByStatusAndMechanicAndIsDeletedFalseOrderByAcceptedAtDesc(RepairStatus.ACCEPTED, mechanic)
