@@ -16,7 +16,7 @@ public class RepairCompletionNotificationService {
         this.repairCompletionNotificationClient = repairCompletionNotificationClient;
     }
 
-    public void sendMessageForCompletion(RepairCompletionRequest  repairCompletionRequest) {
+    public void sendMessageForCompletion(RepairCompletionRequest repairCompletionRequest) {
 
         log.info("RepairCompletionNotificationService send message for completion to {}", repairCompletionRequest.getPhoneNumber());
         repairCompletionNotificationClient.sendMessageForCompletion(repairCompletionRequest);

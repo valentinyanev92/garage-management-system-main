@@ -119,7 +119,6 @@ public class CarController {
         }
 
         carService.updateCar(id, carEditRequest);
-
         return new ModelAndView("redirect:/cars");
     }
 
@@ -134,7 +133,6 @@ public class CarController {
         }
 
         carService.deleteCar(id);
-
         return new ModelAndView("redirect:/cars");
     }
 }

@@ -55,7 +55,6 @@ public class DtoMapper {
             imageUrl = car.getPictureUrl();
         }
 
-
         return CarEditRequest.builder()
                 .brand(car.getBrand())
                 .model(car.getModel())
@@ -81,6 +80,7 @@ public class DtoMapper {
     }
 
     public static InvoiceRequest mapRepairOrderToInvoiceRequest(RepairOrder repairOrder) {
+
         BigDecimal partsTotal = repairOrder.getUsedParts() != null && !repairOrder.getUsedParts().isEmpty()
                 ? repairOrder.getUsedParts().stream()
                 .map(UsedPart::getTotalPrice)

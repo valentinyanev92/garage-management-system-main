@@ -15,5 +15,4 @@ public enum RepairStatus {
     RepairStatus(final String displayName) {
         this.displayName = displayName;
     }
-
 }

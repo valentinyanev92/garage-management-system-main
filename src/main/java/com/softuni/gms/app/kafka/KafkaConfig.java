@@ -27,16 +27,19 @@ public class KafkaConfig {
         config.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, BOOTSTRAP_SERVERS);
         config.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
         config.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, JsonSerializer.class);
+
         return new DefaultKafkaProducerFactory<>(config);
     }
 
     @Bean
     public KafkaTemplate<String, RepairKafkaEventRequest> kafkaTemplate() {
+
         return new KafkaTemplate<>(producerFactory());
     }
 
     @Bean
     public NewTopic gmsEventTopic() {
+
         return TopicBuilder.name("gsm-events")
                 .partitions(1)
                 .replicas(1)

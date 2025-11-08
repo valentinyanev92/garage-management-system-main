@@ -48,8 +48,9 @@ public class RepairOrderService {
 
     @CacheEvict(value = {"pendingRepairs", "completedWithoutInvoice", "acceptedRepairByMechanic"}, allEntries = true)
     public RepairOrder createRepairOrder(UUID carId, User user, String problemDescription) {
+
         Car car = carService.findCarById(carId);
-        
+
         RepairOrder repairOrder = RepairOrder.builder()
                 .car(car)
                 .user(user)
@@ -66,6 +67,7 @@ public class RepairOrderService {
 
     @CacheEvict(value = {"pendingRepairs", "completedWithoutInvoice", "acceptedRepairByMechanic"}, allEntries = true)
     public void cancelRepairRequestByCarId(UUID carId, User user) {
+
         Car car = carService.findCarById(carId);
 
         if (!car.getOwner().getId().equals(user.getId())) {
@@ -93,19 +95,21 @@ public class RepairOrderService {
     }
 
     public RepairOrder findRepairOrderById(UUID repairOrderId) {
+
         return repairOrderRepository.findById(repairOrderId)
                 .orElseThrow(() -> new NotFoundException("Repair order not found"));
     }
 
     @CacheEvict(value = {"pendingRepairs", "completedWithoutInvoice", "acceptedRepairByMechanic"}, allEntries = true)
     public void deleteRepairOrder(UUID repairOrderId, User user) {
+
         RepairOrder repairOrder = findRepairOrderById(repairOrderId);
 
         if (!repairOrder.getUser().getId().equals(user.getId())) {
             log.error("User is not owner of this repair order");
             throw new CarOwnershipException("User does not own this repair order");
         }
-        
+
         repairOrder.setDeleted(true);
         repairOrder.setUpdatedAt(LocalDateTime.now());
 
@@ -115,11 +119,13 @@ public class RepairOrderService {
 
     @Cacheable(value = "pendingRepairs")
     public List<RepairOrder> findPendingRepairOrders() {
+
         return repairOrderRepository.findByStatusAndIsDeletedFalseOrderByCreatedAtDesc(RepairStatus.PENDING);
     }
 
     @CacheEvict(value = {"pendingRepairs", "acceptedRepairByMechanic"}, allEntries = true)
     public void acceptRepairOrder(UUID repairOrderId, User mechanic) {
+
         RepairOrder repairOrder = findRepairOrderById(repairOrderId);
 
         if (repairOrder.getStatus() != RepairStatus.PENDING) {
@@ -146,6 +152,7 @@ public class RepairOrderService {
 
     @CacheEvict(value = {"pendingRepairs", "completedWithoutInvoice", "acceptedRepairByMechanic"}, allEntries = true)
     public void completeRepairOrder(UUID repairOrderId, User mechanic) {
+
         RepairOrder repairOrder = findRepairOrderById(repairOrderId);
 
         if (repairOrder.getMechanic() == null || !repairOrder.getMechanic().getId().equals(mechanic.getId())) {
@@ -170,6 +177,7 @@ public class RepairOrderService {
     }
 
     private BigDecimal calculatePriceForWork(RepairOrder repairOrder, User mechanic) {
+
         LocalDateTime acceptedAt = repairOrder.getAcceptedAt();
         LocalDateTime completedAt = repairOrder.getCompletedAt();
 
@@ -189,6 +197,7 @@ public class RepairOrderService {
     }
 
     public void addWorkToRepairOrder(UUID repairOrderId, User mechanic, WorkOrderRequest workOrderRequest) {
+
         RepairOrder repairOrder = findRepairOrderById(repairOrderId);
 
         if (repairOrder.getMechanic() == null || !repairOrder.getMechanic().getId().equals(mechanic.getId())) {
@@ -227,7 +236,7 @@ public class RepairOrderService {
                 .collect(Collectors.toList());
     }
 
-    @CacheEvict(value = "completedWithoutInvoice",  allEntries = true)
+    @CacheEvict(value = "completedWithoutInvoice", allEntries = true)
     public void changeStatusForGenerateInvoice(RepairOrder repairOrder) {
 
         repairOrder.setInvoiceGenerated(true);

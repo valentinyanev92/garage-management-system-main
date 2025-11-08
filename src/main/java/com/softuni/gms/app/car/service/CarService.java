@@ -25,6 +25,7 @@ public class CarService {
     }
 
     public Car registerCar(CarRegisterRequest carRegisterRequest, User owner) {
+
         Car car = Car.builder()
                 .brand(carRegisterRequest.getBrand())
                 .model(carRegisterRequest.getModel())
@@ -42,11 +43,13 @@ public class CarService {
     }
 
     public Car findCarById(UUID carId) {
+
         return carRepository.findById(carId)
                 .orElseThrow(() -> new NotFoundException("Car not found"));
     }
 
     public Car updateCar(UUID carId, CarEditRequest carEditRequest) {
+
         Car car = findCarById(carId);
 
         String imageUrl = "/images/car-no-photo-available.png";
@@ -75,4 +78,3 @@ public class CarService {
         carRepository.save(car);
     }
 }
-

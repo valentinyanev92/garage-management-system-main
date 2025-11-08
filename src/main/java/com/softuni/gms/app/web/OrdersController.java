@@ -42,4 +42,3 @@ public class OrdersController {
         return modelAndView;
     }
 }
-

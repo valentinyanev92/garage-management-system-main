@@ -28,7 +28,6 @@ public class CacheConfig {
         GenericJackson2JsonRedisSerializer serializer = new GenericJackson2JsonRedisSerializer(objectMapper);
 
         RedisCacheConfiguration config = RedisCacheConfiguration.defaultCacheConfig()
-//                .entryTtl(Duration.ofMinutes(10)) // общ TTL (по избор
                 .serializeValuesWith(RedisSerializationContext.SerializationPair.fromSerializer(serializer))
                 .disableCachingNullValues();
 

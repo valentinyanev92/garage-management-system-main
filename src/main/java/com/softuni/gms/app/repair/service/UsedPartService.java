@@ -22,6 +22,7 @@ public class UsedPartService {
     }
 
     public UsedPart createUsedPart(RepairOrder repairOrder, Part part, int quantity) {
+
         BigDecimal totalPrice = part.getPrice().multiply(BigDecimal.valueOf(quantity));
 
         UsedPart usedPart = UsedPart.builder()

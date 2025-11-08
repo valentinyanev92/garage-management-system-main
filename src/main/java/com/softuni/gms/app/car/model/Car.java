@@ -58,11 +58,12 @@ public class Car {
 
     @Transient
     public boolean hasActiveRepairRequest() {
+
         if (repairOrders == null || repairOrders.isEmpty()) {
             return false;
         }
+
         return repairOrders.stream()
                 .anyMatch(order -> order.getStatus() == RepairStatus.PENDING || order.getStatus() == RepairStatus.ACCEPTED);
     }
-
 }

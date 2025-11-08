@@ -10,6 +10,7 @@ import com.softuni.gms.app.web.dto.RegisterRequest;
 import com.softuni.gms.app.web.dto.UserAdminEditRequest;
 import com.softuni.gms.app.web.dto.UserEditRequest;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -36,6 +37,7 @@ public class UserService implements UserDetailsService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
 
+    @Autowired
     public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
@@ -91,7 +93,7 @@ public class UserService implements UserDetailsService {
         User user = findUserById(userId);
 
         String phoneNumber = "359" + userEditRequest.getPhoneNumber().substring(1);
-        
+
         user.setFirstName(userEditRequest.getFirstName());
         user.setLastName(userEditRequest.getLastName());
         user.setEmail(userEditRequest.getEmail());

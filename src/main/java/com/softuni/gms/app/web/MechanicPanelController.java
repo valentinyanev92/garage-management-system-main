@@ -78,7 +78,6 @@ public class MechanicPanelController {
                                            @AuthenticationPrincipal AuthenticationMetadata authenticationMetadata) {
 
         User mechanic = userService.findUserById(authenticationMetadata.getUserId());
-
         try {
             repairOrderService.completeRepairOrder(id, mechanic);
         } catch (Exception e) {
@@ -126,7 +125,6 @@ public class MechanicPanelController {
                                      @RequestParam(required = false) List<Integer> quantities) {
 
         User mechanic = userService.findUserById(authenticationMetadata.getUserId());
-
         try {
             WorkOrderRequest workOrderRequest = DtoMapper.mapWorkDescriptionToWorkOrderRequest(workDescription);
 
@@ -149,4 +147,3 @@ public class MechanicPanelController {
         return new ModelAndView("redirect:/dashboard/mechanic");
     }
 }
-

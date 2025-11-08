@@ -27,12 +27,13 @@ public class PartService {
     }
 
     public Part findPartById(UUID partId) {
-        return partRepository.findById(partId)
-                .orElseThrow(() -> new NotFoundException("Part not found"));
+
+        return partRepository.findById(partId).orElseThrow(() -> new NotFoundException("Part not found"));
     }
 
     @Cacheable(value = "parts")
     public List<Part> findAllParts() {
+
         return partRepository.findByIsDeletedFalse();
     }
 

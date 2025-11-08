@@ -33,7 +33,6 @@ public class InvoiceScheduler {
         }
 
         for (RepairOrder repairOrder : completedRepairOrders) {
-
             try {
                 pdfService.generateInvoice(DtoMapper.mapRepairOrderToInvoiceRequest(repairOrder));
                 repairOrderService.changeStatusForGenerateInvoice(repairOrder);
