@@ -13,6 +13,8 @@ import com.softuni.gms.app.repair.repository.RepairOrderRepository;
 import com.softuni.gms.app.user.model.User;
 import com.softuni.gms.app.web.dto.WorkOrderRequest;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -42,6 +44,7 @@ public class RepairOrderService {
         this.eventPublisher = eventPublisher;
     }
 
+    @CacheEvict(value = {"pendingRepairs", "completedWithoutInvoice", "acceptedRepairByMechanic"}, allEntries = true)
     public RepairOrder createRepairOrder(UUID carId, User user, String problemDescription) {
         Car car = carService.findCarById(carId);
         
@@ -58,6 +61,7 @@ public class RepairOrderService {
         return repairOrderRepository.save(repairOrder);
     }
 
+    @CacheEvict(value = {"pendingRepairs", "completedWithoutInvoice", "acceptedRepairByMechanic"}, allEntries = true)
     public void cancelRepairRequestByCarId(UUID carId, User user) {
         Car car = carService.findCarById(carId);
 
@@ -86,6 +90,7 @@ public class RepairOrderService {
                 .orElseThrow(() -> new NotFoundException("Repair order not found"));
     }
 
+    @CacheEvict(value = {"pendingRepairs", "completedWithoutInvoice", "acceptedRepairByMechanic"}, allEntries = true)
     public void deleteRepairOrder(UUID repairOrderId, User user) {
         RepairOrder repairOrder = findRepairOrderById(repairOrderId);
 
@@ -98,10 +103,12 @@ public class RepairOrderService {
         repairOrderRepository.save(repairOrder);
     }
 
+    @Cacheable(value = "pendingRepairs")
     public List<RepairOrder> findPendingRepairOrders() {
         return repairOrderRepository.findByStatusAndIsDeletedFalseOrderByCreatedAtDesc(RepairStatus.PENDING);
     }
 
+    @CacheEvict(value = {"pendingRepairs", "acceptedRepairByMechanic"}, allEntries = true)
     public void acceptRepairOrder(UUID repairOrderId, User mechanic) {
         RepairOrder repairOrder = findRepairOrderById(repairOrderId);
 
@@ -118,6 +125,7 @@ public class RepairOrderService {
         repairOrderRepository.save(repairOrder);
     }
 
+    @CacheEvict(value = {"pendingRepairs", "completedWithoutInvoice", "acceptedRepairByMechanic"}, allEntries = true)
     public void completeRepairOrder(UUID repairOrderId, User mechanic) {
         RepairOrder repairOrder = findRepairOrderById(repairOrderId);
 
@@ -150,6 +158,7 @@ public class RepairOrderService {
         return BigDecimal.valueOf(hours).multiply(mechanic.getHourlyRate());
     }
 
+    @Cacheable(value = "acceptedRepairByMechanic", key = "#mechanic.id")
     public RepairOrder findAcceptedRepairOrderByMechanic(User mechanic) {
         return repairOrderRepository
                 .findFirstByStatusAndMechanicAndIsDeletedFalseOrderByAcceptedAtDesc(RepairStatus.ACCEPTED, mechanic)
@@ -183,6 +192,7 @@ public class RepairOrderService {
         return repairOrderRepository.findById(id).orElseThrow(() -> new NotFoundException("Repair not found!"));
     }
 
+    @Cacheable(value = "completedWithoutInvoice")
     public List<RepairOrder> findAllCompletedWithoutInvoice() {
 
         return repairOrderRepository.findAllByStatusAndInvoiceGeneratedFalse(RepairStatus.COMPLETED)
@@ -191,6 +201,7 @@ public class RepairOrderService {
                 .collect(Collectors.toList());
     }
 
+    @CacheEvict(value = "completedWithoutInvoice",  allEntries = true)
     public void changeStatusForGenerateInvoice(RepairOrder repairOrder) {
 
         repairOrder.setInvoiceGenerated(true);
