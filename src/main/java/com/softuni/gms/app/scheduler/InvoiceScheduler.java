@@ -11,8 +11,8 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 
-@Service
 @Slf4j
+@Service
 public class InvoiceScheduler {
 
     private final RepairOrderService repairOrderService;

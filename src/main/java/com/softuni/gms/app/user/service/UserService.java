@@ -9,6 +9,7 @@ import com.softuni.gms.app.user.repository.UserRepository;
 import com.softuni.gms.app.web.dto.RegisterRequest;
 import com.softuni.gms.app.web.dto.UserAdminEditRequest;
 import com.softuni.gms.app.web.dto.UserEditRequest;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -21,13 +22,14 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
+@Slf4j
 @Service
 public class UserService implements UserDetailsService {
+
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
 
         User user = userRepository.findByUsername(username).orElseThrow(() -> new NotFoundException("User with this username does not exist."));
-
         return new AuthenticationMetadata(user.getId(), username, user.getPassword(), user.getRole(), user.getIsActive());
     }
 
@@ -74,6 +76,7 @@ public class UserService implements UserDetailsService {
             user.setRole(UserRole.ADMIN);
         }
 
+        log.info("User {} has been registered", user.getUsername());
         return userRepository.save(user);
     }
 
@@ -94,7 +97,8 @@ public class UserService implements UserDetailsService {
         user.setEmail(userEditRequest.getEmail());
         user.setPhoneNumber(phoneNumber);
         user.setUpdatedAt(LocalDateTime.now());
-        
+
+        log.info("User {} has been updated", user.getUsername());
         return userRepository.save(user);
     }
 
@@ -110,6 +114,8 @@ public class UserService implements UserDetailsService {
         User user = findUserById(userId);
         user.setIsActive(!user.getIsActive());
         user.setUpdatedAt(LocalDateTime.now());
+
+        log.info("User {} status updated from {} to {}", user.getUsername(), !user.getIsActive(), user.getIsActive());
         userRepository.save(user);
     }
 
@@ -120,6 +126,8 @@ public class UserService implements UserDetailsService {
         user.setRole(userAdminEditRequest.getRole());
         user.setHourlyRate(userAdminEditRequest.getHourlyRate());
         user.setUpdatedAt(LocalDateTime.now());
+
+        log.info("User {} has been updated by admin", user.getUsername());
         return userRepository.save(user);
     }
 }

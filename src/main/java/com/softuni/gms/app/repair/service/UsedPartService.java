@@ -10,8 +10,8 @@ import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 
-@Service
 @Slf4j
+@Service
 public class UsedPartService {
 
     private final UsedPartRepository usedPartRepository;
