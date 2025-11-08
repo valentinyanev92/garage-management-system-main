@@ -1,5 +1,6 @@
 package com.softuni.gms.app.web;
 
+import com.softuni.gms.app.exeption.UserAlreadyExistException;
 import com.softuni.gms.app.user.service.UserService;
 import com.softuni.gms.app.web.dto.RegisterRequest;
 import jakarta.validation.Valid;
@@ -61,20 +62,23 @@ public class IndexController {
             ModelAndView modelAndView = new ModelAndView();
             modelAndView.setViewName("register");
             modelAndView.addObject("registerRequest", registerRequest);
+            modelAndView.addObject(org.springframework.validation.BindingResult.MODEL_KEY_PREFIX + "registerRequest", bindingResult);
             return modelAndView;
         }
 
         try {
             userService.registerUser(registerRequest);
             return new ModelAndView("redirect:/login?registered=true");
-        } catch (IllegalArgumentException e) {
+        } catch (UserAlreadyExistException e) {
             ModelAndView modelAndView = new ModelAndView();
             modelAndView.setViewName("register");
             modelAndView.addObject("registerRequest", registerRequest);
 
-            //TODO: properly handling for duplicate phoneNumber !!!
-
             String errorMessage = e.getMessage();
+            if (errorMessage == null || errorMessage.isBlank()) {
+                errorMessage = "Registration error";
+            }
+
             if (errorMessage.contains("Username")) {
                 bindingResult.rejectValue("username", "error.username", "A user with this username already exists");
             } else if (errorMessage.contains("Email")) {
@@ -82,7 +86,19 @@ public class IndexController {
             } else if (errorMessage.contains("Phone number")) {
                 bindingResult.rejectValue("phoneNumber", "error.phoneNumber", "A user with this phone number already exists");
             }
-            
+            modelAndView.addObject(org.springframework.validation.BindingResult.MODEL_KEY_PREFIX + "registerRequest", bindingResult);
+
+            return modelAndView;
+        } catch (IllegalArgumentException e) {
+            ModelAndView modelAndView = new ModelAndView();
+            modelAndView.setViewName("register");
+            modelAndView.addObject("registerRequest", registerRequest);
+            String message = e.getMessage();
+            if (message == null || message.isBlank()) {
+                message = "Registration error";
+            }
+            bindingResult.reject("registrationError", message);
+            modelAndView.addObject(org.springframework.validation.BindingResult.MODEL_KEY_PREFIX + "registerRequest", bindingResult);
             return modelAndView;
         }
     }
