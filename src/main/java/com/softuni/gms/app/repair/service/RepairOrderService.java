@@ -53,7 +53,7 @@ public class RepairOrderService {
         this.objectMapper = objectMapper;
     }
 
-    @CacheEvict(value = {"pendingRepairs", "completedWithoutInvoice", "acceptedRepairByMechanic"}, allEntries = true)
+    @CacheEvict(value = {"pendingRepairs", "acceptedRepairByMechanic"}, allEntries = true)
     public RepairOrder createRepairOrder(UUID carId, User user, String problemDescription) {
 
         Car car = carService.findCarById(carId);
@@ -71,7 +71,7 @@ public class RepairOrderService {
         return repairOrderRepository.save(repairOrder);
     }
 
-    @CacheEvict(value = {"pendingRepairs", "completedWithoutInvoice", "acceptedRepairByMechanic"}, allEntries = true)
+    @CacheEvict(value = {"pendingRepairs", "acceptedRepairByMechanic"}, allEntries = true)
     public void cancelRepairRequestByCarId(UUID carId, User user) {
 
         Car car = carService.findCarById(carId);
@@ -105,7 +105,7 @@ public class RepairOrderService {
                 .orElseThrow(() -> new NotFoundException(REPAIR_NOT_FOUND));
     }
 
-    @CacheEvict(value = {"pendingRepairs", "completedWithoutInvoice", "acceptedRepairByMechanic"}, allEntries = true)
+    @CacheEvict(value = {"pendingRepairs", "acceptedRepairByMechanic"}, allEntries = true)
     public void deleteRepairOrder(UUID repairOrderId, User user) {
 
         RepairOrder repairOrder = findRepairOrderById(repairOrderId);
@@ -225,10 +225,9 @@ public class RepairOrderService {
 
     public RepairOrder findById(UUID id) {
 
-        return repairOrderRepository.findById(id).orElseThrow(() -> new NotFoundException("Repair not found!"));
+        return repairOrderRepository.findById(id).orElseThrow(() -> new NotFoundException(REPAIR_NOT_FOUND));
     }
 
-    @Cacheable(value = "completedWithoutInvoice")
     public List<RepairOrder> findAllCompletedWithoutInvoice() {
 
         List<RepairOrder> orders = repairOrderRepository.findAllByStatusAndInvoiceGeneratedFalse(RepairStatus.COMPLETED);
@@ -238,7 +237,6 @@ public class RepairOrderService {
                 .collect(Collectors.toList());
     }
 
-    @CacheEvict(value = "completedWithoutInvoice", allEntries = true)
     public void changeStatusForGenerateInvoice(RepairOrder repairOrder) {
 
         repairOrder.setInvoiceGenerated(true);

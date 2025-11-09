@@ -8,7 +8,6 @@
 </head>
 <body>
     <div class="dashboard-wrapper">
-        <!-- Left Sidebar -->
         <aside class="sidebar">
             <nav class="sidebar-nav">
                 <a href="/dashboard" class="nav-button">
@@ -23,17 +22,13 @@
                 <a th:href="@{/orders}" class="nav-button active">
                     <span>Manage Orders</span>
                 </a>
-                <!-- Spacer to push buttons to bottom -->
                 <div class="nav-spacer"></div>
-                <!-- Bottom section with role-based buttons and logout -->
                 <div class="nav-bottom-section">
-                    <!-- Mechanic Panel - visible for MECHANIC and ADMIN -->
                     <a th:href="@{/dashboard/mechanic}" 
                        class="nav-button mechanic-button"
                        th:if="${user.role.name().equals('MECHANIC') or user.role.name().equals('ADMIN')}">
                         <span>Mechanic Panel</span>
                     </a>
-                    <!-- Admin Panel - visible only for ADMIN -->
                     <a th:href="@{/dashboard/admin}" 
                        class="nav-button admin-button"
                        th:if="${user.role.name().equals('ADMIN')}">
@@ -46,14 +41,12 @@
             </nav>
         </aside>
 
-        <!-- Main Content -->
         <div class="dashboard-container">
             <header class="dashboard-header">
                 <h1 class="dashboard-title">Manage Orders</h1>
             </header>
 
             <main class="dashboard-content">
-                <!-- Repair Orders Section -->
                 <section class="section repairs-section">
                     <h2 class="section-title">All Repair Orders</h2>
                     <div class="cards-container" th:if="${repairList != null and !repairList.isEmpty()}">
@@ -87,9 +80,19 @@
                                             <span class="label">Plate Number:</span>
                                             <span class="value" th:text="${repair.car.plateNumber}"></span>
                                         </div>
-                                        <div class="card-detail" th:if="${repair.price != null}">
+                                        <div class="card-detail">
                                             <span class="label">Price:</span>
-                                            <span class="value" th:text="|${#numbers.formatDecimal(repair.price, 1, 2)} BGN|"></span>
+                                            <span class="value"
+                                                  th:text="|${#numbers.formatDecimal(
+                                                        (
+                                                            (repair.price != null ? repair.price : T(java.math.BigDecimal).ZERO)
+                                                                .add(
+                                                                    (repair.usedParts != null and !repair.usedParts.isEmpty())
+                                                                        ? #aggregates.sum(repair.usedParts.![totalPrice])
+                                                                        : T(java.math.BigDecimal).ZERO
+                                                                )
+                                                        )
+                                                      , 1, 2)} BGN|"></span>
                                         </div>
                                         <div class="card-detail">
                                             <span class="label">Created on:</span>
