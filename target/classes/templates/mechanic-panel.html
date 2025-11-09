@@ -53,6 +53,7 @@
             </header>
 
             <main class="dashboard-content">
+                <div class="global-alert error" th:if="${notificationErrorMessage != null}" th:text="${notificationErrorMessage}"></div>
                 <!-- Accepted Order Section -->
                 <section class="section accepted-order-section" th:if="${acceptedOrder != null}">
                     <h2 class="section-title">Current Active Order</h2>

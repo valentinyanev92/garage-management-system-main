@@ -91,26 +91,17 @@
                                             <span class="label">Price:</span>
                                             <span class="value" th:text="|${#numbers.formatDecimal(repair.price, 1, 2)} BGN|"></span>
                                         </div>
-                                        <div class="card-detail"
-                                             th:with="createdAt=${repair.createdAt},
-                                                      createdAtValue=${createdAt instanceof T(java.time.temporal.TemporalAccessor) ? createdAt : null}">
+                                        <div class="card-detail">
                                             <span class="label">Created on:</span>
-                                            <span class="value"
-                                                  th:text="${createdAtValue != null ? #temporals.format(createdAtValue, 'dd.MM.yyyy HH:mm') : createdAt}"></span>
+                                            <span class="value" th:text="${repair.createdAt}"></span>
                                         </div>
-                                        <div class="card-detail" th:if="${repair.acceptedAt != null}"
-                                             th:with="acceptedAt=${repair.acceptedAt},
-                                                      acceptedAtValue=${acceptedAt instanceof T(java.time.temporal.TemporalAccessor) ? acceptedAt : null}">
+                                        <div class="card-detail" th:if="${repair.acceptedAt != null}">
                                             <span class="label">Accepted on:</span>
-                                            <span class="value"
-                                                  th:text="${acceptedAtValue != null ? #temporals.format(acceptedAtValue, 'dd.MM.yyyy HH:mm') : acceptedAt}"></span>
+                                            <span class="value" th:text="${repair.acceptedAt}"></span>
                                         </div>
-                                        <div class="card-detail" th:if="${repair.completedAt != null}"
-                                             th:with="completedAt=${repair.completedAt},
-                                                      completedAtValue=${completedAt instanceof T(java.time.temporal.TemporalAccessor) ? completedAt : null}">
+                                        <div class="card-detail" th:if="${repair.completedAt != null}">
                                             <span class="label">Completed on:</span>
-                                            <span class="value"
-                                                  th:text="${completedAtValue != null ? #temporals.format(completedAtValue, 'dd.MM.yyyy HH:mm') : completedAt}"></span>
+                                            <span class="value" th:text="${repair.completedAt}"></span>
                                         </div>
                                     </div>
                                 </div>

@@ -11,6 +11,7 @@ import com.softuni.gms.app.user.model.User;
 import com.softuni.gms.app.user.service.UserService;
 import com.softuni.gms.app.web.dto.WorkOrderRequest;
 import com.softuni.gms.app.web.mapper.DtoMapper;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
@@ -24,6 +25,9 @@ import org.springframework.web.servlet.ModelAndView;
 import java.util.List;
 import java.util.UUID;
 
+import static com.softuni.gms.app.exeption.MicroserviceDontRespondExceptionMessages.NOTIFICATION_SERVICE_TRY_AGAIN;
+
+@Slf4j
 @Controller
 @RequestMapping("/dashboard/mechanic")
 public class MechanicPanelController {
@@ -43,7 +47,8 @@ public class MechanicPanelController {
     }
 
     @GetMapping
-    public ModelAndView getMechanicPanelPage(@AuthenticationPrincipal AuthenticationMetadata authenticationMetadata) {
+    public ModelAndView getMechanicPanelPage(@AuthenticationPrincipal AuthenticationMetadata authenticationMetadata,
+                                             @RequestParam(value = "notificationError", required = false) String notificationError) {
 
         User mechanic = userService.findUserById(authenticationMetadata.getUserId());
         RepairOrder acceptedOrder = repairOrderService.findAcceptedRepairOrderByMechanic(mechanic);
@@ -54,6 +59,9 @@ public class MechanicPanelController {
         modelAndView.addObject("user", mechanic);
         modelAndView.addObject("acceptedOrder", acceptedOrder);
         modelAndView.addObject("pendingOrders", pendingOrders);
+        if (notificationError != null) {
+            modelAndView.addObject("notificationErrorMessage", NOTIFICATION_SERVICE_TRY_AGAIN);
+        }
 
         return modelAndView;
     }
@@ -87,11 +95,14 @@ public class MechanicPanelController {
         RepairOrder repairOrder = repairOrderService.findRepairOrderById(id);
         try {
             repairNotificationService.sendMessageForCompletion(DtoMapper.maprepairordertorepaircompletitionrequest(repairOrder));
+            return new ModelAndView("redirect:/dashboard/mechanic");
+        } catch (MicroserviceDontRespondException e) {
+            log.warn("completeRepairOrder(): Notification service unavailable for repair {} - {}", id, e.getMessage());
+            return new ModelAndView("redirect:/dashboard/mechanic?notificationError=true");
         } catch (Exception e) {
-            throw new MicroserviceDontRespondException(e.getMessage());
+            log.error("completeRepairOrder(): Unexpected error while notifying completion for repair {} - {}", id, e.getMessage());
+            return new ModelAndView("redirect:/dashboard/mechanic?notificationError=true");
         }
-
-        return new ModelAndView("redirect:/dashboard/mechanic");
     }
 
     @GetMapping("/work/{id}")

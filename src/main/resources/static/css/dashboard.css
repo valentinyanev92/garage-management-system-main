@@ -666,6 +666,24 @@ body {
     background: linear-gradient(135deg, #6c757d 0%, #495057 100%);
 }
 
+.global-alert {
+    padding: 14px 18px;
+    border-radius: 12px;
+    margin-bottom: 20px;
+    font-size: 15px;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.global-alert.error {
+    background: rgba(255, 68, 68, 0.12);
+    border: 1px solid rgba(255, 68, 68, 0.35);
+    color: #ff4444;
+    box-shadow: 0 6px 20px rgba(255, 68, 68, 0.15);
+}
+
 .work-on-order-button {
     display: inline-block;
     background: linear-gradient(135deg, #28a745 0%, #20c997 100%);

@@ -101,26 +101,17 @@
                                                   th:if="${statusName == 'CANCELED' or statusName == 'USER_CANCELED'}"
                                                   th:text="${statusLabel}"></span>
                                         </div>
-                                        <div class="detail-item"
-                                             th:with="createdAt=${repairOrder.createdAt},
-                                                      createdAtValue=${createdAt instanceof T(java.time.temporal.TemporalAccessor) ? createdAt : null}">
+                                        <div class="detail-item">
                                             <span class="detail-label">Created on:</span>
-                                            <span class="detail-value"
-                                                  th:text="${createdAtValue != null ? #temporals.format(createdAtValue, 'dd.MM.yyyy HH:mm') : createdAt}"></span>
+                                            <span class="detail-value" th:text="${repairOrder.createdAt}"></span>
                                         </div>
-                                        <div class="detail-item" th:if="${repairOrder.acceptedAt != null}"
-                                             th:with="acceptedAt=${repairOrder.acceptedAt},
-                                                      acceptedAtValue=${acceptedAt instanceof T(java.time.temporal.TemporalAccessor) ? acceptedAt : null}">
+                                        <div class="detail-item" th:if="${repairOrder.acceptedAt != null}">
                                             <span class="detail-label">Accepted on:</span>
-                                            <span class="detail-value"
-                                                  th:text="${acceptedAtValue != null ? #temporals.format(acceptedAtValue, 'dd.MM.yyyy HH:mm') : acceptedAt}"></span>
+                                            <span class="detail-value" th:text="${repairOrder.acceptedAt}"></span>
                                         </div>
-                                        <div class="detail-item" th:if="${repairOrder.completedAt != null}"
-                                             th:with="completedAt=${repairOrder.completedAt},
-                                                      completedAtValue=${completedAt instanceof T(java.time.temporal.TemporalAccessor) ? completedAt : null}">
+                                        <div class="detail-item" th:if="${repairOrder.completedAt != null}">
                                             <span class="detail-label">Completed on:</span>
-                                            <span class="detail-value"
-                                                  th:text="${completedAtValue != null ? #temporals.format(completedAtValue, 'dd.MM.yyyy HH:mm') : completedAt}"></span>
+                                            <span class="detail-value" th:text="${repairOrder.completedAt}"></span>
                                         </div>
                                         <div class="detail-item" th:if="${repairOrder.price != null}">
                                             <span class="detail-label">Service Fee:</span>

@@ -13,6 +13,7 @@ import com.softuni.gms.app.repair.repository.RepairOrderRepository;
 import com.softuni.gms.app.user.model.User;
 import com.softuni.gms.app.web.dto.WorkOrderRequest;
 import lombok.extern.slf4j.Slf4j;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
@@ -38,15 +39,18 @@ public class RepairOrderService {
     private final PartService partService;
     private final UsedPartService usedPartService;
     private final RepairEventPublisher eventPublisher;
+    private final ObjectMapper objectMapper;
 
     @Autowired
     public RepairOrderService(RepairOrderRepository repairOrderRepository, CarService carService,
-                              PartService partService, UsedPartService usedPartService, RepairEventPublisher eventPublisher) {
+                              PartService partService, UsedPartService usedPartService,
+                              RepairEventPublisher eventPublisher, ObjectMapper objectMapper) {
         this.repairOrderRepository = repairOrderRepository;
         this.carService = carService;
         this.partService = partService;
         this.usedPartService = usedPartService;
         this.eventPublisher = eventPublisher;
+        this.objectMapper = objectMapper;
     }
 
     @CacheEvict(value = {"pendingRepairs", "completedWithoutInvoice", "acceptedRepairByMechanic"}, allEntries = true)
@@ -87,7 +91,6 @@ public class RepairOrderService {
             throw new CarOwnershipException(USER_DONT_OWN_REPAIR_ORDER);
         }
 
-        //TODO: try/catch if microservice is offline !
         eventPublisher.publishRepairStatusChanged(repairOrder, repairOrder.getStatus().getDisplayName(), RepairStatus.USER_CANCELED.getDisplayName());
 
         repairOrder.setStatus(RepairStatus.USER_CANCELED);
@@ -140,7 +143,6 @@ public class RepairOrderService {
             throw new IllegalStateException("Mechanic already has an accepted repair order");
         }
 
-        //TODO: try/catch if microservice is offline !
         eventPublisher.publishRepairStatusChanged(repairOrder, repairOrder.getStatus().getDisplayName(), RepairStatus.ACCEPTED.getDisplayName());
 
         repairOrder.setStatus(RepairStatus.ACCEPTED);
@@ -229,8 +231,9 @@ public class RepairOrderService {
     @Cacheable(value = "completedWithoutInvoice")
     public List<RepairOrder> findAllCompletedWithoutInvoice() {
 
-        return repairOrderRepository.findAllByStatusAndInvoiceGeneratedFalse(RepairStatus.COMPLETED)
-                .stream()
+        List<RepairOrder> orders = repairOrderRepository.findAllByStatusAndInvoiceGeneratedFalse(RepairStatus.COMPLETED);
+        return orders.stream()
+                .map(this::ensureRepairOrderInstance)
                 .distinct()
                 .collect(Collectors.toList());
     }
@@ -240,5 +243,15 @@ public class RepairOrderService {
 
         repairOrder.setInvoiceGenerated(true);
         repairOrderRepository.save(repairOrder);
+    }
+
+    private RepairOrder ensureRepairOrderInstance(Object candidate) {
+        if (candidate instanceof RepairOrder order) {
+            return order;
+        }
+        if (candidate instanceof java.util.Map<?, ?> map) {
+            return objectMapper.convertValue(map, RepairOrder.class);
+        }
+        throw new IllegalStateException("Unexpected cached repair order type: " + candidate.getClass());
     }
 }
