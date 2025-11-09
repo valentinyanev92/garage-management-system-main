@@ -3,6 +3,7 @@ package com.softuni.gms.app.web;
 import com.softuni.gms.app.car.model.Car;
 import com.softuni.gms.app.car.service.CarService;
 import com.softuni.gms.app.client.PdfService;
+import com.softuni.gms.app.exeption.MicroserviceDontRespondException;
 import com.softuni.gms.app.repair.model.RepairOrder;
 import com.softuni.gms.app.repair.service.RepairOrderService;
 import com.softuni.gms.app.security.AuthenticationMetadata;
@@ -17,6 +18,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
+import java.nio.charset.StandardCharsets;
 import java.util.UUID;
 
 @Controller
@@ -142,8 +144,18 @@ public class RepairOrderController {
             return ResponseEntity.ok()
                     .headers(headers)
                     .body(pdf);
+        } catch (MicroserviceDontRespondException ex) {
+            byte[] body = "Invoice service is temporarily unavailable. Please try again later."
+                    .getBytes(StandardCharsets.UTF_8);
+            return ResponseEntity.status(502)
+                    .header(HttpHeaders.CONTENT_TYPE, MediaType.TEXT_PLAIN_VALUE + "; charset=UTF-8")
+                    .body(body);
         } catch (Exception ex) {
-            return ResponseEntity.status(502).build();
+            byte[] body = "Unable to download invoice. Please try again later."
+                    .getBytes(StandardCharsets.UTF_8);
+            return ResponseEntity.status(502)
+                    .header(HttpHeaders.CONTENT_TYPE, MediaType.TEXT_PLAIN_VALUE + "; charset=UTF-8")
+                    .body(body);
         }
     }
 }

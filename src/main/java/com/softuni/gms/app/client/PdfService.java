@@ -1,5 +1,6 @@
 package com.softuni.gms.app.client;
 
+import com.softuni.gms.app.exeption.MicroserviceDontRespondException;
 import com.softuni.gms.app.web.dto.InvoiceRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,15 +19,23 @@ public class PdfService {
 
     public byte[] generateInvoice(InvoiceRequest invoiceRequest) {
 
-        // TODO - try/catch if microservice is offline
-
         log.info("Invoice Request: RepairId {}", invoiceRequest.getRepairId());
-        return pdfClient.generateInvoice(invoiceRequest);
+        try {
+            return pdfClient.generateInvoice(invoiceRequest);
+        } catch (Exception ex) {
+            log.error("Failed to generate invoice for repair {}: {}", invoiceRequest.getRepairId(), ex.getMessage());
+            throw new MicroserviceDontRespondException("Invoice service is unavailable", ex);
+        }
     }
 
     public byte[] downloadLatestInvoice(java.util.UUID repairId) {
 
         log.info("Download Latest Invoice Request: RepairId {}", repairId);
-        return pdfClient.downloadLatestInvoice(repairId);
+        try {
+            return pdfClient.downloadLatestInvoice(repairId);
+        } catch (Exception ex) {
+            log.error("Failed to download invoice for repair {}: {}", repairId, ex.getMessage());
+            throw new MicroserviceDontRespondException("Invoice service is unavailable", ex);
+        }
     }
 }
