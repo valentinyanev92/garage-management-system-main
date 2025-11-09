@@ -7,190 +7,194 @@
     <link rel="stylesheet" th:href="@{/css/dashboard.css}">
 </head>
 <body>
-    <div class="dashboard-wrapper">
-        <!-- Left Sidebar -->
-        <aside class="sidebar">
-            <nav class="sidebar-nav">
-                <a href="/dashboard" class="nav-button">
-                    <span>Dashboard</span>
+<div class="dashboard-wrapper">
+    <aside class="sidebar">
+        <nav class="sidebar-nav">
+            <a href="/dashboard" class="nav-button">
+                <span>Dashboard</span>
+            </a>
+            <a href="/profile/edit" class="nav-button">
+                <span>Edit Profile</span>
+            </a>
+            <a th:href="@{/cars}" class="nav-button">
+                <span>Manage Cars</span>
+            </a>
+            <a th:href="@{/orders}" class="nav-button">
+                <span>Manage Orders</span>
+            </a>
+            <div class="nav-spacer"></div>
+            <div class="nav-bottom-section">
+                <a th:href="@{/dashboard/mechanic}"
+                   class="nav-button mechanic-button active"
+                   th:if="${user.role.name().equals('MECHANIC') or user.role.name().equals('ADMIN')}">
+                    <span>Mechanic Panel</span>
                 </a>
-                <a href="/profile/edit" class="nav-button">
-                    <span>Edit Profile</span>
+                <a th:href="@{/dashboard/admin}"
+                   class="nav-button admin-button"
+                   th:if="${user.role.name().equals('ADMIN')}">
+                    <span>Admin Panel</span>
                 </a>
-                <a th:href="@{/cars}" class="nav-button">
-                    <span>Manage Cars</span>
+                <a th:href="@{/logout}" class="nav-button logout-button">
+                    <span>Logout</span>
                 </a>
-                <a th:href="@{/orders}" class="nav-button">
-                    <span>Manage Orders</span>
-                </a>
-                <!-- Spacer to push buttons to bottom -->
-                <div class="nav-spacer"></div>
-                <!-- Bottom section with role-based buttons and logout -->
-                <div class="nav-bottom-section">
-                    <!-- Mechanic Panel - visible for MECHANIC and ADMIN -->
-                    <a th:href="@{/dashboard/mechanic}" 
-                       class="nav-button mechanic-button active"
-                       th:if="${user.role.name().equals('MECHANIC') or user.role.name().equals('ADMIN')}">
-                        <span>Mechanic Panel</span>
-                    </a>
-                    <!-- Admin Panel - visible only for ADMIN -->
-                    <a th:href="@{/dashboard/admin}" 
-                       class="nav-button admin-button"
-                       th:if="${user.role.name().equals('ADMIN')}">
-                        <span>Admin Panel</span>
-                    </a>
-                    <a th:href="@{/logout}" class="nav-button logout-button">
-                        <span>Logout</span>
-                    </a>
-                </div>
-            </nav>
-        </aside>
+            </div>
+        </nav>
+    </aside>
 
-        <!-- Main Content -->
-        <div class="dashboard-container">
-            <header class="dashboard-header">
-                <h1 class="dashboard-title">Mechanic Panel</h1>
-            </header>
+    <div class="dashboard-container">
+        <header class="dashboard-header">
+            <h1 class="dashboard-title">Mechanic Panel</h1>
+        </header>
 
-            <main class="dashboard-content">
-                <div class="global-alert error" th:if="${notificationErrorMessage != null}" th:text="${notificationErrorMessage}"></div>
-                <!-- Accepted Order Section -->
-                <section class="section accepted-order-section" th:if="${acceptedOrder != null}">
-                    <h2 class="section-title">Current Active Order</h2>
-                    <div class="cards-container">
-                        <div class="card repair-card accepted-order-card">
-                            <div class="card-image-container">
-                                <img th:src="${acceptedOrder.car.pictureUrl}" alt="Car image" class="card-image">
-                            </div>
-                            <div class="card-content">
-                                <div class="card-info">
-                                    <div class="card-header">
-                                        <h3 class="card-title" th:text="|${acceptedOrder.car.brand} ${acceptedOrder.car.model}|"></h3>
-                                        <span class="status-badge status-accepted"
-                                              th:text="${acceptedOrder.status instanceof T(com.softuni.gms.app.repair.model.RepairStatus) ? acceptedOrder.status.displayName : acceptedOrder.status}"></span>
+        <main class="dashboard-content">
+            <div class="global-alert error" th:if="${notificationErrorMessage != null}"
+                 th:text="${notificationErrorMessage}"></div>
+            <section class="section accepted-order-section" th:if="${acceptedOrder != null}">
+                <h2 class="section-title">Current Active Order</h2>
+                <div class="cards-container">
+                    <div class="card repair-card accepted-order-card">
+                        <div class="card-image-container">
+                            <img th:src="${acceptedOrder.car.pictureUrl}" alt="Car image" class="card-image">
+                        </div>
+                        <div class="card-content">
+                            <div class="card-info">
+                                <div class="card-header">
+                                    <h3 class="card-title"
+                                        th:text="|${acceptedOrder.car.brand} ${acceptedOrder.car.model}|"></h3>
+                                    <span class="status-badge status-accepted"
+                                          th:text="${acceptedOrder.status instanceof T(com.softuni.gms.app.repair.model.RepairStatus) ? acceptedOrder.status.displayName : acceptedOrder.status}"></span>
+                                </div>
+                                <div class="card-body">
+                                    <div class="card-detail">
+                                        <span class="label">Plate Number:</span>
+                                        <span class="value" th:text="${acceptedOrder.car.plateNumber}"></span>
                                     </div>
-                                    <div class="card-body">
-                                        <div class="card-detail">
-                                            <span class="label">Plate Number:</span>
-                                            <span class="value" th:text="${acceptedOrder.car.plateNumber}"></span>
-                                        </div>
-                                        <div class="card-detail">
-                                            <span class="label">VIN:</span>
-                                            <span class="value" th:text="${acceptedOrder.car.vin}"></span>
-                                        </div>
-                                        <div class="card-detail">
-                                            <span class="label">Problem Description:</span>
-                                            <span class="value" th:text="${acceptedOrder.problemDescription}"></span>
-                                        </div>
-                                        <div class="card-detail">
-                                            <span class="label">Customer:</span>
-                                            <span class="value" th:text="|${acceptedOrder.user.firstName} ${acceptedOrder.user.lastName}|"></span>
-                                        </div>
-                                        <div class="card-detail">
-                                            <span class="label">Customer Phone:</span>
-                                            <span class="value" th:text="${acceptedOrder.user.phoneNumber}"></span>
-                                        </div>
-                                        <div class="card-detail"
-                                             th:with="createdAt=${acceptedOrder.createdAt},
+                                    <div class="card-detail">
+                                        <span class="label">VIN:</span>
+                                        <span class="value" th:text="${acceptedOrder.car.vin}"></span>
+                                    </div>
+                                    <div class="card-detail">
+                                        <span class="label">Problem Description:</span>
+                                        <span class="value" th:text="${acceptedOrder.problemDescription}"></span>
+                                    </div>
+                                    <div class="card-detail">
+                                        <span class="label">Customer:</span>
+                                        <span class="value"
+                                              th:text="|${acceptedOrder.user.firstName} ${acceptedOrder.user.lastName}|"></span>
+                                    </div>
+                                    <div class="card-detail">
+                                        <span class="label">Customer Phone:</span>
+                                        <span class="value" th:text="${acceptedOrder.user.phoneNumber}"></span>
+                                    </div>
+                                    <div class="card-detail"
+                                         th:with="createdAt=${acceptedOrder.createdAt},
                                                       createdAtValue=${createdAt instanceof T(java.time.temporal.TemporalAccessor) ? createdAt : null}">
-                                            <span class="label">Created on:</span>
-                                            <span class="value"
-                                                  th:text="${createdAtValue != null ? #temporals.format(createdAtValue, 'dd.MM.yyyy HH:mm') : createdAt}"></span>
-                                        </div>
-                                        <div class="card-detail"
-                                             th:if="${acceptedOrder.acceptedAt != null}"
-                                             th:with="acceptedAt=${acceptedOrder.acceptedAt},
+                                        <span class="label">Created on:</span>
+                                        <span class="value"
+                                              th:text="${createdAtValue != null ? #temporals.format(createdAtValue, 'dd.MM.yyyy HH:mm') : createdAt}"></span>
+                                    </div>
+                                    <div class="card-detail"
+                                         th:if="${acceptedOrder.acceptedAt != null}"
+                                         th:with="acceptedAt=${acceptedOrder.acceptedAt},
                                                       acceptedAtValue=${acceptedAt instanceof T(java.time.temporal.TemporalAccessor) ? acceptedAt : null}">
-                                            <span class="label">Accepted on:</span>
-                                            <span class="value"
-                                                  th:text="${acceptedAtValue != null ? #temporals.format(acceptedAtValue, 'dd.MM.yyyy HH:mm') : acceptedAt}"></span>
-                                        </div>
+                                        <span class="label">Accepted on:</span>
+                                        <span class="value"
+                                              th:text="${acceptedAtValue != null ? #temporals.format(acceptedAtValue, 'dd.MM.yyyy HH:mm') : acceptedAt}"></span>
                                     </div>
-                                </div>
-                                <div class="card-actions">
-                                    <a th:href="@{/dashboard/mechanic/work/{id}(id=${acceptedOrder.id})}" class="work-on-order-button">Work on Order</a>
-                                    <form th:action="@{/dashboard/mechanic/complete/{id}(id=${acceptedOrder.id})}" method="post" style="display: inline; width: 100%; margin-top: 10px;">
-                                        <button type="submit" class="complete-order-button" onclick="return confirm('Are you sure you want to complete this repair order?')">Complete Order</button>
-                                    </form>
                                 </div>
                             </div>
-                        </div>
-                    </div>
-                </section>
-
-                <!-- Pending Orders Section -->
-                <section class="section repairs-section">
-                    <h2 class="section-title">Available Orders</h2>
-                    <div class="cards-container" th:if="${pendingOrders != null and !pendingOrders.isEmpty()}">
-                        <div class="card repair-card" th:each="repair : ${pendingOrders}">
-                            <div class="card-image-container">
-                                <img th:src="${repair.car.pictureUrl}" alt="Car image" class="card-image">
-                            </div>
-                            <div class="card-content">
-                                <div class="card-info">
-                                    <div class="card-header">
-                                        <h3 class="card-title" th:text="|${repair.car.brand} ${repair.car.model}|"></h3>
-                                        <span class="status-badge status-pending"
-                                              th:text="${repair.status instanceof T(com.softuni.gms.app.repair.model.RepairStatus) ? repair.status.displayName : repair.status}"></span>
-                                    </div>
-                                    <div class="card-body">
-                                        <div class="card-detail">
-                                            <span class="label">Plate Number:</span>
-                                            <span class="value" th:text="${repair.car.plateNumber}"></span>
-                                        </div>
-                                        <div class="card-detail">
-                                            <span class="label">VIN:</span>
-                                            <span class="value" th:text="${repair.car.vin}"></span>
-                                        </div>
-                                        <div class="card-detail">
-                                            <span class="label">Problem Description:</span>
-                                            <span class="value" th:text="${repair.problemDescription}"></span>
-                                        </div>
-                                        <div class="card-detail">
-                                            <span class="label">Customer:</span>
-                                            <span class="value" th:text="|${repair.user.firstName} ${repair.user.lastName}|"></span>
-                                        </div>
-                                        <div class="card-detail">
-                                            <span class="label">Customer Phone:</span>
-                                            <span class="value" th:text="${repair.user.phoneNumber}"></span>
-                                        </div>
-                                        <div class="card-detail"
-                                             th:with="createdAt=${repair.createdAt},
-                                                      createdAtValue=${createdAt instanceof T(java.time.temporal.TemporalAccessor) ? createdAt : null}">
-                                            <span class="label">Created on:</span>
-                                            <span class="value"
-                                                  th:text="${createdAtValue != null ? #temporals.format(createdAtValue, 'dd.MM.yyyy HH:mm') : createdAt}"></span>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="card-actions">
-                                    <form th:action="@{/dashboard/mechanic/accept/{id}(id=${repair.id})}"
-                                          method="post"
-                                          style="display: inline; width: 100%;"
-                                          th:if="${acceptedOrder == null}">
-                                        <button type="submit" class="accept-order-button"
-                                                onclick="return confirm('Are you sure you want to accept this repair order?')">Accept Order</button>
-                                    </form>
-                                    <button type="button"
-                                            class="accept-order-button disabled"
-                                            th:if="${acceptedOrder != null}"
-                                            disabled>
-                                        Finish current order first
+                            <div class="card-actions">
+                                <a th:href="@{/dashboard/mechanic/work/{id}(id=${acceptedOrder.id})}"
+                                   class="work-on-order-button">Work on Order</a>
+                                <form th:action="@{/dashboard/mechanic/complete/{id}(id=${acceptedOrder.id})}"
+                                      method="post" style="display: inline; width: 100%; margin-top: 10px;">
+                                    <button type="submit" class="complete-order-button"
+                                            onclick="return confirm('Are you sure you want to complete this repair order?')">
+                                        Complete Order
                                     </button>
-                                    <a th:href="@{/repairs/details/{id}(id=${repair.id})}" class="view-details-button">View Details</a>
-                                </div>
+                                </form>
                             </div>
                         </div>
                     </div>
-                    <div class="empty-state" th:if="${pendingOrders == null or pendingOrders.isEmpty()}">
-                        <p>No pending orders available</p>
+                </div>
+            </section>
+
+            <section class="section repairs-section">
+                <h2 class="section-title">Available Orders</h2>
+                <div class="cards-container" th:if="${pendingOrders != null and !pendingOrders.isEmpty()}">
+                    <div class="card repair-card" th:each="repair : ${pendingOrders}">
+                        <div class="card-image-container">
+                            <img th:src="${repair.car.pictureUrl}" alt="Car image" class="card-image">
+                        </div>
+                        <div class="card-content">
+                            <div class="card-info">
+                                <div class="card-header">
+                                    <h3 class="card-title" th:text="|${repair.car.brand} ${repair.car.model}|"></h3>
+                                    <span class="status-badge status-pending"
+                                          th:text="${repair.status instanceof T(com.softuni.gms.app.repair.model.RepairStatus) ? repair.status.displayName : repair.status}"></span>
+                                </div>
+                                <div class="card-body">
+                                    <div class="card-detail">
+                                        <span class="label">Plate Number:</span>
+                                        <span class="value" th:text="${repair.car.plateNumber}"></span>
+                                    </div>
+                                    <div class="card-detail">
+                                        <span class="label">VIN:</span>
+                                        <span class="value" th:text="${repair.car.vin}"></span>
+                                    </div>
+                                    <div class="card-detail">
+                                        <span class="label">Problem Description:</span>
+                                        <span class="value" th:text="${repair.problemDescription}"></span>
+                                    </div>
+                                    <div class="card-detail">
+                                        <span class="label">Customer:</span>
+                                        <span class="value"
+                                              th:text="|${repair.user.firstName} ${repair.user.lastName}|"></span>
+                                    </div>
+                                    <div class="card-detail">
+                                        <span class="label">Customer Phone:</span>
+                                        <span class="value" th:text="${repair.user.phoneNumber}"></span>
+                                    </div>
+                                    <div class="card-detail"
+                                         th:with="createdAt=${repair.createdAt},
+                                                      createdAtValue=${createdAt instanceof T(java.time.temporal.TemporalAccessor) ? createdAt : null}">
+                                        <span class="label">Created on:</span>
+                                        <span class="value"
+                                              th:text="${createdAtValue != null ? #temporals.format(createdAtValue, 'dd.MM.yyyy HH:mm') : createdAt}"></span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="card-actions">
+                                <form th:action="@{/dashboard/mechanic/accept/{id}(id=${repair.id})}"
+                                      method="post"
+                                      style="display: inline; width: 100%;"
+                                      th:if="${acceptedOrder == null}">
+                                    <button type="submit" class="accept-order-button"
+                                            onclick="return confirm('Are you sure you want to accept this repair order?')">
+                                        Accept Order
+                                    </button>
+                                </form>
+                                <button type="button"
+                                        class="accept-order-button disabled"
+                                        th:if="${acceptedOrder != null}"
+                                        disabled>
+                                    Finish current order first
+                                </button>
+                                <a th:href="@{/repairs/details/{id}(id=${repair.id})}" class="view-details-button">View
+                                    Details</a>
+                            </div>
+                        </div>
                     </div>
-                </section>
-            </main>
-        </div>
+                </div>
+                <div class="empty-state" th:if="${pendingOrders == null or pendingOrders.isEmpty()}">
+                    <p>No pending orders available</p>
+                </div>
+            </section>
+        </main>
     </div>
-    
-    <div th:replace="fragments/footer :: footer"></div>
+</div>
+
+<div th:replace="fragments/footer :: footer"></div>
 </body>
 </html>
 

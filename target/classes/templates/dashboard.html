@@ -7,60 +7,53 @@
     <link rel="stylesheet" th:href="@{/css/dashboard.css}">
 </head>
 <body>
-    <div class="dashboard-wrapper">
-        <!-- Left Sidebar -->
-        <aside class="sidebar">
-            <nav class="sidebar-nav">
-                <a href="/dashboard" class="nav-button active">
-                    <span>Dashboard</span>
+<div class="dashboard-wrapper">
+    <aside class="sidebar">
+        <nav class="sidebar-nav">
+            <a href="/dashboard" class="nav-button active">
+                <span>Dashboard</span>
+            </a>
+            <a href="/profile/edit" class="nav-button">
+                <span>Edit Profile</span>
+            </a>
+            <a th:href="@{/cars}" class="nav-button">
+                <span>Manage Cars</span>
+            </a>
+            <a th:href="@{/orders}" class="nav-button">
+                <span>Manage Orders</span>
+            </a>
+            <div class="nav-spacer"></div>
+            <div class="nav-bottom-section">
+                <a th:href="@{/dashboard/mechanic}"
+                   class="nav-button mechanic-button"
+                   th:if="${user.role.name().equals('MECHANIC') or user.role.name().equals('ADMIN')}">
+                    <span>Mechanic Panel</span>
                 </a>
-                <a href="/profile/edit" class="nav-button">
-                    <span>Edit Profile</span>
+                <a th:href="@{/dashboard/admin}"
+                   class="nav-button admin-button"
+                   th:if="${user.role.name().equals('ADMIN')}">
+                    <span>Admin Panel</span>
                 </a>
-                <a th:href="@{/cars}" class="nav-button">
-                    <span>Manage Cars</span>
+                <a th:href="@{/logout}" class="nav-button logout-button">
+                    <span>Logout</span>
                 </a>
-                <a th:href="@{/orders}" class="nav-button">
-                    <span>Manage Orders</span>
-                </a>
-                <!-- Spacer to push buttons to bottom -->
-                <div class="nav-spacer"></div>
-                <!-- Bottom section with role-based buttons and logout -->
-                <div class="nav-bottom-section">
-                    <!-- Mechanic Panel - visible for MECHANIC and ADMIN -->
-                    <a th:href="@{/dashboard/mechanic}" 
-                       class="nav-button mechanic-button"
-                       th:if="${user.role.name().equals('MECHANIC') or user.role.name().equals('ADMIN')}">
-                        <span>Mechanic Panel</span>
-                    </a>
-                    <!-- Admin Panel - visible only for ADMIN -->
-                    <a th:href="@{/dashboard/admin}" 
-                       class="nav-button admin-button"
-                       th:if="${user.role.name().equals('ADMIN')}">
-                        <span>Admin Panel</span>
-                    </a>
-                    <a th:href="@{/logout}" class="nav-button logout-button">
-                        <span>Logout</span>
-                    </a>
-                </div>
-            </nav>
-        </aside>
+            </div>
+        </nav>
+    </aside>
 
-        <!-- Main Content -->
-        <div class="dashboard-container">
-            <header class="dashboard-header">
-                <h1 class="dashboard-title">Dashboard</h1>
-                <div class="user-info">
-                    <h2 class="welcome-text">Hello, <span th:text="|${user.firstName} ${user.lastName}|"></span>!</h2>
-                    <p class="user-details">
-                        <span th:text="${user.email}"></span> | 
-                        <span th:text="${user.phoneNumber}"></span>
-                    </p>
-                </div>
-            </header>
+    <div class="dashboard-container">
+        <header class="dashboard-header">
+            <h1 class="dashboard-title">Dashboard</h1>
+            <div class="user-info">
+                <h2 class="welcome-text">Hello, <span th:text="|${user.firstName} ${user.lastName}|"></span>!</h2>
+                <p class="user-details">
+                    <span th:text="${user.email}"></span> |
+                    <span th:text="${user.phoneNumber}"></span>
+                </p>
+            </div>
+        </header>
 
-            <main class="dashboard-content">
-            <!-- Cars Section -->
+        <main class="dashboard-content">
             <section class="section cars-section">
                 <h2 class="section-title">My Cars</h2>
                 <div class="cards-container" th:if="${carList != null and !carList.isEmpty()}">
@@ -85,19 +78,24 @@
                                 </div>
                             </div>
                             <div class="card-actions">
-                                <a th:href="@{/repairs/request/{id}(id=${car.id})}" 
+                                <a th:href="@{/repairs/request/{id}(id=${car.id})}"
                                    class="request-repair-button"
                                    th:if="${!car.hasActiveRepairRequest()}">
                                     Request Repair
                                 </a>
-                                <div th:if="${car.hasActiveRepairRequest()}" style="display: flex; flex-direction: column; gap: 10px; width: 100%;">
-                                    <button type="button" 
+                                <div th:if="${car.hasActiveRepairRequest()}"
+                                     style="display: flex; flex-direction: column; gap: 10px; width: 100%;">
+                                    <button type="button"
                                             class="already-requested-button"
                                             disabled>
                                         Already Requested
                                     </button>
-                                    <form th:action="@{/repairs/cancel/{carId}(carId=${car.id})}" method="post" style="display: inline; width: 100%;">
-                                        <button type="submit" class="cancel-request-button" onclick="return confirm('Are you sure you want to cancel this repair request?')">Cancel Request</button>
+                                    <form th:action="@{/repairs/cancel/{carId}(carId=${car.id})}" method="post"
+                                          style="display: inline; width: 100%;">
+                                        <button type="submit" class="cancel-request-button"
+                                                onclick="return confirm('Are you sure you want to cancel this repair request?')">
+                                            Cancel Request
+                                        </button>
                                     </form>
                                 </div>
                             </div>
@@ -109,7 +107,6 @@
                 </div>
             </section>
 
-            <!-- Repair Orders Section -->
             <section class="section repairs-section">
                 <h2 class="section-title">Repair Orders</h2>
                 <div class="cards-container" th:if="${repairList != null and !repairList.isEmpty()}">
@@ -145,7 +142,8 @@
                                     </div>
                                     <div class="card-detail" th:if="${repair.price != null}">
                                         <span class="label">Price:</span>
-                                        <span class="value" th:text="|${#numbers.formatDecimal(repair.price, 1, 2)} BGN|"></span>
+                                        <span class="value"
+                                              th:text="|${#numbers.formatDecimal(repair.price, 1, 2)} BGN|"></span>
                                     </div>
                                     <div class="card-detail">
                                         <span class="label">Created on:</span>
@@ -162,12 +160,16 @@
                                 </div>
                             </div>
                             <div class="card-actions">
-                                <a th:href="@{/repairs/details/{id}(id=${repair.id})}" class="view-details-button">View Details</a>
-                                <form th:action="@{/repairs/delete/{id}(id=${repair.id})}" 
-                                      method="post" 
+                                <a th:href="@{/repairs/details/{id}(id=${repair.id})}" class="view-details-button">View
+                                    Details</a>
+                                <form th:action="@{/repairs/delete/{id}(id=${repair.id})}"
+                                      method="post"
                                       style="display: inline; width: 100%;"
                                       th:if="${statusName == 'CANCELED' or statusName == 'USER_CANCELED'}">
-                                    <button type="submit" class="delete-repair-button" onclick="return confirm('Are you sure you want to delete this repair order?')">Delete Order</button>
+                                    <button type="submit" class="delete-repair-button"
+                                            onclick="return confirm('Are you sure you want to delete this repair order?')">
+                                        Delete Order
+                                    </button>
                                 </form>
                             </div>
                         </div>
@@ -177,11 +179,11 @@
                     <p>You currently have no active repair orders</p>
                 </div>
             </section>
-            </main>
-        </div>
+        </main>
     </div>
-    
-    <div th:replace="fragments/footer :: footer"></div>
+</div>
+
+<div th:replace="fragments/footer :: footer"></div>
 </body>
 </html>
 

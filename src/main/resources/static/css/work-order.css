@@ -1,0 +1,99 @@
+/* Specific styling for the mechanic work-order page */
+
+.work-order-page .repair-details-layout {
+    width: 100%;
+    max-width: 1400px;
+    box-sizing: border-box;
+}
+
+.work-order-page .repair-details-right,
+.work-order-page .repair-details-right .details-card,
+.work-order-page #partsList {
+    width: 100%;
+    max-width: 100%;
+    overflow-x: auto;
+    box-sizing: border-box;
+}
+
+.work-order-page .parts-container {
+    margin-top: 20px;
+}
+
+.work-order-page .part-item {
+    display: grid;
+    grid-template-columns: 2fr 1fr auto;
+    gap: 15px;
+    align-items: center;
+    padding: 15px;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 10px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    margin-bottom: 10px;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.work-order-page .add-part-button,
+.work-order-page .remove-part-button {
+    padding: 8px 16px;
+    border: none;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    color: white;
+}
+
+.work-order-page .add-part-button {
+    background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+}
+
+.work-order-page .add-part-button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(40, 167, 69, 0.3);
+}
+
+.work-order-page .remove-part-button {
+    background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);
+}
+
+.work-order-page .remove-part-button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(220, 53, 69, 0.3);
+}
+
+.work-order-page select,
+.work-order-page input[type="number"] {
+    padding: 10px;
+    border-radius: 8px;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    background: rgba(255, 255, 255, 0.1);
+    color: white;
+    font-size: 14px;
+    box-sizing: border-box;
+}
+
+.work-order-page select option {
+    background: #2c3e50;
+    color: white;
+}
+
+.work-order-page #workDescription {
+    width: 100%;
+    min-height: 120px;
+    padding: 15px;
+    border-radius: 10px;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    background: rgba(255, 255, 255, 0.1);
+    color: white;
+    font-size: 15px;
+    font-family: inherit;
+    resize: vertical;
+    box-sizing: border-box;
+}
+
+.work-order-page #workDescription::placeholder {
+    color: rgba(255, 255, 255, 0.5);
+}
+

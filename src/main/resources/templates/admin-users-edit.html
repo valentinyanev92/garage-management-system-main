@@ -5,241 +5,98 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Edit User - Admin Panel</title>
     <link rel="stylesheet" th:href="@{/css/dashboard.css}">
-    <style>
-        /* Override profile-edit.css body styles to maintain dashboard layout */
-        body {
-            display: block !important;
-            align-items: unset !important;
-            justify-content: unset !important;
-        }
-        
-        /* Import only form styles from profile-edit.css */
-        .profile-edit-container {
-            width: 100%;
-            max-width: 600px;
-            padding: 20px;
-        }
-
-        .profile-edit-form {
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 20px;
-            padding: 40px;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-        }
-
-        .profile-edit-container .form-group {
-            margin-bottom: 25px;
-        }
-
-        .profile-edit-container label {
-            display: block;
-            color: white;
-            font-size: 16px;
-            font-weight: 600;
-            margin-bottom: 8px;
-            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
-        }
-
-        .profile-edit-container input[type="text"],
-        .profile-edit-container input[type="email"],
-        .profile-edit-container input[type="tel"],
-        .profile-edit-container input[type="number"],
-        .profile-edit-container select {
-            width: 100%;
-            padding: 12px 15px;
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            border-radius: 10px;
-            background: rgba(255, 255, 255, 0.1);
-            color: white;
-            font-size: 15px;
-            transition: all 0.3s ease;
-            box-sizing: border-box;
-        }
-
-        .profile-edit-container select option {
-            background: #2c2c2c;
-            color: white;
-        }
-
-        .profile-edit-container input::placeholder {
-            color: rgba(255, 255, 255, 0.5);
-        }
-
-        .profile-edit-container input:focus,
-        .profile-edit-container select:focus {
-            outline: none;
-            border-color: rgba(255, 215, 0, 0.6);
-            background: rgba(255, 255, 255, 0.15);
-            box-shadow: 0 0 10px rgba(255, 215, 0, 0.3);
-        }
-
-        .profile-edit-button {
-            width: 100%;
-            padding: 15px;
-            background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%);
-            color: #333;
-            border: none;
-            border-radius: 15px;
-            font-size: 18px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            box-shadow: 0 4px 15px rgba(255, 215, 0, 0.3);
-            margin-top: 10px;
-        }
-
-        .profile-edit-button:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(255, 215, 0, 0.5);
-            background: linear-gradient(135deg, #FFA500 0%, #FFD700 100%);
-        }
-
-        .profile-edit-links {
-            text-align: center;
-            margin-top: 20px;
-        }
-
-        .back-link {
-            color: rgba(255, 255, 255, 0.8);
-            text-decoration: none;
-            font-size: 14px;
-            transition: color 0.3s ease;
-        }
-
-        .back-link:hover {
-            color: #FFD700;
-        }
-
-        .help-text {
-            font-size: 12px;
-            color: rgba(255, 255, 255, 0.6);
-            margin-bottom: 5px;
-            display: none;
-        }
-
-        .help-text.show-help {
-            display: block;
-        }
-
-        .error-message {
-            color: #ff6b6b;
-            font-size: 13px;
-            margin-top: 5px;
-            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
-        }
-
-        .user-info {
-            background: rgba(255, 255, 255, 0.05);
-            border-radius: 10px;
-            padding: 15px;
-            margin-bottom: 20px;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-        }
-
-        .user-info p {
-            color: rgba(255, 255, 255, 0.9);
-            margin: 5px 0;
-            font-size: 14px;
-        }
-
-        .user-info strong {
-            color: white;
-            margin-right: 10px;
-        }
-    </style>
+    <link rel="stylesheet" th:href="@{/css/dashboard-form.css}">
 </head>
 <body>
-    <div class="dashboard-wrapper">
-        <!-- Left Sidebar -->
-        <aside class="sidebar">
-            <nav class="sidebar-nav">
-                <a href="/dashboard" class="nav-button">
-                    <span>Dashboard</span>
+<div class="dashboard-wrapper">
+    <aside class="sidebar">
+        <nav class="sidebar-nav">
+            <a href="/dashboard" class="nav-button">
+                <span>Dashboard</span>
+            </a>
+            <a href="/profile/edit" class="nav-button">
+                <span>Edit Profile</span>
+            </a>
+            <a th:href="@{/cars}" class="nav-button">
+                <span>Manage Cars</span>
+            </a>
+            <a th:href="@{/orders}" class="nav-button">
+                <span>Manage Orders</span>
+            </a>
+            <div class="nav-spacer"></div>
+            <div class="nav-bottom-section">
+                <a th:href="@{/dashboard/mechanic}"
+                   class="nav-button mechanic-button"
+                   th:if="${user.role.name().equals('MECHANIC') or user.role.name().equals('ADMIN')}">
+                    <span>Mechanic Panel</span>
                 </a>
-                <a href="/profile/edit" class="nav-button">
-                    <span>Edit Profile</span>
+                <a th:href="@{/dashboard/admin}"
+                   class="nav-button admin-button active">
+                    <span>Admin Panel</span>
                 </a>
-                <a th:href="@{/cars}" class="nav-button">
-                    <span>Manage Cars</span>
+                <a th:href="@{/logout}" class="nav-button logout-button">
+                    <span>Logout</span>
                 </a>
-                <a th:href="@{/orders}" class="nav-button">
-                    <span>Manage Orders</span>
-                </a>
-                <!-- Spacer to push buttons to bottom -->
-                <div class="nav-spacer"></div>
-                <!-- Bottom section with role-based buttons and logout -->
-                <div class="nav-bottom-section">
-                    <!-- Mechanic Panel - visible for MECHANIC and ADMIN -->
-                    <a th:href="@{/dashboard/mechanic}" 
-                       class="nav-button mechanic-button"
-                       th:if="${user.role.name().equals('MECHANIC') or user.role.name().equals('ADMIN')}">
-                        <span>Mechanic Panel</span>
-                    </a>
-                    <!-- Admin Panel - visible only for ADMIN -->
-                    <a th:href="@{/dashboard/admin}" 
-                       class="nav-button admin-button active">
-                        <span>Admin Panel</span>
-                    </a>
-                    <a th:href="@{/logout}" class="nav-button logout-button">
-                        <span>Logout</span>
-                    </a>
-                </div>
-            </nav>
-        </aside>
+            </div>
+        </nav>
+    </aside>
 
-        <!-- Main Content -->
-        <div class="dashboard-container">
-            <header class="dashboard-header">
-                <h1 class="dashboard-title">Edit User</h1>
-            </header>
+    <div class="dashboard-container">
+        <header class="dashboard-header">
+            <h1 class="dashboard-title">Edit User</h1>
+        </header>
 
-            <main class="dashboard-content">
-                <div class="profile-edit-container">
-                    <div class="profile-edit-form">
-                        <div class="user-info">
-                            <p><strong>Name:</strong> <span th:text="|${userToEdit.firstName} ${userToEdit.lastName}|"></span></p>
-                            <p><strong>Username:</strong> <span th:text="${userToEdit.username}"></span></p>
-                            <p><strong>Email:</strong> <span th:text="${userToEdit.email}"></span></p>
+        <main class="dashboard-content">
+            <div class="profile-edit-container">
+                <div class="profile-edit-form">
+                    <div class="user-info">
+                        <p><strong>Name:</strong> <span
+                                th:text="|${userToEdit.firstName} ${userToEdit.lastName}|"></span></p>
+                        <p><strong>Username:</strong> <span th:text="${userToEdit.username}"></span></p>
+                        <p><strong>Email:</strong> <span th:text="${userToEdit.email}"></span></p>
+                    </div>
+
+                    <form th:action="@{/dashboard/admin/users/edit/{id}(id=${userToEdit.id})}"
+                          th:object="${userAdminEditRequest}" method="post">
+                        <div class="form-group">
+                            <label for="role">Role</label>
+                            <div class="help-text" th:classappend="${#fields.hasErrors('role')} ? 'show-help' : ''">
+                                Role is required
+                            </div>
+                            <select id="role" th:field="*{role}" required>
+                                <option value="">Select Role</option>
+                                <option th:each="roleOption : ${roles}"
+                                        th:value="${roleOption}"
+                                        th:text="${roleOption.name()}"
+                                        th:selected="${userAdminEditRequest.role == roleOption}"></option>
+                            </select>
+                            <div th:if="${#fields.hasErrors('role')}" class="error-message" th:errors="*{role}"></div>
                         </div>
 
-                        <form th:action="@{/dashboard/admin/users/edit/{id}(id=${userToEdit.id})}" th:object="${userAdminEditRequest}" method="post">
-                            <div class="form-group">
-                                <label for="role">Role</label>
-                                <div class="help-text" th:classappend="${#fields.hasErrors('role')} ? 'show-help' : ''">
-                                    Role is required
-                                </div>
-                                <select id="role" th:field="*{role}" required>
-                                    <option value="">Select Role</option>
-                                    <option th:each="roleOption : ${roles}" 
-                                            th:value="${roleOption}" 
-                                            th:text="${roleOption.name()}"
-                                            th:selected="${userAdminEditRequest.role == roleOption}"></option>
-                                </select>
-                                <div th:if="${#fields.hasErrors('role')}" class="error-message" th:errors="*{role}"></div>
+                        <div class="form-group">
+                            <label for="hourlyRate">Hourly Rate (BGN)</label>
+                            <div class="help-text"
+                                 th:classappend="${#fields.hasErrors('hourlyRate')} ? 'show-help' : ''">
+                                Hourly rate must be 0 or greater (leave empty if not applicable)
                             </div>
-                            
-                            <div class="form-group">
-                                <label for="hourlyRate">Hourly Rate (BGN)</label>
-                                <div class="help-text" th:classappend="${#fields.hasErrors('hourlyRate')} ? 'show-help' : ''">
-                                    Hourly rate must be 0 or greater (leave empty if not applicable)
-                                </div>
-                                <input type="number" id="hourlyRate" th:field="*{hourlyRate}" step="0.01" min="0" placeholder="Enter hourly rate in BGN">
-                                <div th:if="${#fields.hasErrors('hourlyRate')}" class="error-message" th:errors="*{hourlyRate}"></div>
-                            </div>
-                            
-                            <button type="submit" class="profile-edit-button">Save Changes</button>
-                        </form>
-                        <div class="profile-edit-links">
-                            <a th:href="@{/dashboard/admin/users}" class="back-link">Back to Users</a>
+                            <input type="number" id="hourlyRate" th:field="*{hourlyRate}" step="0.01" min="0"
+                                   placeholder="Enter hourly rate in BGN">
+                            <div th:if="${#fields.hasErrors('hourlyRate')}" class="error-message"
+                                 th:errors="*{hourlyRate}"></div>
                         </div>
+
+                        <button type="submit" class="profile-edit-button">Save Changes</button>
+                    </form>
+                    <div class="profile-edit-links">
+                        <a th:href="@{/dashboard/admin/users}" class="back-link">Back to Users</a>
                     </div>
                 </div>
-            </main>
-        </div>
+            </div>
+        </main>
     </div>
-    
-    <div th:replace="fragments/footer :: footer"></div>
+</div>
+
+<div th:replace="fragments/footer :: footer"></div>
 </body>
 </html>
 

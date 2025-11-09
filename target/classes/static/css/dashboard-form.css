@@ -1,0 +1,164 @@
+/* Dashboard form styling shared across admin/mechanic pages */
+
+.dashboard-wrapper .profile-edit-container {
+    width: 100%;
+    max-width: 600px;
+    padding: 20px;
+}
+
+.dashboard-wrapper .profile-edit-form {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 20px;
+    padding: 40px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.dashboard-wrapper .profile-edit-container .form-group {
+    margin-bottom: 25px;
+}
+
+.dashboard-wrapper .profile-edit-container label {
+    display: block;
+    color: white;
+    font-size: 16px;
+    font-weight: 600;
+    margin-bottom: 8px;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+}
+
+.dashboard-wrapper .profile-edit-container input[type="text"],
+.dashboard-wrapper .profile-edit-container input[type="email"],
+.dashboard-wrapper .profile-edit-container input[type="tel"],
+.dashboard-wrapper .profile-edit-container input[type="number"],
+.dashboard-wrapper .profile-edit-container select,
+.dashboard-wrapper .profile-edit-container textarea {
+    width: 100%;
+    padding: 12px 15px;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 10px;
+    background: rgba(255, 255, 255, 0.1);
+    color: white;
+    font-size: 15px;
+    transition: all 0.3s ease;
+    box-sizing: border-box;
+    font-family: inherit;
+    resize: vertical;
+}
+
+.dashboard-wrapper .profile-edit-container input::placeholder,
+.dashboard-wrapper .profile-edit-container textarea::placeholder {
+    color: rgba(255, 255, 255, 0.5);
+}
+
+.dashboard-wrapper .profile-edit-container input:focus,
+.dashboard-wrapper .profile-edit-container select:focus,
+.dashboard-wrapper .profile-edit-container textarea:focus {
+    outline: none;
+    border-color: rgba(255, 215, 0, 0.6);
+    background: rgba(255, 255, 255, 0.15);
+    box-shadow: 0 0 10px rgba(255, 215, 0, 0.3);
+}
+
+.dashboard-wrapper .profile-edit-container select option {
+    background: #2c2c2c;
+    color: white;
+}
+
+.dashboard-wrapper .profile-edit-button,
+.dashboard-wrapper .submit-work-button {
+    width: 100%;
+    padding: 15px;
+    background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%);
+    color: #333;
+    border: none;
+    border-radius: 15px;
+    font-size: 18px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(255, 215, 0, 0.3);
+    margin-top: 10px;
+}
+
+.dashboard-wrapper .profile-edit-button:hover,
+.dashboard-wrapper .submit-work-button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(255, 215, 0, 0.5);
+    background: linear-gradient(135deg, #FFA500 0%, #FFD700 100%);
+}
+
+.dashboard-wrapper .profile-edit-links {
+    text-align: center;
+    margin-top: 20px;
+}
+
+.dashboard-wrapper .back-link {
+    color: rgba(255, 255, 255, 0.8);
+    text-decoration: none;
+    font-size: 14px;
+    transition: color 0.3s ease;
+}
+
+.dashboard-wrapper .back-link:hover {
+    color: #FFD700;
+}
+
+.dashboard-wrapper .help-text {
+    font-size: 12px;
+    color: rgba(255, 255, 255, 0.6);
+    margin-bottom: 5px;
+    display: none;
+}
+
+.dashboard-wrapper .help-text.show-help {
+    display: block;
+    color: rgba(255, 215, 0, 0.8);
+}
+
+.dashboard-wrapper .error-message {
+    color: #ff6b6b;
+    font-size: 13px;
+    margin-top: 5px;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+}
+
+.dashboard-wrapper .delete-part-button {
+    width: 100%;
+    padding: 15px;
+    background: linear-gradient(135deg, #ff6b6b 0%, #ee5a6f 100%);
+    color: white;
+    border: none;
+    border-radius: 15px;
+    font-size: 18px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(255, 107, 107, 0.3);
+}
+
+.dashboard-wrapper .delete-part-button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(255, 107, 107, 0.5);
+    background: linear-gradient(135deg, #ee5a6f 0%, #ff6b6b 100%);
+}
+
+.dashboard-wrapper .user-info {
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 10px;
+    padding: 15px;
+    margin-bottom: 20px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.dashboard-wrapper .user-info p {
+    color: rgba(255, 255, 255, 0.9);
+    margin: 5px 0;
+    font-size: 14px;
+}
+
+.dashboard-wrapper .user-info strong {
+    color: white;
+    margin-right: 10px;
+}
+

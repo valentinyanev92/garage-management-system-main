@@ -7,146 +7,146 @@
     <link rel="stylesheet" th:href="@{/css/register.css}">
 </head>
 <body>
-    <div class="register-container">
-        <div class="register-form">
-            <h1 class="register-title">Register</h1>
-            <form th:action="@{/register}" th:object="${registerRequest}" method="post">
-                <div class="form-row">
-                    <div class="form-group">
-                        <label for="firstName">First Name</label>
-                        <div class="help-text" th:classappend="${#fields.hasErrors('firstName')} ? 'show-help' : ''">
-                            Must be between 2 and 50 characters
-                        </div>
-                        <input type="text" id="firstName" th:field="*{firstName}" placeholder="Enter your first name" required>
-                        <div th:if="${#fields.hasErrors('firstName')}" class="error-message" th:errors="*{firstName}"></div>
-                    </div>
-                    <div class="form-group">
-                        <label for="lastName">Last Name</label>
-                        <div class="help-text" th:classappend="${#fields.hasErrors('lastName')} ? 'show-help' : ''">
-                            Must be between 2 and 50 characters
-                        </div>
-                        <input type="text" id="lastName" th:field="*{lastName}" placeholder="Enter your last name" required>
-                        <div th:if="${#fields.hasErrors('lastName')}" class="error-message" th:errors="*{lastName}"></div>
-                    </div>
-                </div>
-                
+<div class="register-container">
+    <div class="register-form">
+        <h1 class="register-title">Register</h1>
+        <form th:action="@{/register}" th:object="${registerRequest}" method="post">
+            <div class="form-row">
                 <div class="form-group">
-                    <label for="username">Username</label>
-                    <div class="help-text" th:classappend="${#fields.hasErrors('username')} ? 'show-help' : ''">
-                        Must be 3-50 characters, only letters, numbers and underscores
+                    <label for="firstName">First Name</label>
+                    <div class="help-text" th:classappend="${#fields.hasErrors('firstName')} ? 'show-help' : ''">
+                        Must be between 2 and 50 characters
                     </div>
-                    <input type="text" id="username" th:field="*{username}" placeholder="Enter your username" required>
-                    <div th:if="${#fields.hasErrors('username')}" class="error-message" th:errors="*{username}"></div>
+                    <input type="text" id="firstName" th:field="*{firstName}" placeholder="Enter your first name"
+                           required>
+                    <div th:if="${#fields.hasErrors('firstName')}" class="error-message" th:errors="*{firstName}"></div>
                 </div>
-                
                 <div class="form-group">
-                    <label for="password">Password</label>
-                    <div class="help-text" th:classappend="${#fields.hasErrors('password')} ? 'show-help' : ''">
-                        Must be between 4 and 100 characters
+                    <label for="lastName">Last Name</label>
+                    <div class="help-text" th:classappend="${#fields.hasErrors('lastName')} ? 'show-help' : ''">
+                        Must be between 2 and 50 characters
                     </div>
-                    <div class="password-container">
-                        <input type="password" id="password" th:field="*{password}" placeholder="Enter your password" required>
-                        <div class="password-strength" id="passwordStrength">
-                            <span class="strength-text" id="strengthText"></span>
-                            <div class="strength-bar">
-                                <div class="strength-fill" id="strengthFill"></div>
-                            </div>
-                        </div>
-                    </div>
-                    <div th:if="${#fields.hasErrors('password')}" class="error-message" th:errors="*{password}"></div>
+                    <input type="text" id="lastName" th:field="*{lastName}" placeholder="Enter your last name" required>
+                    <div th:if="${#fields.hasErrors('lastName')}" class="error-message" th:errors="*{lastName}"></div>
                 </div>
-                
-                <div class="form-group">
-                    <label for="email">Email</label>
-                    <div class="help-text" th:classappend="${#fields.hasErrors('email')} ? 'show-help' : ''">
-                        Must be a valid email address (max 100 characters)
-                    </div>
-                    <input type="email" id="email" th:field="*{email}" placeholder="Enter your email" required>
-                    <div th:if="${#fields.hasErrors('email')}" class="error-message" th:errors="*{email}"></div>
-                </div>
-                
-                <div class="form-group">
-                    <label for="phoneNumber">Phone Number</label>
-                    <div class="help-text" th:classappend="${#fields.hasErrors('phoneNumber')} ? 'show-help' : ''">
-                        Bulgarian format: +359123456789 or 0123456789
-                    </div>
-                    <input type="tel" id="phoneNumber" th:field="*{phoneNumber}" placeholder="Enter your phone number" required>
-                    <div th:if="${#fields.hasErrors('phoneNumber')}" class="error-message" th:errors="*{phoneNumber}"></div>
-                </div>
-                
-                <button type="submit" class="register-button">Register</button>
-            </form>
-            <div class="register-links">
-                <a href="/login" class="back-link">Already have an account? Login now!</a>
             </div>
+
+            <div class="form-group">
+                <label for="username">Username</label>
+                <div class="help-text" th:classappend="${#fields.hasErrors('username')} ? 'show-help' : ''">
+                    Must be 3-50 characters, only letters, numbers and underscores
+                </div>
+                <input type="text" id="username" th:field="*{username}" placeholder="Enter your username" required>
+                <div th:if="${#fields.hasErrors('username')}" class="error-message" th:errors="*{username}"></div>
+            </div>
+
+            <div class="form-group">
+                <label for="password">Password</label>
+                <div class="help-text" th:classappend="${#fields.hasErrors('password')} ? 'show-help' : ''">
+                    Must be between 4 and 100 characters
+                </div>
+                <div class="password-container">
+                    <input type="password" id="password" th:field="*{password}" placeholder="Enter your password"
+                           required>
+                    <div class="password-strength" id="passwordStrength">
+                        <span class="strength-text" id="strengthText"></span>
+                        <div class="strength-bar">
+                            <div class="strength-fill" id="strengthFill"></div>
+                        </div>
+                    </div>
+                </div>
+                <div th:if="${#fields.hasErrors('password')}" class="error-message" th:errors="*{password}"></div>
+            </div>
+
+            <div class="form-group">
+                <label for="email">Email</label>
+                <div class="help-text" th:classappend="${#fields.hasErrors('email')} ? 'show-help' : ''">
+                    Must be a valid email address (max 100 characters)
+                </div>
+                <input type="email" id="email" th:field="*{email}" placeholder="Enter your email" required>
+                <div th:if="${#fields.hasErrors('email')}" class="error-message" th:errors="*{email}"></div>
+            </div>
+
+            <div class="form-group">
+                <label for="phoneNumber">Phone Number</label>
+                <div class="help-text" th:classappend="${#fields.hasErrors('phoneNumber')} ? 'show-help' : ''">
+                    Bulgarian format: +359123456789 or 0123456789
+                </div>
+                <input type="tel" id="phoneNumber" th:field="*{phoneNumber}" placeholder="Enter your phone number"
+                       required>
+                <div th:if="${#fields.hasErrors('phoneNumber')}" class="error-message" th:errors="*{phoneNumber}"></div>
+            </div>
+
+            <button type="submit" class="register-button">Register</button>
+        </form>
+        <div class="register-links">
+            <a href="/login" class="back-link">Already have an account? Login now!</a>
         </div>
     </div>
-    
-    <div th:replace="fragments/footer :: footer"></div>
-    
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            const passwordInput = document.getElementById('password');
-            const strengthText = document.getElementById('strengthText');
-            const strengthFill = document.getElementById('strengthFill');
-            
-            passwordInput.addEventListener('input', function() {
-                const password = this.value;
-                const strength = calculatePasswordStrength(password);
-                updateStrengthIndicator(strength);
-            });
-            
-            function calculatePasswordStrength(password) {
-                let score = 0;
-                
-                if (password.length === 0) {
-                    return { score: 0, text: '', color: '#666' };
-                }
-                
-                // Length scoring - more lenient
-                if (password.length >= 4) {
-                    score += 1;
-                }
-                if (password.length >= 6) {
-                    score += 1;
-                }
-                if (password.length >= 8) {
-                    score += 1;
-                }
-                
-                // Character type scoring - optional bonuses
-                if (/[a-z]/.test(password)) {
-                    score += 1;
-                }
-                if (/[A-Z]/.test(password)) {
-                    score += 1;
-                }
-                if (/[0-9]/.test(password)) {
-                    score += 1;
-                }
-                if (/[^A-Za-z0-9]/.test(password)) {
-                    score += 1;
-                }
-                
-                // More lenient thresholds
-                if (score <= 1) {
-                    return { score: score, text: 'Weak', color: '#ff4444' };
-                } else if (score <= 3) {
-                    return { score: score, text: 'Fair', color: '#ffaa00' };
-                } else if (score <= 5) {
-                    return { score: score, text: 'Good', color: '#ffdd00' };
-                } else {
-                    return { score: score, text: 'Strong', color: '#44ff44' };
-                }
-            }
-            
-            function updateStrengthIndicator(strength) {
-                strengthText.textContent = strength.text;
-                strengthText.style.color = strength.color;
-                strengthFill.style.width = (strength.score / 6 * 100) + '%';
-                strengthFill.style.backgroundColor = strength.color;
-            }
+</div>
+
+<div th:replace="fragments/footer :: footer"></div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const passwordInput = document.getElementById('password');
+        const strengthText = document.getElementById('strengthText');
+        const strengthFill = document.getElementById('strengthFill');
+
+        passwordInput.addEventListener('input', function () {
+            const password = this.value;
+            const strength = calculatePasswordStrength(password);
+            updateStrengthIndicator(strength);
         });
-    </script>
+
+        function calculatePasswordStrength(password) {
+            let score = 0;
+
+            if (password.length === 0) {
+                return {score: 0, text: '', color: '#666'};
+            }
+
+            if (password.length >= 4) {
+                score += 1;
+            }
+            if (password.length >= 6) {
+                score += 1;
+            }
+            if (password.length >= 8) {
+                score += 1;
+            }
+
+            if (/[a-z]/.test(password)) {
+                score += 1;
+            }
+            if (/[A-Z]/.test(password)) {
+                score += 1;
+            }
+            if (/[0-9]/.test(password)) {
+                score += 1;
+            }
+            if (/[^A-Za-z0-9]/.test(password)) {
+                score += 1;
+            }
+
+            if (score <= 1) {
+                return {score: score, text: 'Weak', color: '#ff4444'};
+            } else if (score <= 3) {
+                return {score: score, text: 'Fair', color: '#ffaa00'};
+            } else if (score <= 5) {
+                return {score: score, text: 'Good', color: '#ffdd00'};
+            } else {
+                return {score: score, text: 'Strong', color: '#44ff44'};
+            }
+        }
+
+        function updateStrengthIndicator(strength) {
+            strengthText.textContent = strength.text;
+            strengthText.style.color = strength.color;
+            strengthFill.style.width = (strength.score / 6 * 100) + '%';
+            strengthFill.style.backgroundColor = strength.color;
+        }
+    });
+</script>
 </body>
 </html>

@@ -7,82 +7,77 @@
     <link rel="stylesheet" th:href="@{/css/dashboard.css}">
 </head>
 <body>
-    <div class="dashboard-wrapper">
-        <!-- Left Sidebar -->
-        <aside class="sidebar">
-            <nav class="sidebar-nav">
-                <a href="/dashboard" class="nav-button">
-                    <span>Dashboard</span>
+<div class="dashboard-wrapper">
+    <aside class="sidebar">
+        <nav class="sidebar-nav">
+            <a href="/dashboard" class="nav-button">
+                <span>Dashboard</span>
+            </a>
+            <a href="/profile/edit" class="nav-button">
+                <span>Edit Profile</span>
+            </a>
+            <a th:href="@{/cars}" class="nav-button">
+                <span>Manage Cars</span>
+            </a>
+            <a th:href="@{/orders}" class="nav-button">
+                <span>Manage Orders</span>
+            </a>
+            <div class="nav-spacer"></div>
+            <div class="nav-bottom-section">
+                <a th:href="@{/dashboard/mechanic}"
+                   class="nav-button mechanic-button"
+                   th:if="${user.role.name().equals('MECHANIC') or user.role.name().equals('ADMIN')}">
+                    <span>Mechanic Panel</span>
                 </a>
-                <a href="/profile/edit" class="nav-button">
-                    <span>Edit Profile</span>
+                <a th:href="@{/dashboard/admin}"
+                   class="nav-button admin-button active">
+                    <span>Admin Panel</span>
                 </a>
-                <a th:href="@{/cars}" class="nav-button">
-                    <span>Manage Cars</span>
+                <a th:href="@{/logout}" class="nav-button logout-button">
+                    <span>Logout</span>
                 </a>
-                <a th:href="@{/orders}" class="nav-button">
-                    <span>Manage Orders</span>
-                </a>
-                <!-- Spacer to push buttons to bottom -->
-                <div class="nav-spacer"></div>
-                <!-- Bottom section with role-based buttons and logout -->
-                <div class="nav-bottom-section">
-                    <!-- Mechanic Panel - visible for MECHANIC and ADMIN -->
-                    <a th:href="@{/dashboard/mechanic}" 
-                       class="nav-button mechanic-button"
-                       th:if="${user.role.name().equals('MECHANIC') or user.role.name().equals('ADMIN')}">
-                        <span>Mechanic Panel</span>
-                    </a>
-                    <!-- Admin Panel - visible only for ADMIN -->
-                    <a th:href="@{/dashboard/admin}" 
-                       class="nav-button admin-button active">
-                        <span>Admin Panel</span>
-                    </a>
-                    <a th:href="@{/logout}" class="nav-button logout-button">
-                        <span>Logout</span>
-                    </a>
-                </div>
-            </nav>
-        </aside>
+            </div>
+        </nav>
+    </aside>
 
-        <!-- Main Content -->
-        <div class="dashboard-container">
-            <header class="dashboard-header">
-                <div style="display: flex; justify-content: space-between; align-items: center;">
-                    <h1 class="dashboard-title">Manage Parts</h1>
-                    <a th:href="@{/dashboard/admin/parts/add}" class="add-part-header-button">Add Part</a>
-                </div>
-            </header>
+    <div class="dashboard-container">
+        <header class="dashboard-header">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+                <h1 class="dashboard-title">Manage Parts</h1>
+                <a th:href="@{/dashboard/admin/parts/add}" class="add-part-header-button">Add Part</a>
+            </div>
+        </header>
 
-            <main class="dashboard-content">
-                <div class="cards-container" th:if="${parts != null and !parts.isEmpty()}">
-                    <div class="card part-card" th:each="part : ${parts}">
-                        <div class="card-content">
-                            <div class="card-info" style="flex: 1;">
-                                <div class="card-header">
-                                    <h3 class="card-title" th:text="${part.name}"></h3>
-                                </div>
-                                <div class="card-body">
-                                    <div class="card-detail">
-                                        <span class="label">Price:</span>
-                                        <span class="value" th:text="|${#numbers.formatDecimal(part.price, 1, 2)} BGN|"></span>
-                                    </div>
+        <main class="dashboard-content">
+            <div class="cards-container" th:if="${parts != null and !parts.isEmpty()}">
+                <div class="card part-card" th:each="part : ${parts}">
+                    <div class="card-content">
+                        <div class="card-info" style="flex: 1;">
+                            <div class="card-header">
+                                <h3 class="card-title" th:text="${part.name}"></h3>
+                            </div>
+                            <div class="card-body">
+                                <div class="card-detail">
+                                    <span class="label">Price:</span>
+                                    <span class="value"
+                                          th:text="|${#numbers.formatDecimal(part.price, 1, 2)} BGN|"></span>
                                 </div>
                             </div>
-                            <div class="card-actions">
-                                <a th:href="@{/dashboard/admin/parts/edit/{id}(id=${part.id})}" class="edit-button">Edit</a>
-                            </div>
+                        </div>
+                        <div class="card-actions">
+                            <a th:href="@{/dashboard/admin/parts/edit/{id}(id=${part.id})}" class="edit-button">Edit</a>
                         </div>
                     </div>
                 </div>
-                <div class="empty-state" th:if="${parts == null or parts.isEmpty()}">
-                    <p>No parts available</p>
-                </div>
-            </main>
-        </div>
+            </div>
+            <div class="empty-state" th:if="${parts == null or parts.isEmpty()}">
+                <p>No parts available</p>
+            </div>
+        </main>
     </div>
-    
-    <div th:replace="fragments/footer :: footer"></div>
+</div>
+
+<div th:replace="fragments/footer :: footer"></div>
 </body>
 </html>
 

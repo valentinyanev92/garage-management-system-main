@@ -7,103 +7,99 @@
     <link rel="stylesheet" th:href="@{/css/dashboard.css}">
 </head>
 <body>
-    <div class="dashboard-wrapper">
-        <!-- Left Sidebar -->
-        <aside class="sidebar">
-            <nav class="sidebar-nav">
-                <a href="/dashboard" class="nav-button">
-                    <span>Dashboard</span>
+<div class="dashboard-wrapper">
+    <aside class="sidebar">
+        <nav class="sidebar-nav">
+            <a href="/dashboard" class="nav-button">
+                <span>Dashboard</span>
+            </a>
+            <a href="/profile/edit" class="nav-button">
+                <span>Edit Profile</span>
+            </a>
+            <a th:href="@{/cars}" class="nav-button">
+                <span>Manage Cars</span>
+            </a>
+            <a th:href="@{/orders}" class="nav-button">
+                <span>Manage Orders</span>
+            </a>
+            <div class="nav-spacer"></div>
+            <div class="nav-bottom-section">
+                <a th:href="@{/dashboard/mechanic}"
+                   class="nav-button mechanic-button"
+                   th:if="${user.role.name().equals('MECHANIC') or user.role.name().equals('ADMIN')}">
+                    <span>Mechanic Panel</span>
                 </a>
-                <a href="/profile/edit" class="nav-button">
-                    <span>Edit Profile</span>
+                <a th:href="@{/dashboard/admin}"
+                   class="nav-button admin-button active">
+                    <span>Admin Panel</span>
                 </a>
-                <a th:href="@{/cars}" class="nav-button">
-                    <span>Manage Cars</span>
+                <a th:href="@{/logout}" class="nav-button logout-button">
+                    <span>Logout</span>
                 </a>
-                <a th:href="@{/orders}" class="nav-button">
-                    <span>Manage Orders</span>
-                </a>
-                <!-- Spacer to push buttons to bottom -->
-                <div class="nav-spacer"></div>
-                <!-- Bottom section with role-based buttons and logout -->
-                <div class="nav-bottom-section">
-                    <!-- Mechanic Panel - visible for MECHANIC and ADMIN -->
-                    <a th:href="@{/dashboard/mechanic}" 
-                       class="nav-button mechanic-button"
-                       th:if="${user.role.name().equals('MECHANIC') or user.role.name().equals('ADMIN')}">
-                        <span>Mechanic Panel</span>
-                    </a>
-                    <!-- Admin Panel - visible only for ADMIN -->
-                    <a th:href="@{/dashboard/admin}" 
-                       class="nav-button admin-button active">
-                        <span>Admin Panel</span>
-                    </a>
-                    <a th:href="@{/logout}" class="nav-button logout-button">
-                        <span>Logout</span>
-                    </a>
-                </div>
-            </nav>
-        </aside>
+            </div>
+        </nav>
+    </aside>
 
-        <!-- Main Content -->
-        <div class="dashboard-container">
-            <header class="dashboard-header">
-                <h1 class="dashboard-title">Manage Users</h1>
-            </header>
+    <div class="dashboard-container">
+        <header class="dashboard-header">
+            <h1 class="dashboard-title">Manage Users</h1>
+        </header>
 
-            <main class="dashboard-content">
-                <div class="cards-container" th:if="${users != null and !users.isEmpty()}">
-                    <div class="card part-card" th:each="userItem : ${users}">
-                        <div class="card-content">
-                            <div class="card-info" style="flex: 1;">
-                                <div class="card-header">
-                                    <h3 class="card-title" th:text="|${userItem.firstName} ${userItem.lastName}|"></h3>
+        <main class="dashboard-content">
+            <div class="cards-container" th:if="${users != null and !users.isEmpty()}">
+                <div class="card part-card" th:each="userItem : ${users}">
+                    <div class="card-content">
+                        <div class="card-info" style="flex: 1;">
+                            <div class="card-header">
+                                <h3 class="card-title" th:text="|${userItem.firstName} ${userItem.lastName}|"></h3>
+                            </div>
+                            <div class="card-body">
+                                <div class="card-detail">
+                                    <span class="label">Username:</span>
+                                    <span class="value" th:text="${userItem.username}"></span>
                                 </div>
-                                <div class="card-body">
-                                    <div class="card-detail">
-                                        <span class="label">Username:</span>
-                                        <span class="value" th:text="${userItem.username}"></span>
-                                    </div>
-                                    <div class="card-detail">
-                                        <span class="label">Email:</span>
-                                        <span class="value" th:text="${userItem.email}"></span>
-                                    </div>
-                                    <div class="card-detail">
-                                        <span class="label">Phone:</span>
-                                        <span class="value" th:text="${userItem.phoneNumber}"></span>
-                                    </div>
-                                    <div class="card-detail">
-                                        <span class="label">Role:</span>
-                                        <span class="value" th:text="${userItem.role}"></span>
-                                    </div>
-                                    <div class="card-detail">
-                                        <span class="label">Status:</span>
-                                        <span class="value" 
-                                              th:classappend="${userItem.isActive} ? 'status-active' : 'status-inactive'" 
-                                              th:text="${userItem.isActive} ? 'Active' : 'Inactive'"></span>
-                                    </div>
+                                <div class="card-detail">
+                                    <span class="label">Email:</span>
+                                    <span class="value" th:text="${userItem.email}"></span>
+                                </div>
+                                <div class="card-detail">
+                                    <span class="label">Phone:</span>
+                                    <span class="value" th:text="${userItem.phoneNumber}"></span>
+                                </div>
+                                <div class="card-detail">
+                                    <span class="label">Role:</span>
+                                    <span class="value" th:text="${userItem.role}"></span>
+                                </div>
+                                <div class="card-detail">
+                                    <span class="label">Status:</span>
+                                    <span class="value"
+                                          th:classappend="${userItem.isActive} ? 'status-active' : 'status-inactive'"
+                                          th:text="${userItem.isActive} ? 'Active' : 'Inactive'"></span>
                                 </div>
                             </div>
-                            <div class="card-actions" style="display: flex; flex-direction: column; gap: 10px;">
-                                <a th:href="@{/dashboard/admin/users/edit/{id}(id=${userItem.id})}" class="edit-user-button">Edit</a>
-                                <form th:action="@{/dashboard/admin/users/toggle/{id}(id=${userItem.id})}" method="post" style="display: inline;">
-                                    <button type="submit" 
-                                            th:classappend="${userItem.isActive} ? 'toggle-user-button deactivate-button' : 'toggle-user-button activate-button'"
-                                            th:text="${userItem.isActive} ? 'Deactivate' : 'Activate'"
-                                            th:attr="onclick=|return confirm('Are you sure you want to ${userItem.isActive ? 'deactivate' : 'activate'} this user?')|"></button>
-                                </form>
-                            </div>
+                        </div>
+                        <div class="card-actions" style="display: flex; flex-direction: column; gap: 10px;">
+                            <a th:href="@{/dashboard/admin/users/edit/{id}(id=${userItem.id})}"
+                               class="edit-user-button">Edit</a>
+                            <form th:action="@{/dashboard/admin/users/toggle/{id}(id=${userItem.id})}" method="post"
+                                  style="display: inline;">
+                                <button type="submit"
+                                        th:classappend="${userItem.isActive} ? 'toggle-user-button deactivate-button' : 'toggle-user-button activate-button'"
+                                        th:text="${userItem.isActive} ? 'Deactivate' : 'Activate'"
+                                        th:attr="onclick=|return confirm('Are you sure you want to ${userItem.isActive ? 'deactivate' : 'activate'} this user?')|"></button>
+                            </form>
                         </div>
                     </div>
                 </div>
-                <div class="empty-state" th:if="${users == null or users.isEmpty()}">
-                    <p>No users available</p>
-                </div>
-            </main>
-        </div>
+            </div>
+            <div class="empty-state" th:if="${users == null or users.isEmpty()}">
+                <p>No users available</p>
+            </div>
+        </main>
     </div>
-    
-    <div th:replace="fragments/footer :: footer"></div>
+</div>
+
+<div th:replace="fragments/footer :: footer"></div>
 </body>
 </html>
 

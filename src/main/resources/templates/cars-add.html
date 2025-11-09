@@ -7,57 +7,60 @@
     <link rel="stylesheet" th:href="@{/css/profile-edit.css}">
 </head>
 <body>
-    <div class="profile-edit-container">
-        <div class="profile-edit-form">
-            <h1 class="profile-edit-title">Add New Car</h1>
-            
-            <form th:action="@{/cars/add}" th:object="${carRegisterRequest}" method="post">
-                <div class="form-row">
-                    <div class="form-group">
-                        <label for="brand">Brand</label>
-                        <div class="help-text" th:classappend="${#fields.hasErrors('brand')} ? 'show-help' : ''">
-                            Must be between 2 and 50 characters
-                        </div>
-                        <input type="text" id="brand" th:field="*{brand}" placeholder="Enter car brand (e.g., BMW, Mercedes)" required>
-                        <div th:if="${#fields.hasErrors('brand')}" class="error-message" th:errors="*{brand}"></div>
-                    </div>
-                    <div class="form-group">
-                        <label for="model">Model</label>
-                        <div class="help-text" th:classappend="${#fields.hasErrors('model')} ? 'show-help' : ''">
-                            Must be between 1 and 50 characters
-                        </div>
-                        <input type="text" id="model" th:field="*{model}" placeholder="Enter car model (e.g., X5, C-Class)" required>
-                        <div th:if="${#fields.hasErrors('model')}" class="error-message" th:errors="*{model}"></div>
-                    </div>
-                </div>
-                
+<div class="profile-edit-container">
+    <div class="profile-edit-form">
+        <h1 class="profile-edit-title">Add New Car</h1>
+
+        <form th:action="@{/cars/add}" th:object="${carRegisterRequest}" method="post">
+            <div class="form-row">
                 <div class="form-group">
-                    <label for="vin">VIN Number</label>
-                    <div class="help-text" th:classappend="${#fields.hasErrors('vin')} ? 'show-help' : ''">
-                        Must be exactly 17 characters (alphanumeric, excludes I, O, Q)
+                    <label for="brand">Brand</label>
+                    <div class="help-text" th:classappend="${#fields.hasErrors('brand')} ? 'show-help' : ''">
+                        Must be between 2 and 50 characters
                     </div>
-                    <input type="text" id="vin" th:field="*{vin}" placeholder="Enter 17-character VIN" maxlength="17" required>
-                    <div th:if="${#fields.hasErrors('vin')}" class="error-message" th:errors="*{vin}"></div>
+                    <input type="text" id="brand" th:field="*{brand}"
+                           placeholder="Enter car brand (e.g., BMW, Mercedes)" required>
+                    <div th:if="${#fields.hasErrors('brand')}" class="error-message" th:errors="*{brand}"></div>
                 </div>
-                
                 <div class="form-group">
-                    <label for="plateNumber">Plate Number</label>
-                    <div class="help-text" th:classappend="${#fields.hasErrors('plateNumber')} ? 'show-help' : ''">
-                        Must be between 4 and 20 characters
+                    <label for="model">Model</label>
+                    <div class="help-text" th:classappend="${#fields.hasErrors('model')} ? 'show-help' : ''">
+                        Must be between 1 and 50 characters
                     </div>
-                    <input type="text" id="plateNumber" th:field="*{plateNumber}" placeholder="Enter plate number" required>
-                    <div th:if="${#fields.hasErrors('plateNumber')}" class="error-message" th:errors="*{plateNumber}"></div>
+                    <input type="text" id="model" th:field="*{model}" placeholder="Enter car model (e.g., X5, C-Class)"
+                           required>
+                    <div th:if="${#fields.hasErrors('model')}" class="error-message" th:errors="*{model}"></div>
                 </div>
-                
-                <button type="submit" class="profile-edit-button">Add Car</button>
-            </form>
-            <div class="profile-edit-links">
-                <a href="/cars" class="back-link">Back to Cars</a>
             </div>
+
+            <div class="form-group">
+                <label for="vin">VIN Number</label>
+                <div class="help-text" th:classappend="${#fields.hasErrors('vin')} ? 'show-help' : ''">
+                    Must be exactly 17 characters (alphanumeric, excludes I, O, Q)
+                </div>
+                <input type="text" id="vin" th:field="*{vin}" placeholder="Enter 17-character VIN" maxlength="17"
+                       required>
+                <div th:if="${#fields.hasErrors('vin')}" class="error-message" th:errors="*{vin}"></div>
+            </div>
+
+            <div class="form-group">
+                <label for="plateNumber">Plate Number</label>
+                <div class="help-text" th:classappend="${#fields.hasErrors('plateNumber')} ? 'show-help' : ''">
+                    Must be between 4 and 20 characters
+                </div>
+                <input type="text" id="plateNumber" th:field="*{plateNumber}" placeholder="Enter plate number" required>
+                <div th:if="${#fields.hasErrors('plateNumber')}" class="error-message" th:errors="*{plateNumber}"></div>
+            </div>
+
+            <button type="submit" class="profile-edit-button">Add Car</button>
+        </form>
+        <div class="profile-edit-links">
+            <a href="/cars" class="back-link">Back to Cars</a>
         </div>
     </div>
-    
-    <div th:replace="fragments/footer :: footer"></div>
+</div>
+
+<div th:replace="fragments/footer :: footer"></div>
 </body>
 </html>
 

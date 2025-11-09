@@ -5,298 +5,189 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Work on Order - Garage Management System</title>
     <link rel="stylesheet" th:href="@{/css/dashboard.css}">
-    <style>
-        .parts-container {
-            margin-top: 20px;
-        }
-        .part-item {
-            display: grid;
-            grid-template-columns: 2fr 1fr 1fr auto;
-            gap: 15px;
-            align-items: center;
-            padding: 15px;
-            background: rgba(255, 255, 255, 0.05);
-            border-radius: 10px;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            margin-bottom: 10px;
-            width: 100%;
-            box-sizing: border-box;
-        }
-        
-        #partsList {
-            width: 100%;
-            max-width: 100%;
-            overflow-x: auto;
-            overflow-y: visible;
-            box-sizing: border-box;
-        }
-        
-        .repair-details-right {
-            width: 100%;
-            max-width: 100%;
-            overflow-x: auto;
-            box-sizing: border-box;
-        }
-        
-        .repair-details-right .details-card {
-            width: 100%;
-            max-width: 100%;
-            box-sizing: border-box;
-            overflow-x: auto;
-        }
-        
-        .repair-details-layout {
-            width: 100%;
-            max-width: 1400px;
-            box-sizing: border-box;
-        }
-        .add-part-button {
-            background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
-            color: white;
-            padding: 8px 16px;
-            border: none;
-            border-radius: 8px;
-            font-size: 14px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-        .add-part-button:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 15px rgba(40, 167, 69, 0.3);
-        }
-        .remove-part-button {
-            background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);
-            color: white;
-            padding: 8px 16px;
-            border: none;
-            border-radius: 8px;
-            font-size: 14px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-        .remove-part-button:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 15px rgba(220, 53, 69, 0.3);
-        }
-        select, input[type="number"] {
-            padding: 10px;
-            border-radius: 8px;
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            background: rgba(255, 255, 255, 0.1);
-            color: white;
-            font-size: 14px;
-        }
-        select option {
-            background: #2c3e50;
-            color: white;
-        }
-        #workDescription {
-            width: 100%;
-            min-height: 120px;
-            padding: 15px;
-            border-radius: 10px;
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            background: rgba(255, 255, 255, 0.1);
-            color: white;
-            font-size: 15px;
-            font-family: inherit;
-            resize: vertical;
-        }
-        #workDescription::placeholder {
-            color: rgba(255, 255, 255, 0.5);
-        }
-    </style>
+    <link rel="stylesheet" th:href="@{/css/work-order.css}">
 </head>
-<body>
-    <div class="dashboard-wrapper">
-        <!-- Left Sidebar -->
-        <aside class="sidebar">
-            <nav class="sidebar-nav">
-                <a href="/dashboard" class="nav-button">
-                    <span>Dashboard</span>
+<body class="work-order-page">
+<div class="dashboard-wrapper">
+    <aside class="sidebar">
+        <nav class="sidebar-nav">
+            <a href="/dashboard" class="nav-button">
+                <span>Dashboard</span>
+            </a>
+            <a href="/profile/edit" class="nav-button">
+                <span>Edit Profile</span>
+            </a>
+            <a th:href="@{/cars}" class="nav-button">
+                <span>Manage Cars</span>
+            </a>
+            <a th:href="@{/orders}" class="nav-button">
+                <span>Manage Orders</span>
+            </a>
+            <div class="nav-spacer"></div>
+            <div class="nav-bottom-section">
+                <a th:href="@{/dashboard/mechanic}"
+                   class="nav-button mechanic-button active"
+                   th:if="${user.role.name().equals('MECHANIC') or user.role.name().equals('ADMIN')}">
+                    <span>Mechanic Panel</span>
                 </a>
-                <a href="/profile/edit" class="nav-button">
-                    <span>Edit Profile</span>
+                <a th:href="@{/dashboard/admin}"
+                   class="nav-button admin-button"
+                   th:if="${user.role.name().equals('ADMIN')}">
+                    <span>Admin Panel</span>
                 </a>
-                <a th:href="@{/cars}" class="nav-button">
-                    <span>Manage Cars</span>
+                <a th:href="@{/logout}" class="nav-button logout-button">
+                    <span>Logout</span>
                 </a>
-                <a th:href="@{/orders}" class="nav-button">
-                    <span>Manage Orders</span>
-                </a>
-                <!-- Spacer to push buttons to bottom -->
-                <div class="nav-spacer"></div>
-                <!-- Bottom section with role-based buttons and logout -->
-                <div class="nav-bottom-section">
-                    <!-- Mechanic Panel - visible for MECHANIC and ADMIN -->
-                    <a th:href="@{/dashboard/mechanic}" 
-                       class="nav-button mechanic-button active"
-                       th:if="${user.role.name().equals('MECHANIC') or user.role.name().equals('ADMIN')}">
-                        <span>Mechanic Panel</span>
-                    </a>
-                    <!-- Admin Panel - visible only for ADMIN -->
-                    <a th:href="@{/dashboard/admin}" 
-                       class="nav-button admin-button"
-                       th:if="${user.role.name().equals('ADMIN')}">
-                        <span>Admin Panel</span>
-                    </a>
-                    <a th:href="@{/logout}" class="nav-button logout-button">
-                        <span>Logout</span>
-                    </a>
-                </div>
-            </nav>
-        </aside>
+            </div>
+        </nav>
+    </aside>
 
-        <!-- Main Content -->
-        <div class="dashboard-container">
-            <header class="dashboard-header">
-                <h1 class="dashboard-title">Work on Order</h1>
-            </header>
+    <div class="dashboard-container">
+        <header class="dashboard-header">
+            <h1 class="dashboard-title">Work on Order</h1>
+        </header>
 
-            <main class="dashboard-content">
-                <div class="repair-details-container">
-                    <div class="repair-details-layout">
-                        <!-- Left Column: Car Information -->
-                        <div class="repair-details-left">
-                            <section class="details-section">
-                                <h2 class="section-title">Car Information</h2>
-                                <div class="details-card">
-                                    <div class="car-image-container">
-                                        <img th:src="${repairOrder.car.pictureUrl}" alt="Car image" class="car-image">
+        <main class="dashboard-content">
+            <div class="repair-details-container">
+                <div class="repair-details-layout">
+                    <div class="repair-details-left">
+                        <section class="details-section">
+                            <h2 class="section-title">Car Information</h2>
+                            <div class="details-card">
+                                <div class="car-image-container">
+                                    <img th:src="${repairOrder.car.pictureUrl}" alt="Car image" class="car-image">
+                                </div>
+                                <div class="details-grid">
+                                    <div class="detail-item">
+                                        <span class="detail-label">Brand:</span>
+                                        <span class="detail-value" th:text="${repairOrder.car.brand}"></span>
                                     </div>
-                                    <div class="details-grid">
-                                        <div class="detail-item">
-                                            <span class="detail-label">Brand:</span>
-                                            <span class="detail-value" th:text="${repairOrder.car.brand}"></span>
-                                        </div>
-                                        <div class="detail-item">
-                                            <span class="detail-label">Model:</span>
-                                            <span class="detail-value" th:text="${repairOrder.car.model}"></span>
-                                        </div>
-                                        <div class="detail-item">
-                                            <span class="detail-label">VIN:</span>
-                                            <span class="detail-value" th:text="${repairOrder.car.vin}"></span>
-                                        </div>
-                                        <div class="detail-item">
-                                            <span class="detail-label">Plate Number:</span>
-                                            <span class="detail-value" th:text="${repairOrder.car.plateNumber}"></span>
-                                        </div>
-                                        <div class="detail-item">
-                                            <span class="detail-label">Customer:</span>
-                                            <span class="detail-value" th:text="|${repairOrder.user.firstName} ${repairOrder.user.lastName}|"></span>
-                                        </div>
-                                        <div class="detail-item">
-                                            <span class="detail-label">Customer Phone:</span>
-                                            <span class="detail-value" th:text="${repairOrder.user.phoneNumber}"></span>
-                                        </div>
-                                        <div class="detail-item">
-                                            <span class="detail-label">Problem Description:</span>
-                                            <span class="detail-value" th:text="${repairOrder.problemDescription}"></span>
-                                        </div>
+                                    <div class="detail-item">
+                                        <span class="detail-label">Model:</span>
+                                        <span class="detail-value" th:text="${repairOrder.car.model}"></span>
+                                    </div>
+                                    <div class="detail-item">
+                                        <span class="detail-label">VIN:</span>
+                                        <span class="detail-value" th:text="${repairOrder.car.vin}"></span>
+                                    </div>
+                                    <div class="detail-item">
+                                        <span class="detail-label">Plate Number:</span>
+                                        <span class="detail-value" th:text="${repairOrder.car.plateNumber}"></span>
+                                    </div>
+                                    <div class="detail-item">
+                                        <span class="detail-label">Customer:</span>
+                                        <span class="detail-value"
+                                              th:text="|${repairOrder.user.firstName} ${repairOrder.user.lastName}|"></span>
+                                    </div>
+                                    <div class="detail-item">
+                                        <span class="detail-label">Customer Phone:</span>
+                                        <span class="detail-value" th:text="${repairOrder.user.phoneNumber}"></span>
+                                    </div>
+                                    <div class="detail-item">
+                                        <span class="detail-label">Problem Description:</span>
+                                        <span class="detail-value" th:text="${repairOrder.problemDescription}"></span>
                                     </div>
                                 </div>
-                            </section>
-                        </div>
+                            </div>
+                        </section>
+                    </div>
 
-                        <!-- Right Column: Work Description -->
-                        <div class="repair-details-right">
-                            <section class="details-section">
-                                <h2 class="section-title">Work Description</h2>
-                                <div class="details-card">
-                                    <form th:action="@{/dashboard/mechanic/work/{id}(id=${repairOrder.id})}" method="post" id="workOrderForm">
-                                        <div class="form-group">
-                                            <label for="workDescription" style="color: white; margin-bottom: 10px; display: block;">Describe the work performed:</label>
-                                            <textarea id="workDescription" name="workDescription" placeholder="Enter details about the work you performed..."></textarea>
-                                        </div>
+                    <div class="repair-details-right">
+                        <section class="details-section">
+                            <h2 class="section-title">Work Description</h2>
+                            <div class="details-card">
+                                <form th:action="@{/dashboard/mechanic/work/{id}(id=${repairOrder.id})}" method="post"
+                                      id="workOrderForm">
+                                    <div class="form-group">
+                                        <label for="workDescription"
+                                               style="color: white; margin-bottom: 10px; display: block;">Describe the
+                                            work performed:</label>
+                                        <textarea id="workDescription" name="workDescription"
+                                                  placeholder="Enter details about the work you performed..."></textarea>
+                                    </div>
 
-                                        <!-- Used Parts Section -->
-                                        <div class="parts-container">
-                                            <h3 style="color: white; margin-bottom: 15px;">Used Parts</h3>
-                                            <div id="partsList">
-                                                <!-- Parts will be added dynamically here -->
-                                            </div>
-                                            <button type="button" class="add-part-button" onclick="addPartRow()">Add Part</button>
+                                    <div class="parts-container">
+                                        <h3 style="color: white; margin-bottom: 15px;">Used Parts</h3>
+                                        <div id="partsList">
                                         </div>
+                                        <button type="button" class="add-part-button" onclick="addPartRow()">Add Part
+                                        </button>
+                                    </div>
 
-                                        <div class="details-actions" style="margin-top: 30px;">
-                                            <button type="submit" class="submit-work-button">Save Work</button>
-                                            <a th:href="@{/dashboard/mechanic}" class="back-button" style="margin-left: 15px;">Cancel</a>
-                                        </div>
-                                    </form>
-                                </div>
-                            </section>
-                        </div>
+                                    <div class="details-actions" style="margin-top: 30px;">
+                                        <button type="submit" class="submit-work-button">Save Work</button>
+                                        <a th:href="@{/dashboard/mechanic}" class="back-button"
+                                           style="margin-left: 15px;">Cancel</a>
+                                    </div>
+                                </form>
+                            </div>
+                        </section>
                     </div>
                 </div>
-            </main>
-        </div>
+            </div>
+        </main>
     </div>
-    
-    <script th:inline="javascript">
-        let partRowIndex = 0;
-        
-        // Build parts array from Thymeleaf
-        const parts = [
-            /*[# th:each="part : ${parts}"]*/
-            {
-                id: /*[[${part.id}]]*/ '',
-                name: /*[[${part.name}]]*/ '',
-                price: /*[[${part.price}]]*/ 0
-            }/*[(${partStat.last} ? '' : ',')]*/
-            /*[/]*/
-        ];
+</div>
 
-        function addPartRow() {
-            const partsList = document.getElementById('partsList');
-            const row = document.createElement('div');
-            row.className = 'part-item';
-            row.setAttribute('data-index', partRowIndex);
-            
-            let optionsHtml = '<option value="">Select Part</option>';
-            if (parts && parts.length > 0) {
-                parts.forEach(function(part) {
-                    optionsHtml += '<option value="' + part.id + '">' + part.name + ' - ' + parseFloat(part.price).toFixed(2) + ' BGN</option>';
-                });
-            }
-            
-            row.innerHTML = `
+<script th:inline="javascript">
+    let partRowIndex = 0;
+
+    const parts = [
+        /*[# th:each="part : ${parts}"]*/
+        {
+            id: /*[[${part.id}]]*/ '',
+            name: /*[[${part.name}]]*/ '',
+            price: /*[[${part.price}]]*/ 0
+        }/*[(${partStat.last} ? '' : ',')]*/
+        /*[/]*/
+    ];
+
+    function addPartRow() {
+        const partsList = document.getElementById('partsList');
+        const row = document.createElement('div');
+        row.className = 'part-item';
+        row.setAttribute('data-index', partRowIndex);
+
+        let optionsHtml = '<option value="">Select Part</option>';
+        if (parts && parts.length > 0) {
+            parts.forEach(function (part) {
+                optionsHtml += '<option value="' + part.id + '">' + part.name + ' - ' + parseFloat(part.price).toFixed(2) + ' BGN</option>';
+            });
+        }
+
+        row.innerHTML = `
                 <select name="partIds" required>
                     ${optionsHtml}
                 </select>
                 <input type="number" name="quantities" min="1" value="1" required placeholder="Quantity">
                 <button type="button" class="remove-part-button" onclick="removePartRow(this)">Remove</button>
             `;
-            
-            // Re-index all part rows to maintain proper order
-            updatePartRowIndexes();
-            
-            partsList.appendChild(row);
-            partRowIndex++;
-        }
 
-        function removePartRow(button) {
-            button.closest('.part-item').remove();
-            updatePartRowIndexes();
-        }
-        
-        function updatePartRowIndexes() {
-            const rows = document.querySelectorAll('.part-item');
-            rows.forEach((row, index) => {
-                const select = row.querySelector('select[name="partIds"]');
-                const input = row.querySelector('input[name="quantities"]');
-                // Keep same name for Spring to collect as List
-            });
-        }
+        updatePartRowIndexes();
 
-        // Add initial part row if parts exist
-        if (parts.length > 0) {
-            addPartRow();
-        }
-    </script>
-    
-    <div th:replace="fragments/footer :: footer"></div>
+        partsList.appendChild(row);
+        partRowIndex++;
+    }
+
+    function removePartRow(button) {
+        button.closest('.part-item').remove();
+        updatePartRowIndexes();
+    }
+
+    function updatePartRowIndexes() {
+        const rows = document.querySelectorAll('.part-item');
+        rows.forEach((row, index) => {
+            const select = row.querySelector('select[name="partIds"]');
+            const input = row.querySelector('input[name="quantities"]');
+        });
+    }
+
+    if (parts.length > 0) {
+        addPartRow();
+    }
+</script>
+
+<div th:replace="fragments/footer :: footer"></div>
 </body>
 </html>
 

@@ -7,45 +7,47 @@
     <link rel="stylesheet" th:href="@{/css/profile-edit.css}">
 </head>
 <body>
-    <div class="profile-edit-container">
-        <div class="profile-edit-form">
-            <h1 class="profile-edit-title">Edit Profile</h1>
-            
-            <form th:action="@{/profile/edit}" th:object="${userDetails}" method="post">
-                <div class="form-row">
-                    <div class="form-group">
-                        <label for="firstName">First Name</label>
-                        <div th:if="${#fields.hasErrors('firstName')}" class="error-message" th:errors="*{firstName}"></div>
-                        <input type="text" id="firstName" th:field="*{firstName}" placeholder="Enter your first name" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="lastName">Last Name</label>
-                        <div th:if="${#fields.hasErrors('lastName')}" class="error-message" th:errors="*{lastName}"></div>
-                        <input type="text" id="lastName" th:field="*{lastName}" placeholder="Enter your last name" required>
-                    </div>
-                </div>
-                
+<div class="profile-edit-container">
+    <div class="profile-edit-form">
+        <h1 class="profile-edit-title">Edit Profile</h1>
+
+        <form th:action="@{/profile/edit}" th:object="${userDetails}" method="post">
+            <div class="form-row">
                 <div class="form-group">
-                    <label for="email">Email</label>
-                    <div th:if="${#fields.hasErrors('email')}" class="error-message" th:errors="*{email}"></div>
-                    <input type="email" id="email" th:field="*{email}" placeholder="Enter your email" required>
+                    <label for="firstName">First Name</label>
+                    <div th:if="${#fields.hasErrors('firstName')}" class="error-message" th:errors="*{firstName}"></div>
+                    <input type="text" id="firstName" th:field="*{firstName}" placeholder="Enter your first name"
+                           required>
                 </div>
-                
                 <div class="form-group">
-                    <label for="phoneNumber">Phone Number</label>
-                    <div th:if="${#fields.hasErrors('phoneNumber')}" class="error-message" th:errors="*{phoneNumber}"></div>
-                    <input type="tel" id="phoneNumber" th:field="*{phoneNumber}" placeholder="Enter your phone number" required>
+                    <label for="lastName">Last Name</label>
+                    <div th:if="${#fields.hasErrors('lastName')}" class="error-message" th:errors="*{lastName}"></div>
+                    <input type="text" id="lastName" th:field="*{lastName}" placeholder="Enter your last name" required>
                 </div>
-                
-                <button type="submit" class="profile-edit-button">Save Changes</button>
-            </form>
-            <div class="profile-edit-links">
-                <a href="/dashboard" class="back-link">Back to Dashboard</a>
             </div>
+
+            <div class="form-group">
+                <label for="email">Email</label>
+                <div th:if="${#fields.hasErrors('email')}" class="error-message" th:errors="*{email}"></div>
+                <input type="email" id="email" th:field="*{email}" placeholder="Enter your email" required>
+            </div>
+
+            <div class="form-group">
+                <label for="phoneNumber">Phone Number</label>
+                <div th:if="${#fields.hasErrors('phoneNumber')}" class="error-message" th:errors="*{phoneNumber}"></div>
+                <input type="tel" id="phoneNumber" th:field="*{phoneNumber}" placeholder="Enter your phone number"
+                       required>
+            </div>
+
+            <button type="submit" class="profile-edit-button">Save Changes</button>
+        </form>
+        <div class="profile-edit-links">
+            <a href="/dashboard" class="back-link">Back to Dashboard</a>
         </div>
     </div>
-    
-    <div th:replace="fragments/footer :: footer"></div>
+</div>
+
+<div th:replace="fragments/footer :: footer"></div>
 </body>
 </html>
 
