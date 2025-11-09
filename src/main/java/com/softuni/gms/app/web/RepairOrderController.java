@@ -11,6 +11,7 @@ import com.softuni.gms.app.user.model.User;
 import com.softuni.gms.app.user.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -18,7 +19,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
-import java.nio.charset.StandardCharsets;
 import java.util.UUID;
 
 import static com.softuni.gms.app.exeption.MicroserviceDontRespondExceptionMessages.INVOICE_SERVICE_NOT_AVAILABLE_CANNOT_DOWNLOAD;
@@ -92,7 +92,8 @@ public class RepairOrderController {
 
     @GetMapping("/details/{id}")
     public ModelAndView getRepairOrderDetails(@PathVariable UUID id,
-                                              @AuthenticationPrincipal AuthenticationMetadata authenticationMetadata) {
+                                              @AuthenticationPrincipal AuthenticationMetadata authenticationMetadata,
+                                              @RequestParam(value = "invoiceError", required = false) String invoiceError) {
 
         User user = userService.findUserById(authenticationMetadata.getUserId());
         RepairOrder repairOrder = repairOrderService.findRepairOrderById(id);
@@ -105,6 +106,17 @@ public class RepairOrderController {
         modelAndView.setViewName("repair-details");
         modelAndView.addObject("repairOrder", repairOrder);
         modelAndView.addObject("user", user);
+        if (invoiceError != null) {
+            String message = switch (invoiceError) {
+                case "service" -> INVOICE_SERVICE_NOT_AVAILABLE_TRY_AGAIN;
+                case "download" -> INVOICE_SERVICE_NOT_AVAILABLE_CANNOT_DOWNLOAD;
+                case "missing" -> "Invoice is not yet available. Please try again later.";
+                default -> null;
+            };
+            if (message != null) {
+                modelAndView.addObject("invoiceErrorMessage", message);
+            }
+        }
 
         return modelAndView;
     }
@@ -138,7 +150,10 @@ public class RepairOrderController {
         try {
             byte[] pdf = pdfService.downloadLatestInvoice(id);
             if (pdf == null || pdf.length == 0) {
-                return ResponseEntity.notFound().build();
+                String redirectUrl = "/repairs/details/" + id + "?invoiceError=missing";
+                return ResponseEntity.status(HttpStatus.SEE_OTHER)
+                        .header(HttpHeaders.LOCATION, redirectUrl)
+                        .build();
             }
 
             HttpHeaders headers = new HttpHeaders();
@@ -148,15 +163,15 @@ public class RepairOrderController {
                     .headers(headers)
                     .body(pdf);
         } catch (MicroserviceDontRespondException ex) {
-            byte[] body = INVOICE_SERVICE_NOT_AVAILABLE_TRY_AGAIN.getBytes(StandardCharsets.UTF_8);
-            return ResponseEntity.status(502)
-                    .header(HttpHeaders.CONTENT_TYPE, MediaType.TEXT_PLAIN_VALUE + "; charset=UTF-8")
-                    .body(body);
+            String redirectUrl = "/repairs/details/" + id + "?invoiceError=service";
+            return ResponseEntity.status(HttpStatus.SEE_OTHER)
+                    .header(HttpHeaders.LOCATION, redirectUrl)
+                    .build();
         } catch (Exception ex) {
-            byte[] body = INVOICE_SERVICE_NOT_AVAILABLE_CANNOT_DOWNLOAD.getBytes(StandardCharsets.UTF_8);
-            return ResponseEntity.status(502)
-                    .header(HttpHeaders.CONTENT_TYPE, MediaType.TEXT_PLAIN_VALUE + "; charset=UTF-8")
-                    .body(body);
+            String redirectUrl = "/repairs/details/" + id + "?invoiceError=download";
+            return ResponseEntity.status(HttpStatus.SEE_OTHER)
+                    .header(HttpHeaders.LOCATION, redirectUrl)
+                    .build();
         }
     }
 }
