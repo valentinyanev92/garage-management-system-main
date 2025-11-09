@@ -34,7 +34,9 @@ public class DashboardController {
         modelAndView.setViewName("dashboard");
         modelAndView.addObject("user", user);
 
-        modelAndView.addObject("carList", user.getCars());
+        modelAndView.addObject("carList", user.getCars().stream()
+                .filter(car -> !car.isDeleted())
+                .toList());
 
         List<RepairOrder> repairList = user.getRepairOrders().stream()
                 .filter(repairOrder -> !repairOrder.isDeleted())
