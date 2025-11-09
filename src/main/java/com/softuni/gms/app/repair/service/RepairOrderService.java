@@ -61,7 +61,6 @@ public class RepairOrderService {
                 .invoiceGenerated(false)
                 .build();
 
-        log.info("RepairOrder for {} {} created", repairOrder.getCar().getBrand(), repairOrder.getCar().getModel());
         return repairOrderRepository.save(repairOrder);
     }
 
@@ -71,7 +70,7 @@ public class RepairOrderService {
         Car car = carService.findCarById(carId);
 
         if (!car.getOwner().getId().equals(user.getId())) {
-            log.error("User is not owner of this car");
+            log.error("cancelRepairRequestByCarId(): User with id:{}, is not owner of this car with id:{}",  user.getId(), car.getOwner().getId());
             throw new CarOwnershipException("User does not own this car");
         }
 
@@ -81,16 +80,16 @@ public class RepairOrderService {
                 .orElseThrow(() -> new NotFoundException("Active repair order not found"));
 
         if (!repairOrder.getUser().getId().equals(user.getId())) {
-            log.error("User does not own this repair order");
+            log.error("cancelRepairRequestByCarId(): User with id:{}, does not own repair order with id:{}", user.getId(), repairOrder.getId());
             throw new CarOwnershipException("User does not own this repair order");
         }
 
+        //TODO: try/catch if microservice is offline !
         eventPublisher.publishRepairStatusChanged(repairOrder, repairOrder.getStatus().getDisplayName(), RepairStatus.USER_CANCELED.getDisplayName());
 
         repairOrder.setStatus(RepairStatus.USER_CANCELED);
         repairOrder.setUpdatedAt(LocalDateTime.now());
 
-        log.info("RepairOrder cancelled: {} for {} {}", repairOrder.getId(), repairOrder.getCar().getBrand(), repairOrder.getCar().getModel());
         repairOrderRepository.save(repairOrder);
     }
 
@@ -106,14 +105,13 @@ public class RepairOrderService {
         RepairOrder repairOrder = findRepairOrderById(repairOrderId);
 
         if (!repairOrder.getUser().getId().equals(user.getId())) {
-            log.error("User is not owner of this repair order");
+            log.error("deleteRepairOrder(): User with id:{}, does not own repair order with id:{}", user.getId(), repairOrder.getId());
             throw new CarOwnershipException("User does not own this repair order");
         }
 
         repairOrder.setDeleted(true);
         repairOrder.setUpdatedAt(LocalDateTime.now());
 
-        log.info("RepairOrder deleted: {} for {} {}", repairOrder.getId(), repairOrder.getCar().getBrand(), repairOrder.getCar().getModel());
         repairOrderRepository.save(repairOrder);
     }
 
@@ -129,16 +127,17 @@ public class RepairOrderService {
         RepairOrder repairOrder = findRepairOrderById(repairOrderId);
 
         if (repairOrder.getStatus() != RepairStatus.PENDING) {
-            log.error("RepairOrder with id {} is not pending", repairOrder.getId());
+            log.error("acceptRepairOrder(): RepairOrder with id {} is not pending", repairOrder.getId());
             throw new IllegalStateException("Only PENDING repair orders can be accepted");
         }
 
         RepairOrder existingAccepted = findAcceptedRepairOrderByMechanic(mechanic);
         if (existingAccepted != null) {
-            log.info("Mechanic {} {} already has accepted repair order", repairOrder.getMechanic().getFirstName(), repairOrder.getMechanic().getLastName());
+            log.info("acceptRepairOrder(): Mechanic {} {} already has accepted repair order", repairOrder.getMechanic().getFirstName(), repairOrder.getMechanic().getLastName());
             throw new IllegalStateException("Mechanic already has an accepted repair order");
         }
 
+        //TODO: try/catch if microservice is offline !
         eventPublisher.publishRepairStatusChanged(repairOrder, repairOrder.getStatus().getDisplayName(), RepairStatus.ACCEPTED.getDisplayName());
 
         repairOrder.setStatus(RepairStatus.ACCEPTED);
@@ -146,7 +145,6 @@ public class RepairOrderService {
         repairOrder.setAcceptedAt(LocalDateTime.now());
         repairOrder.setUpdatedAt(LocalDateTime.now());
 
-        log.info("RepairOrder accepted: {} for {} {}", repairOrder.getId(), repairOrder.getCar().getBrand(), repairOrder.getCar().getModel());
         repairOrderRepository.save(repairOrder);
     }
 
@@ -156,12 +154,12 @@ public class RepairOrderService {
         RepairOrder repairOrder = findRepairOrderById(repairOrderId);
 
         if (repairOrder.getMechanic() == null || !repairOrder.getMechanic().getId().equals(mechanic.getId())) {
-            log.error("Mechanic is not owner of this repair order");
+            log.error("completeRepairOrder(): Mechanic {} {} is not owner of this repair order", mechanic.getFirstName(), mechanic.getLastName());
             throw new CarOwnershipException("Mechanic does not own this repair order");
         }
 
         if (repairOrder.getStatus() != RepairStatus.ACCEPTED) {
-            log.error("Only accepted repair orders can be completed");
+            log.error("completeRepairOrder(): Only accepted repair orders can be completed");
             throw new IllegalStateException("Only ACCEPTED repair orders can be completed");
         }
 
@@ -172,7 +170,6 @@ public class RepairOrderService {
         BigDecimal priceForWork = calculatePriceForWork(repairOrder, mechanic);
         repairOrder.setPrice(priceForWork);
 
-        log.info("RepairOrder completed: {} for {} {}", repairOrder.getId(), repairOrder.getCar().getBrand(), repairOrder.getCar().getModel());
         repairOrderRepository.save(repairOrder);
     }
 
@@ -201,12 +198,12 @@ public class RepairOrderService {
         RepairOrder repairOrder = findRepairOrderById(repairOrderId);
 
         if (repairOrder.getMechanic() == null || !repairOrder.getMechanic().getId().equals(mechanic.getId())) {
-            log.error("Mechanic is not owner of this repair order to add parts");
+            log.error("addWorkToRepairOrder(): Mechanic {} {} is not owner of this repair order to add parts", mechanic.getFirstName(), mechanic.getLastName());
             throw new CarOwnershipException("Mechanic does not own this repair order");
         }
 
         if (repairOrder.getStatus() != RepairStatus.ACCEPTED) {
-            log.error("Only for accepted repair orders can be added parts");
+            log.error("addWorkToRepairOrder(): Only for accepted repair orders can be added parts, orderId:{}", repairOrder.getId());
             throw new IllegalStateException("Work can only be added to ACCEPTED repair orders");
         }
 
@@ -218,7 +215,6 @@ public class RepairOrderService {
         }
 
         repairOrder.setUpdatedAt(LocalDateTime.now());
-        log.info("Added parts for repair {}", repairOrder.getId());
         repairOrderRepository.save(repairOrder);
     }
 
@@ -240,7 +236,6 @@ public class RepairOrderService {
     public void changeStatusForGenerateInvoice(RepairOrder repairOrder) {
 
         repairOrder.setInvoiceGenerated(true);
-        log.info("Invoice generated for repairOrder {} for {} {}", repairOrder.getId(), repairOrder.getCar().getBrand(), repairOrder.getCar().getModel());
         repairOrderRepository.save(repairOrder);
     }
 }

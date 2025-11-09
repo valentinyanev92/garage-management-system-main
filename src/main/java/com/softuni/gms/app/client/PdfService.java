@@ -18,6 +18,8 @@ public class PdfService {
 
     public byte[] generateInvoice(InvoiceRequest invoiceRequest) {
 
+        // TODO - try/catch if microservice is offline
+
         log.info("Invoice Request: RepairId {}", invoiceRequest.getRepairId());
         return pdfClient.generateInvoice(invoiceRequest);
     }

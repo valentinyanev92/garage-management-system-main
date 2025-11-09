@@ -6,14 +6,12 @@ import com.softuni.gms.app.exeption.NotFoundException;
 import com.softuni.gms.app.user.model.User;
 import com.softuni.gms.app.web.dto.CarEditRequest;
 import com.softuni.gms.app.web.dto.CarRegisterRequest;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
 
-@Slf4j
 @Service
 public class CarService {
 
@@ -25,6 +23,8 @@ public class CarService {
     }
 
     public Car registerCar(CarRegisterRequest carRegisterRequest, User owner) {
+
+        //TODO : properly check for already exist cat with same VIN number
 
         Car car = Car.builder()
                 .brand(carRegisterRequest.getBrand())
@@ -38,7 +38,6 @@ public class CarService {
                 .updatedAt(LocalDateTime.now())
                 .build();
 
-        log.info("Successfully registerer {} {} with plate number {}", car.getBrand(), car.getModel(), car.getPlateNumber());
         return carRepository.save(car);
     }
 
@@ -64,7 +63,6 @@ public class CarService {
         car.setPictureUrl(imageUrl);
         car.setUpdatedAt(LocalDateTime.now());
 
-        log.info("Successfully updated {} {} with plate number {}", car.getBrand(), car.getModel(), car.getPlateNumber());
         return carRepository.save(car);
     }
 
@@ -74,7 +72,6 @@ public class CarService {
         car.setDeleted(true);
         car.setUpdatedAt(LocalDateTime.now());
 
-        log.info("Successfully deleted {} {} with plate number {}", car.getBrand(), car.getModel(), car.getPlateNumber());
         carRepository.save(car);
     }
 }

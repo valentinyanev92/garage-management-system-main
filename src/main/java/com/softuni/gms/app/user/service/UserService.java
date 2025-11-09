@@ -47,14 +47,17 @@ public class UserService implements UserDetailsService {
     public User registerUser(RegisterRequest registerRequest) {
 
         if (userRepository.findByUsername(registerRequest.getUsername()).isPresent()) {
+            log.error("Username {} already exist", registerRequest.getUsername());
             throw new UserAlreadyExistException("Username already exists");
         }
 
         if (userRepository.findByEmail(registerRequest.getEmail()).isPresent()) {
+            log.error("Email {} already exist", registerRequest.getEmail());
             throw new UserAlreadyExistException("Email already exists");
         }
 
         if (userRepository.findByPhoneNumber(registerRequest.getPhoneNumber()).isPresent()) {
+            log.error("Phone number {} already exist", registerRequest.getPhoneNumber());
             throw new UserAlreadyExistException("Phone number already exists");
         }
 
@@ -78,7 +81,6 @@ public class UserService implements UserDetailsService {
             user.setRole(UserRole.ADMIN);
         }
 
-        log.info("User {} has been registered", user.getUsername());
         return userRepository.save(user);
     }
 
@@ -100,7 +102,6 @@ public class UserService implements UserDetailsService {
         user.setPhoneNumber(phoneNumber);
         user.setUpdatedAt(LocalDateTime.now());
 
-        log.info("User {} has been updated", user.getUsername());
         return userRepository.save(user);
     }
 
@@ -117,7 +118,6 @@ public class UserService implements UserDetailsService {
         user.setIsActive(!user.getIsActive());
         user.setUpdatedAt(LocalDateTime.now());
 
-        log.info("User {} status updated from {} to {}", user.getUsername(), !user.getIsActive(), user.getIsActive());
         userRepository.save(user);
     }
 
@@ -129,7 +129,6 @@ public class UserService implements UserDetailsService {
         user.setHourlyRate(userAdminEditRequest.getHourlyRate());
         user.setUpdatedAt(LocalDateTime.now());
 
-        log.info("User {} has been updated by admin", user.getUsername());
         return userRepository.save(user);
     }
 }
