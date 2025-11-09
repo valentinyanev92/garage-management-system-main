@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="bg" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Deleted Cars - Admin Panel</title>
+    <link rel="stylesheet" th:href="@{/css/dashboard.css}">
+</head>
+<body>
+<div class="dashboard-wrapper">
+    <aside class="sidebar">
+        <nav class="sidebar-nav">
+            <a href="/dashboard" class="nav-button">
+                <span>Dashboard</span>
+            </a>
+            <a href="/profile/edit" class="nav-button">
+                <span>Edit Profile</span>
+            </a>
+            <a th:href="@{/cars}" class="nav-button">
+                <span>Manage Cars</span>
+            </a>
+            <a th:href="@{/orders}" class="nav-button">
+                <span>Manage Orders</span>
+            </a>
+            <div class="nav-spacer"></div>
+            <div class="nav-bottom-section">
+                <a th:href="@{/dashboard/mechanic}"
+                   class="nav-button mechanic-button"
+                   th:if="${user.role.name().equals('MECHANIC') or user.role.name().equals('ADMIN')}">
+                    <span>Mechanic Panel</span>
+                </a>
+                <a th:href="@{/dashboard/admin}"
+                   class="nav-button admin-button active">
+                    <span>Admin Panel</span>
+                </a>
+                <a th:href="@{/logout}" class="nav-button logout-button">
+                    <span>Logout</span>
+                </a>
+            </div>
+        </nav>
+    </aside>
+
+    <div class="dashboard-container">
+        <header class="dashboard-header">
+            <h1 class="dashboard-title">Manage Deleted Cars</h1>
+        </header>
+
+        <main class="dashboard-content">
+            <section class="section repairs-section">
+                <h2 class="section-title">Deleted Cars</h2>
+                <div class="cards-container" th:if="${cars != null and !cars.isEmpty()}">
+                    <div class="card car-card" th:each="car : ${cars}">
+                        <div class="card-image-container">
+                            <img th:src="${car.pictureUrl}" alt="Car image" class="card-image">
+                        </div>
+                        <div class="card-content">
+                            <div class="card-info">
+                                <div class="card-header">
+                                    <h3 class="card-title" th:text="|${car.brand} ${car.model}|"></h3>
+                                </div>
+                                <div class="card-body">
+                                    <div class="card-detail">
+                                        <span class="label">VIN:</span>
+                                        <span class="value" th:text="${car.vin}"></span>
+                                    </div>
+                                    <div class="card-detail">
+                                        <span class="label">Plate Number:</span>
+                                        <span class="value" th:text="${car.plateNumber}"></span>
+                                    </div>
+                                    <div class="card-detail">
+                                        <span class="label">Owner:</span>
+                                        <span class="value" th:text="|${car.owner.firstName} ${car.owner.lastName}|"></span>
+                                    </div>
+                                    <div class="card-detail">
+                                        <span class="label">Last Updated:</span>
+                                        <span class="value" th:text="${car.updatedAt}"></span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="card-actions">
+                                <form th:action="@{/dashboard/admin/deleted-cars/restore/{id}(id=${car.id})}"
+                                      method="post"
+                                      style="display: inline; width: 100%;">
+                                    <button type="submit"
+                                            class="restore-car-button"
+                                            onclick="return confirm('Are you sure you want to restore this car?')">
+                                        Restore Car
+                                    </button>
+                                </form>
+                                <a th:href="@{/dashboard/admin/deleted-cars/edit/{id}(id=${car.id})}"
+                                   class="edit-car-button"
+                                   style="width: 100%; text-align: center;">
+                                    Edit Car Details
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="empty-state" th:if="${cars == null or cars.isEmpty()}">
+                    <p>No deleted cars found.</p>
+                </div>
+            </section>
+        </main>
+    </div>
+</div>
+
+<div th:replace="fragments/footer :: footer"></div>
+</body>
+</html>
+
+

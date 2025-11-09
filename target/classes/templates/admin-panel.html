@@ -49,9 +49,19 @@
             <div class="admin-panel-container">
                 <section class="section">
                     <div class="cards-container">
+                        <a th:href="@{/dashboard/admin/cars}" class="card admin-card-link">
+                            <div class="card-content admin-card-content-blur">
+                                <h3 class="card-title">Manage Cars</h3>
+                            </div>
+                        </a>
                         <a th:href="@{/dashboard/admin/parts}" class="card admin-card-link">
                             <div class="card-content admin-card-content-blur">
                                 <h3 class="card-title">Manage Parts</h3>
+                            </div>
+                        </a>
+                        <a th:href="@{/dashboard/admin/deleted-cars}" class="card admin-card-link">
+                            <div class="card-content admin-card-content-blur">
+                                <h3 class="card-title">Manage Deleted Cars</h3>
                             </div>
                         </a>
                         <a th:href="@{/dashboard/admin/users}" class="card admin-card-link">

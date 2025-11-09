@@ -14,9 +14,11 @@ public interface CarRepository extends JpaRepository<Car, UUID> {
 
     List<Car> findByOwnerAndIsDeletedFalse(User owner);
 
-    Optional<Car> findByVinAndIsDeletedFalse(String vin);
     Optional<Car> findByVin(String vin);
 
-    Optional<Car> findByPlateNumberAndIsDeletedFalse(String plateNumber);
     Optional<Car> findByPlateNumber(String plateNumber);
+
+    List<Car> findAllByIsDeletedTrueOrderByUpdatedAtDesc();
+
+    List<Car> findAllByIsDeletedFalseOrderByUpdatedAtDesc();
 }

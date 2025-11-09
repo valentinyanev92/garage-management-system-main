@@ -1,11 +1,14 @@
 package com.softuni.gms.app.web;
 
+import com.softuni.gms.app.car.model.Car;
+import com.softuni.gms.app.car.service.CarService;
 import com.softuni.gms.app.part.model.Part;
 import com.softuni.gms.app.part.service.PartService;
 import com.softuni.gms.app.security.AuthenticationMetadata;
 import com.softuni.gms.app.user.model.User;
 import com.softuni.gms.app.user.model.UserRole;
 import com.softuni.gms.app.user.service.UserService;
+import com.softuni.gms.app.web.dto.CarEditRequest;
 import com.softuni.gms.app.web.dto.PartAddRequest;
 import com.softuni.gms.app.web.dto.PartEditRequest;
 import com.softuni.gms.app.web.dto.UserAdminEditRequest;
@@ -30,11 +33,13 @@ public class AdminPanelController {
 
     private final UserService userService;
     private final PartService partService;
+    private final CarService carService;
 
     @Autowired
-    public AdminPanelController(UserService userService, PartService partService) {
+    public AdminPanelController(UserService userService, PartService partService, CarService carService) {
         this.userService = userService;
         this.partService = partService;
+        this.carService = carService;
     }
 
     @GetMapping
@@ -47,6 +52,131 @@ public class AdminPanelController {
         modelAndView.addObject("user", admin);
 
         return modelAndView;
+    }
+
+    @GetMapping("/deleted-cars")
+    public ModelAndView getDeletedCarsPage(@AuthenticationPrincipal AuthenticationMetadata authenticationMetadata) {
+
+        User admin = userService.findUserById(authenticationMetadata.getUserId());
+        List<Car> deletedCars = carService.findAllDeletedCars();
+
+        ModelAndView modelAndView = new ModelAndView();
+        modelAndView.setViewName("admin-deleted-cars");
+        modelAndView.addObject("user", admin);
+        modelAndView.addObject("cars", deletedCars);
+
+        return modelAndView;
+    }
+
+    @PostMapping("/deleted-cars/restore/{id}")
+    public ModelAndView restoreCar(@PathVariable UUID id) {
+
+        carService.restoreCar(id);
+        return new ModelAndView("redirect:/dashboard/admin/deleted-cars");
+    }
+
+    @GetMapping("/deleted-cars/edit/{id}")
+    public ModelAndView getEditDeletedCarPage(@PathVariable UUID id,
+                                              @AuthenticationPrincipal AuthenticationMetadata authenticationMetadata) {
+
+        User admin = userService.findUserById(authenticationMetadata.getUserId());
+        Car car = carService.findCarById(id);
+
+        ModelAndView modelAndView = new ModelAndView();
+        modelAndView.setViewName("admin-deleted-car-edit");
+        modelAndView.addObject("user", admin);
+        modelAndView.addObject("carId", id);
+        modelAndView.addObject("car", car);
+        modelAndView.addObject("carEditRequest", DtoMapper.mapCarToCarEditRequest(car));
+
+        return modelAndView;
+    }
+
+    @PostMapping("/deleted-cars/edit/{id}")
+    public ModelAndView editDeletedCar(@PathVariable UUID id,
+                                       @Valid CarEditRequest carEditRequest,
+                                       BindingResult bindingResult,
+                                       @AuthenticationPrincipal AuthenticationMetadata authenticationMetadata) {
+
+        User admin = userService.findUserById(authenticationMetadata.getUserId());
+
+        if (bindingResult.hasErrors()) {
+            Car car = carService.findCarById(id);
+
+            ModelAndView modelAndView = new ModelAndView();
+            modelAndView.setViewName("admin-deleted-car-edit");
+            modelAndView.addObject("user", admin);
+            modelAndView.addObject("car", car);
+            modelAndView.addObject("carId", id);
+            modelAndView.addObject("carEditRequest", carEditRequest);
+
+            return modelAndView;
+        }
+
+        carService.updateCar(id, carEditRequest);
+        return new ModelAndView("redirect:/dashboard/admin/deleted-cars");
+    }
+
+    @GetMapping("/cars")
+    public ModelAndView getActiveCarsPage(@AuthenticationPrincipal AuthenticationMetadata authenticationMetadata) {
+
+        User admin = userService.findUserById(authenticationMetadata.getUserId());
+        List<Car> activeCars = carService.findAllActiveCars();
+
+        ModelAndView modelAndView = new ModelAndView();
+        modelAndView.setViewName("admin-cars");
+        modelAndView.addObject("user", admin);
+        modelAndView.addObject("cars", activeCars);
+
+        return modelAndView;
+    }
+
+    @GetMapping("/cars/edit/{id}")
+    public ModelAndView getEditCarPage(@PathVariable UUID id,
+                                       @AuthenticationPrincipal AuthenticationMetadata authenticationMetadata) {
+
+        User admin = userService.findUserById(authenticationMetadata.getUserId());
+        Car car = carService.findCarById(id);
+
+        ModelAndView modelAndView = new ModelAndView();
+        modelAndView.setViewName("admin-car-edit");
+        modelAndView.addObject("user", admin);
+        modelAndView.addObject("carId", id);
+        modelAndView.addObject("car", car);
+        modelAndView.addObject("carEditRequest", DtoMapper.mapCarToCarEditRequest(car));
+
+        return modelAndView;
+    }
+
+    @PostMapping("/cars/edit/{id}")
+    public ModelAndView editCar(@PathVariable UUID id,
+                                @Valid CarEditRequest carEditRequest,
+                                BindingResult bindingResult,
+                                @AuthenticationPrincipal AuthenticationMetadata authenticationMetadata) {
+
+        User admin = userService.findUserById(authenticationMetadata.getUserId());
+
+        if (bindingResult.hasErrors()) {
+            Car car = carService.findCarById(id);
+
+            ModelAndView modelAndView = new ModelAndView();
+            modelAndView.setViewName("admin-car-edit");
+            modelAndView.addObject("user", admin);
+            modelAndView.addObject("car", car);
+            modelAndView.addObject("carId", id);
+            modelAndView.addObject("carEditRequest", carEditRequest);
+            return modelAndView;
+        }
+
+        carService.updateCar(id, carEditRequest);
+        return new ModelAndView("redirect:/dashboard/admin/cars");
+    }
+
+    @PostMapping("/cars/delete/{id}")
+    public ModelAndView deleteActiveCar(@PathVariable UUID id) {
+
+        carService.deleteCar(id);
+        return new ModelAndView("redirect:/dashboard/admin/cars");
     }
 
     @GetMapping("/parts")

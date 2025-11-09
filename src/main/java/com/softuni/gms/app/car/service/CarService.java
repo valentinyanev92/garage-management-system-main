@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.UUID;
 
 import static com.softuni.gms.app.exeption.CarAlreadyExistsExceptionMessages.*;
@@ -74,6 +75,16 @@ public class CarService {
                 .orElseThrow(() -> new NotFoundException("Car not found"));
     }
 
+    public List<Car> findAllDeletedCars() {
+
+        return carRepository.findAllByIsDeletedTrueOrderByUpdatedAtDesc();
+    }
+
+    public List<Car> findAllActiveCars() {
+
+        return carRepository.findAllByIsDeletedFalseOrderByUpdatedAtDesc();
+    }
+
     public Car updateCar(UUID carId, CarEditRequest carEditRequest) {
 
         Car car = findCarById(carId);
@@ -125,6 +136,18 @@ public class CarService {
         car.setDeleted(true);
         car.setUpdatedAt(LocalDateTime.now());
 
+        carRepository.save(car);
+    }
+
+    public void restoreCar(UUID carId) {
+
+        Car car = findCarById(carId);
+        if (!car.isDeleted()) {
+            return;
+        }
+
+        car.setDeleted(false);
+        car.setUpdatedAt(LocalDateTime.now());
         carRepository.save(car);
     }
 }
