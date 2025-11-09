@@ -21,6 +21,9 @@ import org.springframework.web.servlet.ModelAndView;
 import java.nio.charset.StandardCharsets;
 import java.util.UUID;
 
+import static com.softuni.gms.app.exeption.MicroserviceDontRespondExceptionMessages.INVOICE_SERVICE_NOT_AVAILABLE_CANNOT_DOWNLOAD;
+import static com.softuni.gms.app.exeption.MicroserviceDontRespondExceptionMessages.INVOICE_SERVICE_NOT_AVAILABLE_TRY_AGAIN;
+
 @Controller
 @RequestMapping("/repairs")
 public class RepairOrderController {
@@ -40,84 +43,84 @@ public class RepairOrderController {
 
     @GetMapping("/request/{carId}")
     public ModelAndView getRepairRequestPage(@PathVariable UUID carId,
-                                            @AuthenticationPrincipal AuthenticationMetadata authenticationMetadata) {
-        
+                                             @AuthenticationPrincipal AuthenticationMetadata authenticationMetadata) {
+
         Car car = carService.findCarById(carId);
         User user = userService.findUserById(authenticationMetadata.getUserId());
-        
+
         if (!car.getOwner().getId().equals(user.getId())) {
             return new ModelAndView("redirect:/dashboard");
         }
-        
+
         ModelAndView modelAndView = new ModelAndView();
         modelAndView.setViewName("repair-request");
         modelAndView.addObject("car", car);
-        
+
         return modelAndView;
     }
 
     @PostMapping("/create/{carId}")
     public ModelAndView createRepairOrder(@PathVariable UUID carId,
-                                         @RequestParam String problemDescription,
-                                         @AuthenticationPrincipal AuthenticationMetadata authenticationMetadata) {
-        
+                                          @RequestParam String problemDescription,
+                                          @AuthenticationPrincipal AuthenticationMetadata authenticationMetadata) {
+
         Car car = carService.findCarById(carId);
         User user = userService.findUserById(authenticationMetadata.getUserId());
 
         if (!car.getOwner().getId().equals(user.getId())) {
             return new ModelAndView("redirect:/dashboard");
         }
-        
+
         repairOrderService.createRepairOrder(carId, user, problemDescription);
         return new ModelAndView("redirect:/dashboard");
     }
 
     @PostMapping("/cancel/{carId}")
     public ModelAndView cancelRepairRequest(@PathVariable UUID carId,
-                                           @AuthenticationPrincipal AuthenticationMetadata authenticationMetadata) {
-        
+                                            @AuthenticationPrincipal AuthenticationMetadata authenticationMetadata) {
+
         User user = userService.findUserById(authenticationMetadata.getUserId());
-        
+
         try {
             repairOrderService.cancelRepairRequestByCarId(carId, user);
         } catch (Exception e) {
             return new ModelAndView("redirect:/dashboard");
         }
-        
+
         return new ModelAndView("redirect:/dashboard");
     }
 
     @GetMapping("/details/{id}")
     public ModelAndView getRepairOrderDetails(@PathVariable UUID id,
-                                             @AuthenticationPrincipal AuthenticationMetadata authenticationMetadata) {
-        
+                                              @AuthenticationPrincipal AuthenticationMetadata authenticationMetadata) {
+
         User user = userService.findUserById(authenticationMetadata.getUserId());
         RepairOrder repairOrder = repairOrderService.findRepairOrderById(id);
 
         if (!repairOrder.getUser().getId().equals(user.getId())) {
             return new ModelAndView("redirect:/dashboard");
         }
-        
+
         ModelAndView modelAndView = new ModelAndView();
         modelAndView.setViewName("repair-details");
         modelAndView.addObject("repairOrder", repairOrder);
         modelAndView.addObject("user", user);
-        
+
         return modelAndView;
     }
 
     @PostMapping("/delete/{id}")
     public ModelAndView deleteRepairOrder(@PathVariable UUID id,
-                                         @AuthenticationPrincipal AuthenticationMetadata authenticationMetadata) {
-        
+                                          @AuthenticationPrincipal AuthenticationMetadata authenticationMetadata) {
+
         User user = userService.findUserById(authenticationMetadata.getUserId());
-        
+
         try {
             repairOrderService.deleteRepairOrder(id, user);
         } catch (Exception e) {
             return new ModelAndView("redirect:/dashboard");
         }
-        
+
         return new ModelAndView("redirect:/dashboard");
     }
 
@@ -145,14 +148,12 @@ public class RepairOrderController {
                     .headers(headers)
                     .body(pdf);
         } catch (MicroserviceDontRespondException ex) {
-            byte[] body = "Invoice service is temporarily unavailable. Please try again later."
-                    .getBytes(StandardCharsets.UTF_8);
+            byte[] body = INVOICE_SERVICE_NOT_AVAILABLE_TRY_AGAIN.getBytes(StandardCharsets.UTF_8);
             return ResponseEntity.status(502)
                     .header(HttpHeaders.CONTENT_TYPE, MediaType.TEXT_PLAIN_VALUE + "; charset=UTF-8")
                     .body(body);
         } catch (Exception ex) {
-            byte[] body = "Unable to download invoice. Please try again later."
-                    .getBytes(StandardCharsets.UTF_8);
+            byte[] body = INVOICE_SERVICE_NOT_AVAILABLE_CANNOT_DOWNLOAD.getBytes(StandardCharsets.UTF_8);
             return ResponseEntity.status(502)
                     .header(HttpHeaders.CONTENT_TYPE, MediaType.TEXT_PLAIN_VALUE + "; charset=UTF-8")
                     .body(body);

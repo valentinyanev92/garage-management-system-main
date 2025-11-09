@@ -6,6 +6,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import static com.softuni.gms.app.exeption.MicroserviceDontRespondExceptionMessages.INVOICE_SERVICE_UNAVAILABLE;
+
 @Slf4j
 @Service
 public class PdfService {
@@ -24,7 +26,7 @@ public class PdfService {
             return pdfClient.generateInvoice(invoiceRequest);
         } catch (Exception ex) {
             log.error("Failed to generate invoice for repair {}: {}", invoiceRequest.getRepairId(), ex.getMessage());
-            throw new MicroserviceDontRespondException("Invoice service is unavailable", ex);
+            throw new MicroserviceDontRespondException(INVOICE_SERVICE_UNAVAILABLE, ex);
         }
     }
 
@@ -35,7 +37,7 @@ public class PdfService {
             return pdfClient.downloadLatestInvoice(repairId);
         } catch (Exception ex) {
             log.error("Failed to download invoice for repair {}: {}", repairId, ex.getMessage());
-            throw new MicroserviceDontRespondException("Invoice service is unavailable", ex);
+            throw new MicroserviceDontRespondException(INVOICE_SERVICE_UNAVAILABLE, ex);
         }
     }
 }

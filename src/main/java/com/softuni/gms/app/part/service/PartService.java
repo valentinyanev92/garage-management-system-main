@@ -14,6 +14,8 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
+import static com.softuni.gms.app.exeption.NotFoundExceptionMessages.PART_NOT_FOUND;
+
 @Service
 public class PartService {
 
@@ -26,7 +28,7 @@ public class PartService {
 
     public Part findPartById(UUID partId) {
 
-        return partRepository.findById(partId).orElseThrow(() -> new NotFoundException("Part not found"));
+        return partRepository.findById(partId).orElseThrow(() -> new NotFoundException(PART_NOT_FOUND));
     }
 
     @Cacheable(value = "parts")

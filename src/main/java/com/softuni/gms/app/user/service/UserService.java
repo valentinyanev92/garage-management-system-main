@@ -23,6 +23,9 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
+import static com.softuni.gms.app.exeption.NotFoundExceptionMessages.USER_NOT_FOUND;
+import static com.softuni.gms.app.exeption.UserAlreadyExistExceptionMessages.*;
+
 @Slf4j
 @Service
 public class UserService implements UserDetailsService {
@@ -48,17 +51,17 @@ public class UserService implements UserDetailsService {
 
         if (userRepository.findByUsername(registerRequest.getUsername()).isPresent()) {
             log.error("Username {} already exist", registerRequest.getUsername());
-            throw new UserAlreadyExistException("Username already exists");
+            throw new UserAlreadyExistException(USERNAME_ALREADY_EXIST);
         }
 
         if (userRepository.findByEmail(registerRequest.getEmail()).isPresent()) {
             log.error("Email {} already exist", registerRequest.getEmail());
-            throw new UserAlreadyExistException("Email already exists");
+            throw new UserAlreadyExistException(EMAIL_ALREADY_EXIST);
         }
 
         if (userRepository.findByPhoneNumber(registerRequest.getPhoneNumber()).isPresent()) {
             log.error("Phone number {} already exist", registerRequest.getPhoneNumber());
-            throw new UserAlreadyExistException("Phone number already exists");
+            throw new UserAlreadyExistException(PHONE_NUMBER_ALREADY_EXIST);
         }
 
         String phoneNumber = "359" + registerRequest.getPhoneNumber().substring(1);
@@ -86,7 +89,7 @@ public class UserService implements UserDetailsService {
 
     public User findUserById(UUID id) {
 
-        return userRepository.findById(id).orElseThrow(() -> new NotFoundException("User not found"));
+        return userRepository.findById(id).orElseThrow(() -> new NotFoundException(USER_NOT_FOUND));
     }
 
     @CacheEvict(value = "users", allEntries = true)

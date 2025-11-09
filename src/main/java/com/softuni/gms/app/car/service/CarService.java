@@ -14,6 +14,9 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
+import static com.softuni.gms.app.exeption.CarAlreadyExistsExceptionMessages.*;
+
+
 @Slf4j
 @Service
 public class CarService {
@@ -34,20 +37,20 @@ public class CarService {
                 .ifPresent(existing -> {
                     if (existing.isDeleted()) {
                         log.error("registerCar(): Car with VIN {} already exists, but its deleted!", vin);
-                        throw new CarAlreadyExistsException("VIN already exists (car previously deleted) - contact Administrator!");
+                        throw new CarAlreadyExistsException(CAR_VIN_EXIST_CAR_PREVIOUSLY_DELETED);
                     }
                     log.info("registerCar(): Car with VIN {} already exists", vin);
-                    throw new CarAlreadyExistsException("VIN already exists");
+                    throw new CarAlreadyExistsException(CAR_VIN_EXIST);
                 });
 
         carRepository.findByPlateNumber(plateNumber)
                 .ifPresent(existing -> {
                     if (existing.isDeleted()) {
                         log.error("registerCar(): Car with Plate {} already exists, but its deleted!", plateNumber);
-                        throw new CarAlreadyExistsException("Plate number already exists (car previously deleted) - contact Administrator!");
+                        throw new CarAlreadyExistsException(CAR_PLATE_EXIST_CAR_PREVIOUSLY_DELETED);
                     }
                     log.info("registerCar(): Car with Plate {} already exists", plateNumber);
-                    throw new CarAlreadyExistsException("Plate number already exists");
+                    throw new CarAlreadyExistsException(CAR_PLATE_EXIST);
                 });
 
         Car car = Car.builder()
@@ -82,10 +85,10 @@ public class CarService {
                     if (!existing.getId().equals(car.getId())) {
                         if (existing.isDeleted()) {
                             log.error("updateCar(): Car with VIN {} already exists, but its deleted!", vin);
-                            throw new CarAlreadyExistsException("VIN already exists (car previously deleted) - contact Administrator!");
+                            throw new CarAlreadyExistsException(CAR_VIN_EXIST_CAR_PREVIOUSLY_DELETED);
                         }
                         log.info("updateCar(): Car with VIN {} already exists", vin);
-                        throw new CarAlreadyExistsException("VIN already exists");
+                        throw new CarAlreadyExistsException(CAR_VIN_EXIST);
                     }
                 });
 
@@ -94,10 +97,10 @@ public class CarService {
                     if (!existing.getId().equals(car.getId())) {
                         if (existing.isDeleted()) {
                             log.error("updateCar(): Car with Plate {} already exists, but its deleted!", plateNumber);
-                            throw new CarAlreadyExistsException("Plate number already exists (car previously deleted) - contact Administrator!");
+                            throw new CarAlreadyExistsException(CAR_PLATE_EXIST_CAR_PREVIOUSLY_DELETED);
                         }
                         log.info("updateCar(): Car with Plate {} already exists", plateNumber);
-                        throw new CarAlreadyExistsException("Plate number already exists");
+                        throw new CarAlreadyExistsException(CAR_PLATE_EXIST);
                     }
                 });
 

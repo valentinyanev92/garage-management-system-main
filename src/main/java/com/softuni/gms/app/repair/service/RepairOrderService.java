@@ -26,6 +26,9 @@ import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+import static com.softuni.gms.app.exeption.CarOwnershipExceptionMessages.*;
+import static com.softuni.gms.app.exeption.NotFoundExceptionMessages.REPAIR_NOT_FOUND;
+
 @Slf4j
 @Service
 public class RepairOrderService {
@@ -71,7 +74,7 @@ public class RepairOrderService {
 
         if (!car.getOwner().getId().equals(user.getId())) {
             log.error("cancelRepairRequestByCarId(): User with id:{}, is not owner of this car with id:{}",  user.getId(), car.getOwner().getId());
-            throw new CarOwnershipException("User does not own this car");
+            throw new CarOwnershipException(USER_DONT_OWN_CAR);
         }
 
         List<RepairStatus> activeStatuses = Arrays.asList(RepairStatus.PENDING, RepairStatus.ACCEPTED);
@@ -81,7 +84,7 @@ public class RepairOrderService {
 
         if (!repairOrder.getUser().getId().equals(user.getId())) {
             log.error("cancelRepairRequestByCarId(): User with id:{}, does not own repair order with id:{}", user.getId(), repairOrder.getId());
-            throw new CarOwnershipException("User does not own this repair order");
+            throw new CarOwnershipException(USER_DONT_OWN_REPAIR_ORDER);
         }
 
         //TODO: try/catch if microservice is offline !
@@ -96,7 +99,7 @@ public class RepairOrderService {
     public RepairOrder findRepairOrderById(UUID repairOrderId) {
 
         return repairOrderRepository.findById(repairOrderId)
-                .orElseThrow(() -> new NotFoundException("Repair order not found"));
+                .orElseThrow(() -> new NotFoundException(REPAIR_NOT_FOUND));
     }
 
     @CacheEvict(value = {"pendingRepairs", "completedWithoutInvoice", "acceptedRepairByMechanic"}, allEntries = true)
@@ -106,7 +109,7 @@ public class RepairOrderService {
 
         if (!repairOrder.getUser().getId().equals(user.getId())) {
             log.error("deleteRepairOrder(): User with id:{}, does not own repair order with id:{}", user.getId(), repairOrder.getId());
-            throw new CarOwnershipException("User does not own this repair order");
+            throw new CarOwnershipException(USER_DONT_OWN_REPAIR_ORDER);
         }
 
         repairOrder.setDeleted(true);
@@ -155,7 +158,7 @@ public class RepairOrderService {
 
         if (repairOrder.getMechanic() == null || !repairOrder.getMechanic().getId().equals(mechanic.getId())) {
             log.error("completeRepairOrder(): Mechanic {} {} is not owner of this repair order", mechanic.getFirstName(), mechanic.getLastName());
-            throw new CarOwnershipException("Mechanic does not own this repair order");
+            throw new CarOwnershipException(MECHANIC_DONT_OWN_REPAIR_ORDER);
         }
 
         if (repairOrder.getStatus() != RepairStatus.ACCEPTED) {
@@ -199,7 +202,7 @@ public class RepairOrderService {
 
         if (repairOrder.getMechanic() == null || !repairOrder.getMechanic().getId().equals(mechanic.getId())) {
             log.error("addWorkToRepairOrder(): Mechanic {} {} is not owner of this repair order to add parts", mechanic.getFirstName(), mechanic.getLastName());
-            throw new CarOwnershipException("Mechanic does not own this repair order");
+            throw new CarOwnershipException(MECHANIC_DONT_OWN_REPAIR_ORDER);
         }
 
         if (repairOrder.getStatus() != RepairStatus.ACCEPTED) {
