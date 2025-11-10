@@ -15,10 +15,12 @@ public class LoggingAspect {
 
     @Pointcut("execution(* com.softuni.gms.app..service..*(..))")
     public void allServiceMethods() {
-
     }
 
-    @Before("allServiceMethods()")
+    @Pointcut("@annotation(com.softuni.gms.app.aop.NoLog)")
+    public void noLogMethods() {}
+
+    @Before("allServiceMethods() && !noLogMethods()")
     public void beforeAllServiceMethods(JoinPoint joinPoint) {
 
         String method = joinPoint.getSignature().toShortString();
@@ -27,7 +29,8 @@ public class LoggingAspect {
         log.info("[AOP] Starting method {} with arguments: {}", method, Arrays.toString(args));
     }
 
-    @AfterReturning(pointcut = "allServiceMethods()", returning = "result")
+
+    @AfterReturning(pointcut = "allServiceMethods() && !noLogMethods()", returning = "result")
     public void afterAllServiceMethods(JoinPoint joinPoint, Object result) {
 
         String method = joinPoint.getSignature().toShortString();

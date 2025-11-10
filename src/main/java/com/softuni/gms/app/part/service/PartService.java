@@ -1,5 +1,6 @@
 package com.softuni.gms.app.part.service;
 
+import com.softuni.gms.app.aop.NoLog;
 import com.softuni.gms.app.exeption.NotFoundException;
 import com.softuni.gms.app.part.model.Part;
 import com.softuni.gms.app.part.repository.PartRepository;
@@ -31,6 +32,7 @@ public class PartService {
         return partRepository.findById(partId).orElseThrow(() -> new NotFoundException(PART_NOT_FOUND));
     }
 
+    @NoLog
     @Cacheable(value = "parts")
     public List<Part> findAllParts() {
 

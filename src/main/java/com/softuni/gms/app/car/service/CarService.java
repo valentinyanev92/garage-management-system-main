@@ -1,5 +1,6 @@
 package com.softuni.gms.app.car.service;
 
+import com.softuni.gms.app.aop.NoLog;
 import com.softuni.gms.app.car.model.Car;
 import com.softuni.gms.app.car.repository.CarRepository;
 import com.softuni.gms.app.exeption.CarAlreadyExistsException;
@@ -69,17 +70,20 @@ public class CarService {
         return carRepository.save(car);
     }
 
+    @NoLog
     public Car findCarById(UUID carId) {
 
         return carRepository.findById(carId)
                 .orElseThrow(() -> new NotFoundException("Car not found"));
     }
 
+    @NoLog
     public List<Car> findAllDeletedCars() {
 
         return carRepository.findAllByIsDeletedTrueOrderByUpdatedAtDesc();
     }
 
+    @NoLog
     public List<Car> findAllActiveCars() {
 
         return carRepository.findAllByIsDeletedFalseOrderByUpdatedAtDesc();

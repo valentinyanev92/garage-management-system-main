@@ -1,5 +1,6 @@
 package com.softuni.gms.app.repair.service;
 
+import com.softuni.gms.app.aop.NoLog;
 import com.softuni.gms.app.car.model.Car;
 import com.softuni.gms.app.car.service.CarService;
 import com.softuni.gms.app.event.RepairEventPublisher;
@@ -99,6 +100,7 @@ public class RepairOrderService {
         repairOrderRepository.save(repairOrder);
     }
 
+    @NoLog
     public RepairOrder findRepairOrderById(UUID repairOrderId) {
 
         return repairOrderRepository.findById(repairOrderId)
@@ -121,6 +123,7 @@ public class RepairOrderService {
         repairOrderRepository.save(repairOrder);
     }
 
+    @NoLog
     @Cacheable(value = "pendingRepairs")
     public List<RepairOrder> findPendingRepairOrders() {
 
@@ -223,11 +226,13 @@ public class RepairOrderService {
         repairOrderRepository.save(repairOrder);
     }
 
+    @NoLog
     public RepairOrder findById(UUID id) {
 
         return repairOrderRepository.findById(id).orElseThrow(() -> new NotFoundException(REPAIR_NOT_FOUND));
     }
 
+    @NoLog
     public List<RepairOrder> findAllCompletedWithoutInvoice() {
 
         List<RepairOrder> orders = repairOrderRepository.findAllByStatusAndInvoiceGeneratedFalse(RepairStatus.COMPLETED);
@@ -244,12 +249,15 @@ public class RepairOrderService {
     }
 
     private RepairOrder ensureRepairOrderInstance(Object candidate) {
+
         if (candidate instanceof RepairOrder order) {
             return order;
         }
+
         if (candidate instanceof java.util.Map<?, ?> map) {
             return objectMapper.convertValue(map, RepairOrder.class);
         }
+
         throw new IllegalStateException("Unexpected cached repair order type: " + candidate.getClass());
     }
 }

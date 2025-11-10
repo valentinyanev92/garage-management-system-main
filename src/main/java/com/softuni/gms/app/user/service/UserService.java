@@ -1,5 +1,6 @@
 package com.softuni.gms.app.user.service;
 
+import com.softuni.gms.app.aop.NoLog;
 import com.softuni.gms.app.exeption.NotFoundException;
 import com.softuni.gms.app.exeption.UserAlreadyExistException;
 import com.softuni.gms.app.security.AuthenticationMetadata;
@@ -87,6 +88,7 @@ public class UserService implements UserDetailsService {
         return userRepository.save(user);
     }
 
+    @NoLog
     public User findUserById(UUID id) {
 
         return userRepository.findById(id).orElseThrow(() -> new NotFoundException(USER_NOT_FOUND));
@@ -108,6 +110,7 @@ public class UserService implements UserDetailsService {
         return userRepository.save(user);
     }
 
+    @NoLog
     @Cacheable(value = "users")
     public List<User> findAllUsers() {
 
