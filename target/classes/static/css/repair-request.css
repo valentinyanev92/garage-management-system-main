@@ -87,3 +87,43 @@
     color: rgba(255, 255, 255, 0.5);
 }
 
+.repair-request-page .ai-helper {
+    margin-bottom: 16px;
+}
+
+.repair-request-page .ai-helper-button {
+    display: inline-block;
+    width: 100%;
+    padding: 14px 20px;
+    background: linear-gradient(135deg, #34d399 0%, #059669 100%);
+    border-radius: 12px;
+    color: #ffffff;
+    font-size: 16px;
+    font-weight: 600;
+    text-align: center;
+    text-decoration: none;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    box-shadow: 0 4px 15px rgba(5, 150, 105, 0.35);
+}
+
+.repair-request-page .ai-helper-button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(5, 150, 105, 0.45);
+}
+
+.repair-request-page .ai-apply-form + .profile-edit-links,
+.repair-request-page .ai-question-form + .profile-edit-links {
+    margin-top: 24px;
+}
+
+.repair-request-page .sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    border: 0;
+}
+

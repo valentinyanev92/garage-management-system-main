@@ -41,10 +41,10 @@
 
         <form th:action="@{/repairs/create/{id}(id=${car.id})}" method="post">
             <div class="form-group">
-                <label for="problemDescription">Problem Description</label>
+                <label for="problemDescription" class="sr-only">Problem Description</label>
                 <div class="ai-helper">
-                    <a class="profile-edit-button secondary-button"
-                       th:href="@{/ai/ask(carId=${car.id})}">Ask AI Mechanic</a>
+                    <a class="ai-helper-button"
+                       th:href="@{/ai/ask(carId=${car.id})}">Not sure what's the problem? Ask AI!</a>
                 </div>
                 <div class="help-text">
                     Please describe the problem with your car in detail

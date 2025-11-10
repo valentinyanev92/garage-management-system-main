@@ -12,7 +12,10 @@
     <div class="profile-edit-form">
         <h1 class="profile-edit-title">Ask the AI Mechanic</h1>
 
-        <form th:action="@{/ai/ask}" method="post" class="ai-question-form">
+        <form th:if="${answer == null}"
+              th:action="@{/ai/ask}"
+              method="post"
+              class="ai-question-form">
             <input type="hidden" name="carId" th:value="${carId}">
             <div class="form-group">
                 <label for="aiQuestion">Describe the car issue</label>
@@ -25,16 +28,17 @@
                           th:text="${question != null ? question : ''}"></textarea>
             </div>
             <div th:if="${error != null}" class="error-message" th:text="${error}"></div>
-            <button type="submit" class="profile-edit-button">Ask AI Mechanic</button>
+            <button type="submit" class="ai-helper-button">Not sure what's the problem? Ask AI!</button>
         </form>
 
         <div th:if="${answer != null}" class="ai-answer-section">
             <h2 class="car-details-title">AI Mechanic Suggestion</h2>
             <div class="ai-answer-text" th:text="${answer}"></div>
-            <form th:action="@{/ai/apply}" method="post" class="ai-apply-form">
-                <input type="hidden" name="carId" th:value="${carId}">
-                <textarea name="answer" hidden th:text="${answer}"></textarea>
-                <button type="submit" class="profile-edit-button">Use in Repair Request</button>
+            <form th:action="@{/repairs/create/{id}(id=${carId})}"
+                  method="post"
+                  class="ai-apply-form">
+                <textarea name="problemDescription" hidden th:text="${answer}"></textarea>
+                <button type="submit" class="ai-helper-button">Create Repair Request</button>
             </form>
         </div>
 

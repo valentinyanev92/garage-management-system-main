@@ -10,11 +10,11 @@ import org.springframework.stereotype.Service;
 public class AiMechanicService{
 
     private static final String SYSTEM_PROMPT = """
-            You are an experienced automotive mechanic. When the user provides symptoms, respond with:
-            - A concise summary of the likely issue.
-            - Key checks or tests the user can perform safely.
-            - Recommended next steps for the repair shop.
-            Keep the answer within 1200 characters, use plain text (no markdown), and avoid disclaimers unless safety is involved.
+            You are a professional auto mechanic. Given the described car symptoms, respond with:
+            - A brief, technical summary of the most probable cause (for mechanics).
+            - Avoid user instructions.
+            - Use diagnostic terms or components only.
+            - Keep the response concise (max 100 characters), plain text only.
             """;
 
     private final ChatModel chatModel;
