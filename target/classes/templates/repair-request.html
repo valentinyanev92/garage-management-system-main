@@ -42,12 +42,20 @@
         <form th:action="@{/repairs/create/{id}(id=${car.id})}" method="post">
             <div class="form-group">
                 <label for="problemDescription">Problem Description</label>
+                <div class="ai-helper">
+                    <a class="profile-edit-button secondary-button"
+                       th:href="@{/ai/ask(carId=${car.id})}">Ask AI Mechanic</a>
+                </div>
                 <div class="help-text">
                     Please describe the problem with your car in detail
                 </div>
+                <div th:if="${aiSuggestion != null}" class="help-text">
+                    AI suggestion loaded. You can edit before submitting.
+                </div>
                 <textarea id="problemDescription" name="problemDescription" rows="6"
                           placeholder="Describe the problem with your car... (e.g., engine makes strange noise, brakes are squeaking, etc.)"
-                          required></textarea>
+                          required
+                          th:text="${aiSuggestion != null ? aiSuggestion : ''}"></textarea>
             </div>
 
             <button type="submit" class="profile-edit-button">Submit Repair Request</button>

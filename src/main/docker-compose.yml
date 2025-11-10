@@ -73,10 +73,29 @@ services:
     networks:
       - gms_network
 
+  ollama:
+    image: ollama/ollama:latest
+    container_name: ollama
+    restart: unless-stopped
+    ports:
+      - "11434:11434"
+    volumes:
+      - ollama_data:/root/.ollama
+    networks:
+      - gms_network
+    entrypoint: >
+      sh -c "
+      ollama serve &
+      sleep 5 &&
+      ollama pull phi3 &&
+      tail -f /dev/null
+      "
+
 volumes:
   mysql_data:
   redis_data:
   mongo_data:
+  ollama_data:
 
 networks:
   gms_network:

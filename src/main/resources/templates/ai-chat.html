@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="bg" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Mechanic Assistant</title>
+    <link rel="stylesheet" th:href="@{/css/profile-edit.css}">
+    <link rel="stylesheet" th:href="@{/css/repair-request.css}">
+</head>
+<body class="repair-request-page">
+<div class="profile-edit-container">
+    <div class="profile-edit-form">
+        <h1 class="profile-edit-title">Ask the AI Mechanic</h1>
+
+        <form th:action="@{/ai/ask}" method="post" class="ai-question-form">
+            <input type="hidden" name="carId" th:value="${carId}">
+            <div class="form-group">
+                <label for="aiQuestion">Describe the car issue</label>
+                <div class="help-text">
+                    Share symptoms or noises you have noticed. The AI mechanic will suggest what to check.
+                </div>
+                <textarea id="aiQuestion" name="question" rows="5"
+                          placeholder="Example: When I start the car there is a rattling noise from the engine area."
+                          required
+                          th:text="${question != null ? question : ''}"></textarea>
+            </div>
+            <div th:if="${error != null}" class="error-message" th:text="${error}"></div>
+            <button type="submit" class="profile-edit-button">Ask AI Mechanic</button>
+        </form>
+
+        <div th:if="${answer != null}" class="ai-answer-section">
+            <h2 class="car-details-title">AI Mechanic Suggestion</h2>
+            <div class="ai-answer-text" th:text="${answer}"></div>
+            <form th:action="@{/ai/apply}" method="post" class="ai-apply-form">
+                <input type="hidden" name="carId" th:value="${carId}">
+                <textarea name="answer" hidden th:text="${answer}"></textarea>
+                <button type="submit" class="profile-edit-button">Use in Repair Request</button>
+            </form>
+        </div>
+
+        <div class="profile-edit-links">
+            <a th:href="@{/repairs/request/{id}(id=${carId})}" class="back-link">Back to Repair Request</a>
+        </div>
+    </div>
+</div>
+
+<div th:replace="fragments/footer :: footer"></div>
+</body>
+</html>
+
+

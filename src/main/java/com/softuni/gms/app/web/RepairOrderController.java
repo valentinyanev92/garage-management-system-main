@@ -43,7 +43,8 @@ public class RepairOrderController {
 
     @GetMapping("/request/{carId}")
     public ModelAndView getRepairRequestPage(@PathVariable UUID carId,
-                                             @AuthenticationPrincipal AuthenticationMetadata authenticationMetadata) {
+                                             @AuthenticationPrincipal AuthenticationMetadata authenticationMetadata,
+                                             @RequestParam(value = "aiSuggestion", required = false) String aiSuggestion) {
 
         Car car = carService.findCarById(carId);
         User user = userService.findUserById(authenticationMetadata.getUserId());
@@ -55,6 +56,9 @@ public class RepairOrderController {
         ModelAndView modelAndView = new ModelAndView();
         modelAndView.setViewName("repair-request");
         modelAndView.addObject("car", car);
+        if (aiSuggestion != null) {
+            modelAndView.addObject("aiSuggestion", aiSuggestion);
+        }
 
         return modelAndView;
     }
