@@ -1,7 +1,9 @@
 package com.softuni.gms.app.web;
 
 import com.softuni.gms.app.client.RepairCompletionNotificationService;
+import com.softuni.gms.app.exeption.CarOwnershipException;
 import com.softuni.gms.app.exeption.MicroserviceDontRespondException;
+import com.softuni.gms.app.exeption.NotFoundException;
 import com.softuni.gms.app.part.model.Part;
 import com.softuni.gms.app.part.service.PartService;
 import com.softuni.gms.app.repair.model.RepairOrder;
@@ -11,10 +13,13 @@ import com.softuni.gms.app.user.model.User;
 import com.softuni.gms.app.user.service.UserService;
 import com.softuni.gms.app.web.dto.WorkOrderRequest;
 import com.softuni.gms.app.web.mapper.DtoMapper;
+import com.softuni.gms.app.web.util.RequestUtils;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -68,16 +73,10 @@ public class MechanicPanelController {
 
     @PostMapping("/accept/{id}")
     public ModelAndView acceptRepairOrder(@PathVariable UUID id,
-                                         @AuthenticationPrincipal AuthenticationMetadata authenticationMetadata) {
+                                          @AuthenticationPrincipal AuthenticationMetadata authenticationMetadata) {
 
         User mechanic = userService.findUserById(authenticationMetadata.getUserId());
-
-        try {
-            repairOrderService.acceptRepairOrder(id, mechanic);
-        } catch (Exception e) {
-            return new ModelAndView("redirect:/dashboard/mechanic");
-        }
-
+        repairOrderService.acceptRepairOrder(id, mechanic);
         return new ModelAndView("redirect:/dashboard/mechanic");
     }
 
@@ -86,23 +85,11 @@ public class MechanicPanelController {
                                            @AuthenticationPrincipal AuthenticationMetadata authenticationMetadata) {
 
         User mechanic = userService.findUserById(authenticationMetadata.getUserId());
-        try {
-            repairOrderService.completeRepairOrder(id, mechanic);
-        } catch (Exception e) {
-            return new ModelAndView("redirect:/dashboard/mechanic");
-        }
+        repairOrderService.completeRepairOrder(id, mechanic);
 
         RepairOrder repairOrder = repairOrderService.findRepairOrderById(id);
-        try {
-            repairNotificationService.sendMessageForCompletion(DtoMapper.maprepairordertorepaircompletitionrequest(repairOrder));
-            return new ModelAndView("redirect:/dashboard/mechanic");
-        } catch (MicroserviceDontRespondException e) {
-            log.warn("completeRepairOrder(): Notification service unavailable for repair {} - {}", id, e.getMessage());
-            return new ModelAndView("redirect:/dashboard/mechanic?notificationError=true");
-        } catch (Exception e) {
-            log.error("completeRepairOrder(): Unexpected error while notifying completion for repair {} - {}", id, e.getMessage());
-            return new ModelAndView("redirect:/dashboard/mechanic?notificationError=true");
-        }
+        repairNotificationService.sendMessageForCompletion(DtoMapper.maprepairordertorepaircompletitionrequest(repairOrder));
+        return new ModelAndView("redirect:/dashboard/mechanic");
     }
 
     @GetMapping("/work/{id}")
@@ -136,25 +123,52 @@ public class MechanicPanelController {
                                      @RequestParam(required = false) List<Integer> quantities) {
 
         User mechanic = userService.findUserById(authenticationMetadata.getUserId());
-        try {
-            WorkOrderRequest workOrderRequest = DtoMapper.mapWorkDescriptionToWorkOrderRequest(workDescription);
+        WorkOrderRequest workOrderRequest = DtoMapper.mapWorkDescriptionToWorkOrderRequest(workDescription);
 
-            if (partIds != null && quantities != null && partIds.size() == quantities.size()) {
-                List<WorkOrderRequest.PartUsageRequest> parts = new java.util.ArrayList<>();
-                for (int i = 0; i < partIds.size(); i++) {
-                    if (partIds.get(i) != null && quantities.get(i) != null && quantities.get(i) > 0) {
-                        parts.add(DtoMapper.mapPartUsageRequestToPartUsageRequest(partIds.get(i), quantities.get(i)));
-                    }
+        if (partIds != null && quantities != null && partIds.size() == quantities.size()) {
+            List<WorkOrderRequest.PartUsageRequest> parts = new java.util.ArrayList<>();
+            for (int i = 0; i < partIds.size(); i++) {
+                if (partIds.get(i) != null && quantities.get(i) != null && quantities.get(i) > 0) {
+                    parts.add(DtoMapper.mapPartUsageRequestToPartUsageRequest(partIds.get(i), quantities.get(i)));
                 }
-
-                workOrderRequest.setParts(parts);
             }
 
-            repairOrderService.addWorkToRepairOrder(id, mechanic, workOrderRequest);
-        } catch (Exception e) {
-            return new ModelAndView("redirect:/dashboard/mechanic/work/" + id);
+            workOrderRequest.setParts(parts);
         }
 
+        repairOrderService.addWorkToRepairOrder(id, mechanic, workOrderRequest);
         return new ModelAndView("redirect:/dashboard/mechanic");
+    }
+
+    private ModelAndView redirectToMechanicSection(HttpServletRequest request, UUID repairId) {
+
+        String requestUri = request.getRequestURI();
+        if (requestUri != null && requestUri.contains("/work/") && repairId != null) {
+            return new ModelAndView("redirect:/dashboard/mechanic/work/" + repairId);
+        }
+        return new ModelAndView("redirect:/dashboard/mechanic");
+    }
+
+    @ExceptionHandler(MicroserviceDontRespondException.class)
+    public ModelAndView handleNotificationFailure(HttpServletRequest request, MicroserviceDontRespondException ex) {
+
+        log.warn("Notification service unavailable for {} {}: {}", request.getMethod(), request.getRequestURI(), ex.getMessage());
+        return new ModelAndView("redirect:/dashboard/mechanic?notificationError=true");
+    }
+
+    @ExceptionHandler({CarOwnershipException.class, IllegalStateException.class, NotFoundException.class})
+    public ModelAndView handleRepairFlowIssues(HttpServletRequest request, RuntimeException ex) {
+
+        log.warn("Repair flow issue for {} {}: {}", request.getMethod(), request.getRequestURI(), ex.getMessage());
+        UUID repairId = RequestUtils.getPathVariableAsUuid(request, "id");
+        return redirectToMechanicSection(request, repairId);
+    }
+
+    @ExceptionHandler(Exception.class)
+    public ModelAndView handleUnexpectedIssues(HttpServletRequest request, Exception ex) {
+
+        log.error("Unexpected error for {} {}", request.getMethod(), request.getRequestURI(), ex);
+        UUID repairId = RequestUtils.getPathVariableAsUuid(request, "id");
+        return redirectToMechanicSection(request, repairId);
     }
 }

@@ -40,11 +40,11 @@ public class DashboardController {
 
         List<RepairOrder> repairList = user.getRepairOrders().stream()
                 .filter(repairOrder -> !repairOrder.isDeleted())
-                .filter(repairOrder -> repairOrder.getStatus() == RepairStatus.PENDING 
+                .filter(repairOrder -> repairOrder.getStatus() == RepairStatus.PENDING
                         || repairOrder.getStatus() == RepairStatus.ACCEPTED)
                 .toList();
         modelAndView.addObject("repairList", repairList);
 
-        return  modelAndView;
+        return modelAndView;
     }
 }

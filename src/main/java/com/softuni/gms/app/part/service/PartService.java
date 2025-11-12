@@ -40,7 +40,7 @@ public class PartService {
     }
 
     @CacheEvict(value = "parts", allEntries = true)
-    public Part createPart(PartAddRequest partAddRequest) {
+    public void createPart(PartAddRequest partAddRequest) {
 
         LocalDateTime now = LocalDateTime.now();
         Part part = Part.builder()
@@ -52,11 +52,11 @@ public class PartService {
                 .updatedAt(now)
                 .build();
 
-        return partRepository.save(part);
+        partRepository.save(part);
     }
 
     @CacheEvict(value = "parts", allEntries = true)
-    public Part updatePart(UUID partId, PartEditRequest partEditRequest) {
+    public void updatePart(UUID partId, PartEditRequest partEditRequest) {
 
         Part part = findPartById(partId);
 
@@ -65,7 +65,7 @@ public class PartService {
         part.setPrice(partEditRequest.getPrice());
         part.setUpdatedAt(LocalDateTime.now());
 
-        return partRepository.save(part);
+        partRepository.save(part);
     }
 
     @CacheEvict(value = "parts", allEntries = true)

@@ -70,7 +70,7 @@
             <div class="form-group">
                 <label for="phoneNumber">Phone Number</label>
                 <div class="help-text" th:classappend="${#fields.hasErrors('phoneNumber')} ? 'show-help' : ''">
-                    Bulgarian format: +359123456789 or 0123456789
+                    Bulgarian format: 0123456789
                 </div>
                 <input type="tel" id="phoneNumber" th:field="*{phoneNumber}" placeholder="Enter your phone number"
                        required>

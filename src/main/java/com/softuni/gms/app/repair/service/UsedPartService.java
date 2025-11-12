@@ -19,7 +19,7 @@ public class UsedPartService {
         this.usedPartRepository = usedPartRepository;
     }
 
-    public UsedPart createUsedPart(RepairOrder repairOrder, Part part, int quantity) {
+    public void createUsedPart(RepairOrder repairOrder, Part part, int quantity) {
 
         BigDecimal totalPrice = part.getPrice().multiply(BigDecimal.valueOf(quantity));
 
@@ -30,6 +30,6 @@ public class UsedPartService {
                 .totalPrice(totalPrice)
                 .build();
 
-        return usedPartRepository.save(usedPart);
+        usedPartRepository.save(usedPart);
     }
 }

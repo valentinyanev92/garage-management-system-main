@@ -30,7 +30,7 @@ public class CarService {
         this.carRepository = carRepository;
     }
 
-    public Car registerCar(CarRegisterRequest carRegisterRequest, User owner) {
+    public void registerCar(CarRegisterRequest carRegisterRequest, User owner) {
 
         String vin = carRegisterRequest.getVin().trim().toUpperCase();
         String plateNumber = carRegisterRequest.getPlateNumber().trim().toUpperCase();
@@ -67,7 +67,7 @@ public class CarService {
                 .updatedAt(LocalDateTime.now())
                 .build();
 
-        return carRepository.save(car);
+        carRepository.save(car);
     }
 
     @NoLog
@@ -89,7 +89,7 @@ public class CarService {
         return carRepository.findAllByIsDeletedFalseOrderByUpdatedAtDesc();
     }
 
-    public Car updateCar(UUID carId, CarEditRequest carEditRequest) {
+    public void updateCar(UUID carId, CarEditRequest carEditRequest) {
 
         Car car = findCarById(carId);
         String vin = carEditRequest.getVin().trim().toUpperCase();
@@ -131,7 +131,7 @@ public class CarService {
         car.setPictureUrl(imageUrl);
         car.setUpdatedAt(LocalDateTime.now());
 
-        return carRepository.save(car);
+        carRepository.save(car);
     }
 
     public void deleteCar(UUID carId) {

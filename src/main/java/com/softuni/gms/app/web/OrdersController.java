@@ -1,18 +1,22 @@
 package com.softuni.gms.app.web;
 
+import com.softuni.gms.app.exeption.NotFoundException;
 import com.softuni.gms.app.repair.model.RepairOrder;
 import com.softuni.gms.app.security.AuthenticationMetadata;
 import com.softuni.gms.app.user.model.User;
 import com.softuni.gms.app.user.service.UserService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.ModelAndView;
 
 import java.util.List;
 
+@Slf4j
 @Controller
 @RequestMapping("/orders")
 public class OrdersController {
@@ -40,5 +44,19 @@ public class OrdersController {
         modelAndView.addObject("repairList", repairList);
 
         return modelAndView;
+    }
+
+    @ExceptionHandler(NotFoundException.class)
+    public ModelAndView handleMissingUser(NotFoundException ex) {
+
+        log.warn("OrdersController: {}", ex.getMessage());
+        return new ModelAndView("redirect:/dashboard");
+    }
+
+    @ExceptionHandler(Exception.class)
+    public ModelAndView handleUnexpectedOrdersError(Exception ex) {
+
+        log.error("OrdersController unexpected error", ex);
+        return new ModelAndView("redirect:/dashboard");
     }
 }

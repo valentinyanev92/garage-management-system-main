@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Page Not Found</title>
+    <link rel="stylesheet" th:href="@{/css/error.css}">
+</head>
+<body>
+<div class="error-wrapper">
+    <div class="error-title">404</div>
+    <div class="error-subtitle">Looks like this path doesn't exist.</div>
+    <p class="error-text">The page you're trying to reach has been moved, deleted, or never existed. Let's head back to the dashboard and continue from there.</p>
+    <p class="error-text" th:if="${errorMessage != null}" th:text="${errorMessage}"></p>
+    <div th:if="${requestedPath != null}" class="error-path">
+        <span>→</span>
+        <span th:text="${requestedPath}">/missing-path</span>
+    </div>
+    <div>
+        <a href="/dashboard" class="dashboard-button">Back to Dashboard</a>
+    </div>
+</div>
+</body>
+</html>

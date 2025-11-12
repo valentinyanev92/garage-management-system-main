@@ -1,8 +1,10 @@
 package com.softuni.gms.app.web;
 
 import com.softuni.gms.app.ai.AiMechanicService;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -47,18 +49,12 @@ public class AiMechanicController {
             return new ModelAndView("redirect:/ai/ask?carId=" + carId + "&error=" + encodedError);
         }
 
-        try {
-            String answer = aiMechanicService.askMechanic(sanitizedQuestion);
-            ModelAndView modelAndView = new ModelAndView("ai-chat");
-            modelAndView.addObject("carId", carId);
-            modelAndView.addObject("question", sanitizedQuestion);
-            modelAndView.addObject("answer", answer);
-            return modelAndView;
-        } catch (Exception ex) {
-            String encodedError = URLEncoder.encode("We could not get an answer right now. Please try again.", StandardCharsets.UTF_8);
-            return new ModelAndView("redirect:/ai/ask?carId=" + carId + "&question="
-                    + URLEncoder.encode(sanitizedQuestion, StandardCharsets.UTF_8) + "&error=" + encodedError);
-        }
+        String answer = aiMechanicService.askMechanic(sanitizedQuestion);
+        ModelAndView modelAndView = new ModelAndView("ai-chat");
+        modelAndView.addObject("carId", carId);
+        modelAndView.addObject("question", sanitizedQuestion);
+        modelAndView.addObject("answer", answer);
+        return modelAndView;
     }
 
     @PostMapping("/apply")
@@ -70,6 +66,35 @@ public class AiMechanicController {
         String encodedAnswer = URLEncoder.encode(answer, StandardCharsets.UTF_8);
         return new ModelAndView("redirect:/repairs/request/" + carId + "?aiSuggestion=" + encodedAnswer);
     }
+
+    @ExceptionHandler(Exception.class)
+    public ModelAndView handleAiErrors(HttpServletRequest request, Exception ex) throws Exception {
+
+        String requestUri = request.getRequestURI();
+        if (requestUri == null || !requestUri.contains("/ask")) {
+            throw ex;
+        }
+
+        String carIdParam = request.getParameter("carId");
+        String questionParam = request.getParameter("question");
+        String sanitizedQuestion = questionParam == null ? "" : questionParam.trim();
+        String encodedError = URLEncoder.encode("We could not get an answer right now. Please try again.", StandardCharsets.UTF_8);
+
+        StringBuilder redirect = new StringBuilder("redirect:/ai/ask");
+        String separator = "?";
+        if (carIdParam != null && !carIdParam.isBlank()) {
+            redirect.append(separator).append("carId=").append(carIdParam);
+            separator = "&";
+        }
+        if (!sanitizedQuestion.isEmpty()) {
+            redirect.append(separator).append("question=")
+                    .append(URLEncoder.encode(sanitizedQuestion, StandardCharsets.UTF_8));
+            separator = "&";
+        }
+        redirect.append(separator).append("error=").append(encodedError);
+
+        ModelAndView modelAndView = new ModelAndView();
+        modelAndView.setViewName(redirect.toString());
+        return modelAndView;
+    }
 }
-
-

@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Unexpected Error</title>
+    <link rel="stylesheet" th:href="@{/css/error.css}">
+</head>
+<body>
+<div class="error-wrapper">
+    <div class="error-title">Unexpected Error</div>
+    <p class="error-text">We're sorry, but something went wrong. Our team has already been notified. You can return to the dashboard or try again in a moment.</p>
+    <p class="error-text" th:if="${errorMessage != null}" th:text="${errorMessage}"></p>
+    <div th:if="${requestedPath != null}" class="error-path">
+        <span>→</span>
+        <span th:text="${requestedPath}">/current-path</span>
+    </div>
+    <div>
+        <a href="/dashboard" class="dashboard-button">Back to Dashboard</a>
+    </div>
+</div>
+</body>
+</html>

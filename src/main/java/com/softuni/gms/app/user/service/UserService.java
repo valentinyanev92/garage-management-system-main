@@ -19,9 +19,12 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.validation.BindingResult;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Objects;
 import java.util.UUID;
 
 import static com.softuni.gms.app.exeption.NotFoundExceptionMessages.USER_NOT_FOUND;
@@ -30,13 +33,6 @@ import static com.softuni.gms.app.exeption.UserAlreadyExistExceptionMessages.*;
 @Slf4j
 @Service
 public class UserService implements UserDetailsService {
-
-    @Override
-    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-
-        User user = userRepository.findByUsername(username).orElseThrow(() -> new NotFoundException("User with this username does not exist."));
-        return new AuthenticationMetadata(user.getId(), username, user.getPassword(), user.getRole(), user.getIsActive());
-    }
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
@@ -47,8 +43,15 @@ public class UserService implements UserDetailsService {
         this.passwordEncoder = passwordEncoder;
     }
 
+    @Override
+    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+
+        User user = userRepository.findByUsername(username).orElseThrow(() -> new NotFoundException("User with this username does not exist."));
+        return new AuthenticationMetadata(user.getId(), username, user.getPassword(), user.getRole(), user.getIsActive());
+    }
+
     @CacheEvict(value = "users", allEntries = true)
-    public User registerUser(RegisterRequest registerRequest) {
+    public void registerUser(RegisterRequest registerRequest) {
 
         if (userRepository.findByUsername(registerRequest.getUsername()).isPresent()) {
             log.error("Username {} already exist", registerRequest.getUsername());
@@ -60,12 +63,11 @@ public class UserService implements UserDetailsService {
             throw new UserAlreadyExistException(EMAIL_ALREADY_EXIST);
         }
 
-        if (userRepository.findByPhoneNumber(registerRequest.getPhoneNumber()).isPresent()) {
+        String phoneNumber = "359" + registerRequest.getPhoneNumber().substring(1);
+        if (userRepository.findByPhoneNumber(phoneNumber).isPresent()) {
             log.error("Phone number {} already exist", registerRequest.getPhoneNumber());
             throw new UserAlreadyExistException(PHONE_NUMBER_ALREADY_EXIST);
         }
-
-        String phoneNumber = "359" + registerRequest.getPhoneNumber().substring(1);
 
         User user = User.builder()
                 .username(registerRequest.getUsername())
@@ -83,9 +85,10 @@ public class UserService implements UserDetailsService {
         int usersCount = userRepository.findAll().size();
         if (usersCount == 0) {
             user.setRole(UserRole.ADMIN);
+            user.setHourlyRate(BigDecimal.valueOf(100.0));
         }
 
-        return userRepository.save(user);
+        userRepository.save(user);
     }
 
     @NoLog
@@ -95,19 +98,35 @@ public class UserService implements UserDetailsService {
     }
 
     @CacheEvict(value = "users", allEntries = true)
-    public User updateUser(UUID userId, UserEditRequest userEditRequest) {
+    public void updateUser(UUID userId, UserEditRequest userEditRequest) {
 
-        User user = findUserById(userId);
+        UUID targetUserId = Objects.requireNonNull(userId, "User id must not be null");
+        User user = userRepository.findById(targetUserId)
+                .orElseThrow(() -> new NotFoundException(USER_NOT_FOUND));
+
+        String trimmedEmail = userEditRequest.getEmail().trim();
+        userRepository.findByEmail(trimmedEmail)
+                .filter(existing -> !existing.getId().equals(user.getId()))
+                .ifPresent(existing -> {
+                    log.error("updateUser(): Email {} already exists", trimmedEmail);
+                    throw new UserAlreadyExistException(EMAIL_ALREADY_EXIST);
+                });
 
         String phoneNumber = "359" + userEditRequest.getPhoneNumber().substring(1);
+        userRepository.findByPhoneNumber(phoneNumber)
+                .filter(existing -> !existing.getId().equals(user.getId()))
+                .ifPresent(existing -> {
+                    log.error("updateUser(): Phone number {} already exists", userEditRequest.getPhoneNumber());
+                    throw new UserAlreadyExistException(PHONE_NUMBER_ALREADY_EXIST);
+                });
 
         user.setFirstName(userEditRequest.getFirstName());
         user.setLastName(userEditRequest.getLastName());
-        user.setEmail(userEditRequest.getEmail());
+        user.setEmail(trimmedEmail);
         user.setPhoneNumber(phoneNumber);
         user.setUpdatedAt(LocalDateTime.now());
 
-        return userRepository.save(user);
+        userRepository.save(user);
     }
 
     @NoLog
@@ -120,7 +139,12 @@ public class UserService implements UserDetailsService {
     @CacheEvict(value = "users", allEntries = true)
     public void toggleUserActiveStatus(UUID userId) {
 
-        User user = findUserById(userId);
+        UUID targetUserId = Objects.requireNonNull(userId, "User id must not be null");
+        User user = userRepository.findById(targetUserId).orElse(null);
+        if (user == null) {
+            throw new NotFoundException(USER_NOT_FOUND);
+        }
+
         user.setIsActive(!user.getIsActive());
         user.setUpdatedAt(LocalDateTime.now());
 
@@ -128,13 +152,38 @@ public class UserService implements UserDetailsService {
     }
 
     @CacheEvict(value = "users", allEntries = true)
-    public User updateUserByAdmin(UUID userId, UserAdminEditRequest userAdminEditRequest) {
+    public void updateUserByAdmin(UUID userId, UserAdminEditRequest userAdminEditRequest) {
 
-        User user = findUserById(userId);
+        UUID targetUserId = Objects.requireNonNull(userId, "User id must not be null");
+        User user = userRepository.findById(targetUserId).orElse(null);
+        if (user == null) {
+            throw new NotFoundException(USER_NOT_FOUND);
+        }
+
         user.setRole(userAdminEditRequest.getRole());
         user.setHourlyRate(userAdminEditRequest.getHourlyRate());
         user.setUpdatedAt(LocalDateTime.now());
 
-        return userRepository.save(user);
+        userRepository.save(user);
+    }
+
+    public void validateRegisterRequest(RegisterRequest registerRequest, BindingResult bindingResult) {
+
+        if (bindingResult == null) {
+            return;
+        }
+
+        if (userRepository.findByUsername(registerRequest.getUsername()).isPresent()) {
+            bindingResult.rejectValue("username", "error.username", "A user with this username already exists");
+        }
+
+        if (userRepository.findByEmail(registerRequest.getEmail()).isPresent()) {
+            bindingResult.rejectValue("email", "error.email", "A user with this email already exists");
+        }
+
+        String phoneNumber = "359" + registerRequest.getPhoneNumber().substring(1);
+        if (userRepository.findByPhoneNumber(phoneNumber).isPresent()) {
+            bindingResult.rejectValue("phoneNumber", "error.phoneNumber", "A user with this phone number already exists");
+        }
     }
 }

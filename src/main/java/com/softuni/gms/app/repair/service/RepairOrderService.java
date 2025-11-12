@@ -55,7 +55,7 @@ public class RepairOrderService {
     }
 
     @CacheEvict(value = {"pendingRepairs", "acceptedRepairByMechanic"}, allEntries = true)
-    public RepairOrder createRepairOrder(UUID carId, User user, String problemDescription) {
+    public void createRepairOrder(UUID carId, User user, String problemDescription) {
 
         Car car = carService.findCarById(carId);
 
@@ -69,7 +69,7 @@ public class RepairOrderService {
                 .invoiceGenerated(false)
                 .build();
 
-        return repairOrderRepository.save(repairOrder);
+        repairOrderRepository.save(repairOrder);
     }
 
     @CacheEvict(value = {"pendingRepairs", "acceptedRepairByMechanic"}, allEntries = true)
