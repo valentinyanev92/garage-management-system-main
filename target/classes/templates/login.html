@@ -11,6 +11,11 @@
     <div class="login-form">
         <h1 class="login-title">Login</h1>
 
+        <div th:if="${firstAdminSuccessMessage}" class="success-message"
+             style="color: #FFD700; border-color: rgba(255, 215, 0, 0.5); box-shadow: 0 6px 20px rgba(255, 215, 0, 0.2); font-weight: 700; margin-bottom: 10px;">
+            <span th:text="${firstAdminSuccessMessage}"></span>
+        </div>
+
         <div th:if="${successMessage}" class="success-message">
             <span th:text="${successMessage}"></span>
         </div>

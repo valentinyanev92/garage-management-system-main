@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="bg" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Invoices - Garage Management System</title>
+    <link rel="stylesheet" th:href="@{/css/dashboard.css}">
+</head>
+<body>
+<div class="dashboard-wrapper">
+    <aside class="sidebar">
+        <nav class="sidebar-nav">
+            <a href="/dashboard" class="nav-button">
+                <span>Dashboard</span>
+            </a>
+            <a href="/profile/edit" class="nav-button">
+                <span>Edit Profile</span>
+            </a>
+            <a th:href="@{/cars}" class="nav-button">
+                <span>Manage Cars</span>
+            </a>
+            <a th:href="@{/orders}" class="nav-button">
+                <span>Manage Orders</span>
+            </a>
+            <div class="nav-spacer"></div>
+            <div class="nav-bottom-section">
+                <a th:href="@{/dashboard/mechanic}"
+                   class="nav-button mechanic-button"
+                   th:if="${user.role.name().equals('MECHANIC') or user.role.name().equals('ADMIN')}">
+                    <span>Mechanic Panel</span>
+                </a>
+                <a th:href="@{/dashboard/admin}"
+                   class="nav-button admin-button active">
+                    <span>Admin Panel</span>
+                </a>
+                <a th:href="@{/logout}" class="nav-button logout-button">
+                    <span>Logout</span>
+                </a>
+            </div>
+        </nav>
+    </aside>
+
+    <div class="dashboard-container">
+        <header class="dashboard-header">
+            <h1 class="dashboard-title">Invoices</h1>
+        </header>
+
+        <main class="dashboard-content">
+            <section class="section">
+                <h2 class="section-title" style="margin-bottom: 16px;">Invoice History</h2>
+                <div class="global-alert info" th:if="${historyErrorMessage != null}"
+                     th:text="${historyErrorMessage}"></div>
+                <div class="parts-table" th:if="${invoices != null and !invoices.isEmpty()}">
+                    <table>
+                        <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Repair ID</th>
+                            <th>Created At</th>
+                            <th>File Name</th>
+                            <th>Actions</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr th:each="inv,iter : ${invoices}">
+                            <td th:text="${iter.index + 1}">1</td>
+                            <td th:text="${inv.get('repairId')}">-</td>
+                            <td th:text="${inv.get('createdAt')}">-</td>
+                            <td th:text="${inv.get('fileName')}">-</td>
+                            <td>
+                                <a th:href="@{/dashboard/admin/invoices/download/{repairId}(repairId=${inv.get('repairId')})}"
+                                   class="invoice-button"
+                                   th:if="${inv.get('repairId') != null}">
+                                    Download
+                                </a>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="empty-state" th:if="${invoices == null or invoices.isEmpty()}">
+                    <p>No invoices found</p>
+                </div>
+            </section>
+        </main>
+    </div>
+</div>
+
+<div th:replace="fragments/footer :: footer"></div>
+</body>
+</html>
+

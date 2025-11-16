@@ -2,8 +2,14 @@ package com.softuni.gms.app.web;
 
 import com.softuni.gms.app.car.model.Car;
 import com.softuni.gms.app.car.service.CarService;
+import com.softuni.gms.app.client.InvoiceHistoryService;
+import com.softuni.gms.app.client.PdfService;
+import com.softuni.gms.app.exeption.MicroserviceDontRespondException;
 import com.softuni.gms.app.part.model.Part;
 import com.softuni.gms.app.part.service.PartService;
+import com.softuni.gms.app.repair.model.RepairOrder;
+import com.softuni.gms.app.repair.model.RepairStatus;
+import com.softuni.gms.app.repair.service.RepairOrderService;
 import com.softuni.gms.app.security.AuthenticationMetadata;
 import com.softuni.gms.app.user.model.User;
 import com.softuni.gms.app.user.model.UserRole;
@@ -13,8 +19,12 @@ import com.softuni.gms.app.web.dto.PartAddRequest;
 import com.softuni.gms.app.web.dto.PartEditRequest;
 import com.softuni.gms.app.web.dto.UserAdminEditRequest;
 import com.softuni.gms.app.web.mapper.DtoMapper;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
@@ -24,8 +34,12 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.ModelAndView;
 
+import java.time.LocalDate;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
+
+import static com.softuni.gms.app.exeption.MicroserviceDontRespondExceptionMessages.INVOICE_SERVICE_NOT_AVAILABLE_TRY_AGAIN;
 
 @Controller
 @RequestMapping("/dashboard/admin")
@@ -34,24 +48,98 @@ public class AdminPanelController {
     private final UserService userService;
     private final PartService partService;
     private final CarService carService;
+    private final RepairOrderService repairOrderService;
+    private final InvoiceHistoryService invoiceHistoryService;
+    private final PdfService pdfService;
 
     @Autowired
-    public AdminPanelController(UserService userService, PartService partService, CarService carService) {
+    public AdminPanelController(UserService userService, PartService partService, CarService carService,
+                                RepairOrderService repairOrderService, InvoiceHistoryService invoiceHistoryService,
+                                PdfService pdfService) {
         this.userService = userService;
         this.partService = partService;
         this.carService = carService;
+        this.repairOrderService = repairOrderService;
+        this.invoiceHistoryService = invoiceHistoryService;
+        this.pdfService = pdfService;
     }
 
     @GetMapping
     public ModelAndView getAdminPanelPage(@AuthenticationPrincipal AuthenticationMetadata authenticationMetadata) {
 
         User admin = userService.findUserById(authenticationMetadata.getUserId());
+        LocalDate today = LocalDate.now();
+
+        List<User> allUsers = userService.findAllUsersUncached();
+        long totalUsers = allUsers.size();
+        long usersToday = allUsers.stream()
+                .filter(u -> u.getCreatedAt() != null && u.getCreatedAt().toLocalDate().isEqual(today))
+                .count();
+        long activeMechanics = allUsers.stream()
+                .filter(u -> u.getRole() == UserRole.MECHANIC && Boolean.TRUE.equals(u.getIsActive()))
+                .count();
+
+        List<RepairOrder> pendingOrders = repairOrderService.findPendingRepairOrders();
+        List<RepairOrder> acceptedOrders =
+                repairOrderService.findByStatus(RepairStatus.ACCEPTED);
+        long activeRepairs = pendingOrders.size() + acceptedOrders.size();
+        long repairsToday = pendingOrders.stream()
+                .filter(o -> o.getCreatedAt() != null && o.getCreatedAt().toLocalDate().isEqual(today)).count()
+                + acceptedOrders.stream()
+                .filter(o -> o.getCreatedAt() != null && o.getCreatedAt().toLocalDate().isEqual(today)).count();
 
         ModelAndView modelAndView = new ModelAndView();
         modelAndView.setViewName("admin-panel");
         modelAndView.addObject("user", admin);
+        modelAndView.addObject("statsTotalUsers", totalUsers);
+        modelAndView.addObject("statsUsersToday", usersToday);
+        modelAndView.addObject("statsActiveMechanics", activeMechanics);
+        modelAndView.addObject("statsActiveRepairs", activeRepairs);
+        modelAndView.addObject("statsRepairsToday", repairsToday);
 
         return modelAndView;
+    }
+
+    @GetMapping("/invoices")
+    public ModelAndView getInvoicesPage(@AuthenticationPrincipal AuthenticationMetadata authenticationMetadata,
+                                        @org.springframework.web.bind.annotation.RequestParam(value = "historyError", required = false) String historyError) {
+
+        User admin = userService.findUserById(authenticationMetadata.getUserId());
+        List<Map<String, Object>> invoices = invoiceHistoryService.getHistory();
+
+        invoices.sort((a, b) -> {
+            Object va = a.get("createdAt");
+            Object vb = b.get("createdAt");
+            if (va == null && vb == null) return 0;
+            if (va == null) return 1;
+            if (vb == null) return -1;
+            String sa = va.toString();
+            String sb = vb.toString();
+
+            return sb.compareTo(sa);
+        });
+
+        ModelAndView modelAndView = new ModelAndView();
+        modelAndView.setViewName("admin-invoices");
+        modelAndView.addObject("user", admin);
+        modelAndView.addObject("invoices", invoices);
+        if (historyError != null) {
+            modelAndView.addObject("historyErrorMessage", INVOICE_SERVICE_NOT_AVAILABLE_TRY_AGAIN);
+        }
+
+        return modelAndView;
+    }
+
+    @GetMapping("/invoices/download/{repairId}")
+    public ResponseEntity<byte[]> downloadInvoiceFromHistory(@PathVariable java.util.UUID repairId) {
+
+        byte[] pdf = pdfService.downloadLatestInvoice(repairId);
+        return ResponseEntity
+                .ok()
+                .header(HttpHeaders.CONTENT_DISPOSITION,
+                        "attachment; filename=invoice-" + repairId + ".pdf")
+                .contentType(MediaType.APPLICATION_PDF)
+                .body(pdf);
     }
 
     @GetMapping("/deleted-cars")
@@ -180,7 +268,8 @@ public class AdminPanelController {
     }
 
     @GetMapping("/parts")
-    public ModelAndView getPartsPage(@AuthenticationPrincipal AuthenticationMetadata authenticationMetadata) {
+    public ModelAndView getPartsPage(@AuthenticationPrincipal AuthenticationMetadata authenticationMetadata,
+                                     @org.springframework.web.bind.annotation.RequestParam(value = "added", required = false) String added) {
 
         User admin = userService.findUserById(authenticationMetadata.getUserId());
         List<Part> parts = partService.findAllParts();
@@ -189,6 +278,9 @@ public class AdminPanelController {
         modelAndView.setViewName("admin-parts");
         modelAndView.addObject("user", admin);
         modelAndView.addObject("parts", parts);
+        if (added != null) {
+            modelAndView.addObject("successMessage", "Part added successfully.");
+        }
 
         return modelAndView;
     }
@@ -223,12 +315,12 @@ public class AdminPanelController {
         }
 
         partService.createPart(partAddRequest);
-        return new ModelAndView("redirect:/dashboard/admin/parts");
+        return new ModelAndView("redirect:/dashboard/admin/parts?added=true");
     }
 
     @GetMapping("/parts/edit/{id}")
     public ModelAndView getEditPartPage(@PathVariable UUID id,
-                                       @AuthenticationPrincipal AuthenticationMetadata authenticationMetadata) {
+                                        @AuthenticationPrincipal AuthenticationMetadata authenticationMetadata) {
 
         User admin = userService.findUserById(authenticationMetadata.getUserId());
         Part part = partService.findPartById(id);
@@ -288,7 +380,7 @@ public class AdminPanelController {
 
     @PostMapping("/users/toggle/{id}")
     public ModelAndView toggleUserActiveStatus(@PathVariable UUID id,
-                                              @AuthenticationPrincipal AuthenticationMetadata authenticationMetadata) {
+                                               @AuthenticationPrincipal AuthenticationMetadata authenticationMetadata) {
 
         userService.toggleUserActiveStatus(id);
         return new ModelAndView("redirect:/dashboard/admin/users");
@@ -296,7 +388,7 @@ public class AdminPanelController {
 
     @GetMapping("/users/edit/{id}")
     public ModelAndView getEditUserPage(@PathVariable UUID id,
-                                      @AuthenticationPrincipal AuthenticationMetadata authenticationMetadata) {
+                                        @AuthenticationPrincipal AuthenticationMetadata authenticationMetadata) {
 
         User admin = userService.findUserById(authenticationMetadata.getUserId());
         User userToEdit = userService.findUserById(id);
@@ -333,5 +425,10 @@ public class AdminPanelController {
 
         userService.updateUserByAdmin(id, userAdminEditRequest);
         return new ModelAndView("redirect:/dashboard/admin/users");
+    }
+
+    @org.springframework.web.bind.annotation.ExceptionHandler(MicroserviceDontRespondException.class)
+    public ModelAndView handleInvoiceServiceIssues(HttpServletRequest request, MicroserviceDontRespondException ex) {
+        return new ModelAndView("redirect:/dashboard/admin/invoices?historyError=true");
     }
 }

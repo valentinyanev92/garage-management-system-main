@@ -48,27 +48,62 @@
         <main class="dashboard-content">
             <div class="admin-panel-container">
                 <section class="section">
-                    <div class="cards-container">
-                        <a th:href="@{/dashboard/admin/cars}" class="card admin-card-link">
-                            <div class="card-content admin-card-content-blur">
-                                <h3 class="card-title">Manage Cars</h3>
+                    <div class="admin-grid">
+                        <div class="admin-stats">
+                            <h2 class="section-title" style="margin-bottom: 20px;">Statistics</h2>
+                            <div class="stats-grid">
+                                <div class="stat-card">
+                                    <div class="stat-label">Registered Users (Total)</div>
+                                    <div class="stat-value" th:text="${statsTotalUsers}">0</div>
+                                </div>
+                                <div class="stat-card">
+                                    <div class="stat-label">Registered Users (Today)</div>
+                                    <div class="stat-value" th:text="${statsUsersToday}">0</div>
+                                </div>
+                                <div class="stat-card">
+                                    <div class="stat-label">Active Mechanics</div>
+                                    <div class="stat-value" th:text="${statsActiveMechanics}">0</div>
+                                </div>
+                                <div class="stat-card">
+                                    <div class="stat-label">Active Repair Orders</div>
+                                    <div class="stat-value" th:text="${statsActiveRepairs}">0</div>
+                                </div>
+                                <div class="stat-card">
+                                    <div class="stat-label">Repair Orders (Today)</div>
+                                    <div class="stat-value" th:text="${statsRepairsToday}">0</div>
+                                </div>
                             </div>
-                        </a>
-                        <a th:href="@{/dashboard/admin/parts}" class="card admin-card-link">
-                            <div class="card-content admin-card-content-blur">
-                                <h3 class="card-title">Manage Parts</h3>
+                        </div>
+                        <div class="admin-actions">
+                            <h2 class="section-title" style="margin-bottom: 20px;">Management</h2>
+                            <div class="cards-container">
+                                <a th:href="@{/dashboard/admin/invoices}" class="card admin-card-link">
+                                    <div class="card-content admin-card-content-blur">
+                                        <h3 class="card-title">Invoices History</h3>
+                                    </div>
+                                </a>
+                                <a th:href="@{/dashboard/admin/cars}" class="card admin-card-link">
+                                    <div class="card-content admin-card-content-blur">
+                                        <h3 class="card-title">Manage Cars</h3>
+                                    </div>
+                                </a>
+                                <a th:href="@{/dashboard/admin/parts}" class="card admin-card-link">
+                                    <div class="card-content admin-card-content-blur">
+                                        <h3 class="card-title">Manage Parts</h3>
+                                    </div>
+                                </a>
+                                <a th:href="@{/dashboard/admin/deleted-cars}" class="card admin-card-link">
+                                    <div class="card-content admin-card-content-blur">
+                                        <h3 class="card-title">Manage Deleted Cars</h3>
+                                    </div>
+                                </a>
+                                <a th:href="@{/dashboard/admin/users}" class="card admin-card-link">
+                                    <div class="card-content admin-card-content-blur">
+                                        <h3 class="card-title">Manage Users</h3>
+                                    </div>
+                                </a>
                             </div>
-                        </a>
-                        <a th:href="@{/dashboard/admin/deleted-cars}" class="card admin-card-link">
-                            <div class="card-content admin-card-content-blur">
-                                <h3 class="card-title">Manage Deleted Cars</h3>
-                            </div>
-                        </a>
-                        <a th:href="@{/dashboard/admin/users}" class="card admin-card-link">
-                            <div class="card-content admin-card-content-blur">
-                                <h3 class="card-title">Manage Users</h3>
-                            </div>
-                        </a>
+                        </div>
                     </div>
                 </section>
             </div>

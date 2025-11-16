@@ -1,6 +1,7 @@
 package com.softuni.gms.app.user.service;
 
 import com.softuni.gms.app.aop.NoLog;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.softuni.gms.app.exeption.NotFoundException;
 import com.softuni.gms.app.exeption.UserAlreadyExistException;
 import com.softuni.gms.app.security.AuthenticationMetadata;
@@ -36,11 +37,13 @@ public class UserService implements UserDetailsService {
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+    private final ObjectMapper objectMapper;
 
     @Autowired
-    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder) {
+    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder, ObjectMapper objectMapper) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
+        this.objectMapper = objectMapper;
     }
 
     @Override
@@ -133,6 +136,16 @@ public class UserService implements UserDetailsService {
     @Cacheable(value = "users")
     public List<User> findAllUsers() {
 
+        List<User> users = userRepository.findAll();
+        return users.stream()
+                .map(this::ensureUserInstance)
+                .distinct()
+                .toList();
+    }
+
+    @NoLog
+    public List<User> findAllUsersUncached() {
+        
         return userRepository.findAll();
     }
 
@@ -185,5 +198,15 @@ public class UserService implements UserDetailsService {
         if (userRepository.findByPhoneNumber(phoneNumber).isPresent()) {
             bindingResult.rejectValue("phoneNumber", "error.phoneNumber", "A user with this phone number already exists");
         }
+    }
+
+    private User ensureUserInstance(Object candidate) {
+        if (candidate instanceof User u) {
+            return u;
+        }
+        if (candidate instanceof java.util.Map<?, ?> map) {
+            return objectMapper.convertValue(map, User.class);
+        }
+        throw new IllegalStateException("Unexpected cached user type: " + candidate.getClass());
     }
 }

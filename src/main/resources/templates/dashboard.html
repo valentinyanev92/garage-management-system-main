@@ -43,17 +43,47 @@
 
     <div class="dashboard-container">
         <header class="dashboard-header">
-            <h1 class="dashboard-title">Dashboard</h1>
-            <div class="user-info">
-                <h2 class="welcome-text">Hello, <span th:text="|${user.firstName} ${user.lastName}|"></span>!</h2>
-                <p class="user-details">
-                    <span th:text="${user.email}"></span> |
-                    <span th:text="${user.phoneNumber}"></span>
-                </p>
+            <div class="header-left">
+                <h1 class="dashboard-title">Dashboard</h1>
+                <div class="user-info">
+                    <h2 class="welcome-text">Hello, <span th:text="|${user.firstName} ${user.lastName}|"></span>!</h2>
+                    <p class="user-details">
+                        <span th:text="${user.email}"></span> |
+                        <span th:text="${user.phoneNumber}"></span>
+                    </p>
+                </div>
+            </div>
+            <div class="notify-panel" aria-label="Repair status notification info">
+                <div class="notify-icon" aria-hidden="true">
+                    <!-- WhatsApp glyph (inline SVG) -->
+                    <svg viewBox="0 0 32 32" width="26" height="26" xmlns="http://www.w3.org/2000/svg">
+                        <defs>
+                            <linearGradient id="waGrad" x1="0" y1="0" x2="1" y2="1">
+                                <stop offset="0%" stop-color="#25D366"/>
+                                <stop offset="100%" stop-color="#128C7E"/>
+                            </linearGradient>
+                        </defs>
+                        <circle cx="16" cy="16" r="14" fill="url(#waGrad)"/>
+                        <path d="M22.4 18.6c-.3-.1-1.8-.9-2.1-1s-.5-.1-.7.2-.8 1-1 1.1-.4.1-.7 0c-.3-.1-1.5-.6-2.9-1.9-1.1-1-1.9-2.3-2.1-2.6-.2-.3 0-.5.1-.6.1-.1.3-.4.4-.5.1-.2.2-.3.3-.5.1-.2.1-.3 0-.5 0-.1-.7-1.7-1-2.3-.2-.5-.4-.4-.6-.4h-.5c-.2 0-.5.1-.8.4-.3.3-1 1-1 2.5s1.1 2.9 1.2 3.1c.1.2 2.2 3.4 5.2 4.7.7.3 1.3.5 1.7.6.7.2 1.4.2 1.9.1.6-.1 1.8-.7 2.1-1.4.3-.7.3-1.2.2-1.4-.1-.2-.3-.2-.6-.3z" fill="#fff"/>
+                    </svg>
+                </div>
+                <div class="notify-content">
+                    <div class="notify-title">WhatsApp Notifications</div>
+                    <div class="notify-text">
+                        You will receive a WhatsApp message whenever your repair status changes (started, completed, etc.).
+                    </div>
+                </div>
             </div>
         </header>
 
         <main class="dashboard-content">
+            <div class="global-alert info"
+                 th:if="${repairList != null and !repairList.?[status.name() == 'ACCEPTED'].isEmpty()}">
+                <span>
+                    Your repair request has been accepted. We are working on it
+                    (<span th:text="${repairList.?[status.name() == 'ACCEPTED'].size()}"></span> in progress).
+                </span>
+            </div>
             <section class="section cars-section">
                 <h2 class="section-title">My Cars</h2>
                 <div class="cards-container" th:if="${carList != null and !carList.isEmpty()}">
@@ -104,6 +134,7 @@
                 </div>
                 <div class="empty-state" th:if="${carList == null or carList.isEmpty()}">
                     <p>You have no registered cars</p>
+                    <a th:href="@{/cars/add}" class="add-button" style="margin-top: 12px;">Add Car</a>
                 </div>
             </section>
 

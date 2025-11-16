@@ -49,6 +49,10 @@
         <main class="dashboard-content">
             <div class="global-alert error" th:if="${notificationErrorMessage != null}"
                  th:text="${notificationErrorMessage}"></div>
+            <div class="global-alert success" th:if="${acceptedSuccessMessage != null}"
+                 th:text="${acceptedSuccessMessage}"></div>
+            <div class="global-alert success" th:if="${workSavedSuccessMessage != null}"
+                 th:text="${workSavedSuccessMessage}"></div>
             <section class="section accepted-order-section" th:if="${acceptedOrder != null}">
                 <h2 class="section-title">Current Active Order</h2>
                 <div class="cards-container">

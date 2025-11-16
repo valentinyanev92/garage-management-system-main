@@ -130,6 +130,12 @@ public class RepairOrderService {
         return repairOrderRepository.findByStatusAndIsDeletedFalseOrderByCreatedAtDesc(RepairStatus.PENDING);
     }
 
+    @NoLog
+    public List<RepairOrder> findByStatus(RepairStatus status) {
+        
+        return repairOrderRepository.findByStatusAndIsDeletedFalseOrderByCreatedAtDesc(status);
+    }
+
     @CacheEvict(value = {"pendingRepairs", "acceptedRepairByMechanic"}, allEntries = true)
     public void acceptRepairOrder(UUID repairOrderId, User mechanic) {
 

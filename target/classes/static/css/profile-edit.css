@@ -175,6 +175,19 @@ body {
     transform: translateY(-1px) scale(1.01);
 }
 
+/* Green variant for secondary actions */
+.profile-edit-button.green {
+    background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+    color: #fff;
+    box-shadow: 0 4px 15px rgba(40, 167, 69, 0.3);
+    animation: none;
+}
+
+.profile-edit-button.green:hover {
+    background: linear-gradient(135deg, #20c997 0%, #28a745 100%);
+    box-shadow: 0 8px 24px rgba(40, 167, 69, 0.5);
+}
+
 @keyframes pulse {
     0% {
         box-shadow: 0 4px 15px rgba(255, 215, 0, 0.3);

@@ -50,90 +50,86 @@
             <div class="repair-details-container">
                 <div class="global-alert error" th:if="${invoiceErrorMessage != null}"
                      th:text="${invoiceErrorMessage}"></div>
-                <div class="repair-details-layout">
-                    <div class="repair-details-left">
-                        <section class="details-section">
-                            <h2 class="section-title">Car Information</h2>
-                            <div class="details-card">
-                                <div class="car-image-container">
-                                    <img th:src="${repairOrder.car.pictureUrl}" alt="Car image" class="car-image">
-                                </div>
-                                <div class="details-grid">
-                                    <div class="detail-item">
-                                        <span class="detail-label">Brand:</span>
-                                        <span class="detail-value" th:text="${repairOrder.car.brand}"></span>
-                                    </div>
-                                    <div class="detail-item">
-                                        <span class="detail-label">Model:</span>
-                                        <span class="detail-value" th:text="${repairOrder.car.model}"></span>
-                                    </div>
-                                    <div class="detail-item">
-                                        <span class="detail-label">VIN:</span>
-                                        <span class="detail-value" th:text="${repairOrder.car.vin}"></span>
-                                    </div>
-                                    <div class="detail-item">
-                                        <span class="detail-label">Plate Number:</span>
-                                        <span class="detail-value" th:text="${repairOrder.car.plateNumber}"></span>
-                                    </div>
-                                </div>
-                            </div>
-                        </section>
-                    </div>
 
-                    <div class="repair-details-right">
-                        <section class="details-section">
-                            <h2 class="section-title">Repair Order Information</h2>
-                            <div class="details-card"
-                                 th:with="statusObj=${repairOrder.status},
-                                              statusName=${statusObj instanceof T(com.softuni.gms.app.repair.model.RepairStatus) ? statusObj.name() : statusObj},
-                                              statusLabel=${statusObj instanceof T(com.softuni.gms.app.repair.model.RepairStatus) ? statusObj.displayName : statusObj}">
-                                <div class="details-grid">
-                                    <div class="detail-item">
-                                        <span class="detail-label">Status:</span>
-                                        <span class="status-badge status-pending"
-                                              th:if="${statusName == 'PENDING'}"
-                                              th:text="${statusLabel}"></span>
-                                        <span class="status-badge status-accepted"
-                                              th:if="${statusName == 'ACCEPTED'}"
-                                              th:text="${statusLabel}"></span>
-                                        <span class="status-badge status-completed"
-                                              th:if="${statusName == 'COMPLETED'}"
-                                              th:text="${statusLabel}"></span>
-                                        <span class="status-badge status-canceled"
-                                              th:if="${statusName == 'CANCELED' or statusName == 'USER_CANCELED'}"
-                                              th:text="${statusLabel}"></span>
-                                    </div>
-                                    <div class="detail-item">
-                                        <span class="detail-label">Created on:</span>
-                                        <span class="detail-value" th:text="${repairOrder.createdAt}"></span>
-                                    </div>
-                                    <div class="detail-item" th:if="${repairOrder.acceptedAt != null}">
-                                        <span class="detail-label">Accepted on:</span>
-                                        <span class="detail-value" th:text="${repairOrder.acceptedAt}"></span>
-                                    </div>
-                                    <div class="detail-item" th:if="${repairOrder.completedAt != null}">
-                                        <span class="detail-label">Completed on:</span>
-                                        <span class="detail-value" th:text="${repairOrder.completedAt}"></span>
-                                    </div>
-                                    <div class="detail-item" th:if="${repairOrder.price != null}">
-                                        <span class="detail-label">Service Fee:</span>
-                                        <span class="detail-value"
-                                              th:text="|${#numbers.formatDecimal(repairOrder.price, 1, 2)} BGN|"></span>
-                                    </div>
-                                </div>
+                <!-- Top: Car image left, info right -->
+                <section class="details-section">
+                    <h2 class="section-title">Car Information</h2>
+                    <div class="details-card horizontal">
+                        <div class="car-image-container">
+                            <img th:src="${repairOrder.car.pictureUrl}" alt="Car image" class="car-image">
+                        </div>
+                        <div class="details-grid">
+                            <div class="detail-item">
+                                <span class="detail-label">Brand:</span>
+                                <span class="detail-value" th:text="${repairOrder.car.brand}"></span>
                             </div>
-                        </section>
-
-                        <section class="details-section">
-                            <h2 class="section-title">Problem Description</h2>
-                            <div class="details-card">
-                                <div class="problem-description">
-                                    <p th:text="${repairOrder.problemDescription}"></p>
-                                </div>
+                            <div class="detail-item">
+                                <span class="detail-label">Model:</span>
+                                <span class="detail-value" th:text="${repairOrder.car.model}"></span>
                             </div>
-                        </section>
+                            <div class="detail-item">
+                                <span class="detail-label">VIN:</span>
+                                <span class="detail-value" th:text="${repairOrder.car.vin}"></span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="detail-label">Plate Number:</span>
+                                <span class="detail-value" th:text="${repairOrder.car.plateNumber}"></span>
+                            </div>
+                        </div>
                     </div>
-                </div>
+                </section>
+
+                <!-- Below: Repair order info + Problem description -->
+                <section class="details-section">
+                    <h2 class="section-title">Repair Request</h2>
+                    <div class="details-card">
+                        <div class="order-problem-grid"
+                             th:with="statusObj=${repairOrder.status},
+                                      statusName=${statusObj instanceof T(com.softuni.gms.app.repair.model.RepairStatus) ? statusObj.name() : statusObj},
+                                      statusLabel=${statusObj instanceof T(com.softuni.gms.app.repair.model.RepairStatus) ? statusObj.displayName : statusObj}">
+                            <div class="details-grid">
+                                <div class="detail-item">
+                                    <span class="detail-label">Status:</span>
+                                    <span class="status-badge status-pending"
+                                          th:if="${statusName == 'PENDING'}"
+                                          th:text="${statusLabel}"></span>
+                                    <span class="status-badge status-accepted"
+                                          th:if="${statusName == 'ACCEPTED'}"
+                                          th:text="${statusLabel}"></span>
+                                    <span class="status-badge status-completed"
+                                          th:if="${statusName == 'COMPLETED'}"
+                                          th:text="${statusLabel}"></span>
+                                    <span class="status-badge status-canceled"
+                                          th:if="${statusName == 'CANCELED' or statusName == 'USER_CANCELED'}"
+                                          th:text="${statusLabel}"></span>
+                                    <span class="detail-value" style="margin-left: 10px;"
+                                          th:text="${statusLabel}"></span>
+                                </div>
+                                <div class="detail-item">
+                                    <span class="detail-label">Created on:</span>
+                                    <span class="detail-value" th:text="${repairOrder.createdAt}"></span>
+                                </div>
+                                <div class="detail-item" th:if="${repairOrder.acceptedAt != null}">
+                                    <span class="detail-label">Accepted on:</span>
+                                    <span class="detail-value" th:text="${repairOrder.acceptedAt}"></span>
+                                </div>
+                                <div class="detail-item" th:if="${repairOrder.completedAt != null}">
+                                    <span class="detail-label">Completed on:</span>
+                                    <span class="detail-value" th:text="${repairOrder.completedAt}"></span>
+                                </div>
+                                <div class="detail-item" th:if="${repairOrder.price != null}">
+                                    <span class="detail-label">Service Fee:</span>
+                                    <span class="detail-value"
+                                          th:text="|${#numbers.formatDecimal(repairOrder.price, 1, 2)} BGN|"></span>
+                                </div>
+                            </div>
+                            <div class="problem-description">
+                                <p style="margin-top: 0; font-weight: 600; margin-bottom: 8px;">Problem description:</p>
+                                <p th:text="${repairOrder.problemDescription}"></p>
+                            </div>
+                        </div>
+                    </div>
+                </section>
 
                 <section class="details-section" th:if="${repairOrder.mechanic != null}">
                     <h2 class="section-title">Assigned Mechanic</h2>
@@ -229,7 +225,7 @@
                         Invoice</a>
                     <span class="invoice-button disabled"
                           th:if="${repairOrder.status.name().equals('COMPLETED') and !repairOrder.invoiceGenerated}">
-                            Invoice not ready yet
+                            Invoice will be ready within 1 minute
                         </span>
                     <a href="/dashboard" class="back-button">Back to Dashboard</a>
                 </div>

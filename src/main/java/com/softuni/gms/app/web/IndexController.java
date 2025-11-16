@@ -34,13 +34,17 @@ public class IndexController {
 
     @GetMapping("/login")
     public ModelAndView getLoginPage(@RequestParam(required = false) String registered,
-                                     @RequestParam(required = false) String error) {
+                                     @RequestParam(required = false) String error,
+                                     @RequestParam(required = false) String firstAdmin) {
 
         ModelAndView modelAndView = new ModelAndView();
         modelAndView.setViewName("login");
         
         if ("true".equals(registered)) {
             modelAndView.addObject("successMessage", "Registration successful!");
+        }
+        if ("true".equals(firstAdmin)) {
+            modelAndView.addObject("firstAdminSuccessMessage", "First user registered – admin role granted.");
         }
         if (error != null) {
             modelAndView.addObject("errorMessage", "Wrong username or password");
@@ -79,8 +83,10 @@ public class IndexController {
             return modelAndView;
         }
 
+        boolean firstUser = userService.findAllUsersUncached().isEmpty();
         userService.registerUser(registerRequest);
-        return new ModelAndView("redirect:/login?registered=true");
+        String redirectUrl = firstUser ? "redirect:/login?registered=true&firstAdmin=true" : "redirect:/login?registered=true";
+        return new ModelAndView(redirectUrl);
     }
 
     @ExceptionHandler(UserAlreadyExistException.class)

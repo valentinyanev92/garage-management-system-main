@@ -53,7 +53,9 @@ public class MechanicPanelController {
 
     @GetMapping
     public ModelAndView getMechanicPanelPage(@AuthenticationPrincipal AuthenticationMetadata authenticationMetadata,
-                                             @RequestParam(value = "notificationError", required = false) String notificationError) {
+                                             @RequestParam(value = "notificationError", required = false) String notificationError,
+                                             @RequestParam(value = "accepted", required = false) String accepted,
+                                             @RequestParam(value = "workSaved", required = false) String workSaved) {
 
         User mechanic = userService.findUserById(authenticationMetadata.getUserId());
         RepairOrder acceptedOrder = repairOrderService.findAcceptedRepairOrderByMechanic(mechanic);
@@ -67,6 +69,12 @@ public class MechanicPanelController {
         if (notificationError != null) {
             modelAndView.addObject("notificationErrorMessage", NOTIFICATION_SERVICE_TRY_AGAIN);
         }
+        if (accepted != null) {
+            modelAndView.addObject("acceptedSuccessMessage", "Order accepted successfully. You can start working on it.");
+        }
+        if (workSaved != null) {
+            modelAndView.addObject("workSavedSuccessMessage", "Work saved successfully to the order.");
+        }
 
         return modelAndView;
     }
@@ -77,7 +85,7 @@ public class MechanicPanelController {
 
         User mechanic = userService.findUserById(authenticationMetadata.getUserId());
         repairOrderService.acceptRepairOrder(id, mechanic);
-        return new ModelAndView("redirect:/dashboard/mechanic");
+        return new ModelAndView("redirect:/dashboard/mechanic?accepted=true");
     }
 
     @PostMapping("/complete/{id}")
@@ -137,7 +145,7 @@ public class MechanicPanelController {
         }
 
         repairOrderService.addWorkToRepairOrder(id, mechanic, workOrderRequest);
-        return new ModelAndView("redirect:/dashboard/mechanic");
+        return new ModelAndView("redirect:/dashboard/mechanic?workSaved=true");
     }
 
     private ModelAndView redirectToMechanicSection(HttpServletRequest request, UUID repairId) {

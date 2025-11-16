@@ -52,6 +52,10 @@
                 <div th:if="${#fields.hasErrors('plateNumber')}" class="error-message" th:errors="*{plateNumber}"></div>
             </div>
 
+            <button type="button" class="profile-edit-button green" style="margin-bottom: 10px;"
+                    onclick="fillExampleCarData()">
+                Use example data
+            </button>
             <button type="submit" class="profile-edit-button">Add Car</button>
         </form>
         <div class="profile-edit-links">
@@ -61,6 +65,55 @@
 </div>
 
 <div th:replace="fragments/footer :: footer"></div>
+<script>
+    (function () {
+        const brands = [
+            { brand: 'BMW', models: ['X5', '3 Series', '5 Series', 'X3'] },
+            { brand: 'Mercedes', models: ['C-Class', 'E-Class', 'GLC', 'A-Class'] },
+            { brand: 'Audi', models: ['A4', 'A6', 'Q5', 'Q3'] },
+            { brand: 'Toyota', models: ['Corolla', 'Camry', 'RAV4', 'Yaris'] },
+            { brand: 'Volkswagen', models: ['Golf', 'Passat', 'Tiguan', 'Polo'] },
+            { brand: 'Honda', models: ['Civic', 'Accord', 'CR-V', 'Jazz'] }
+        ];
+
+        function randomItem(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
+
+        // Generate a valid VIN: 17 chars, digits or capital letters excluding I, O, Q
+        function generateVin() {
+            const chars = '0123456789ABCDEFGHJKLMNPRSTUVWXYZ'; // excludes I, O, Q
+            let vin = '';
+            for (let i = 0; i < 17; i++) {
+                vin += chars[Math.floor(Math.random() * chars.length)];
+            }
+            return vin;
+        }
+
+        // Generate plate like BG format: XX1234YY (letters exclude special BG diacritics)
+        function generatePlate() {
+            const letters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+            const l2 = () => letters[Math.floor(Math.random() * letters.length)];
+            const d4 = String(Math.floor(1000 + Math.random() * 9000));
+            return `${l2()}${l2()}${d4}${l2()}${l2()}`;
+        }
+
+        window.fillExampleCarData = function () {
+            const brandInput = document.getElementById('brand');
+            const modelInput = document.getElementById('model');
+            const vinInput = document.getElementById('vin');
+            const plateInput = document.getElementById('plateNumber');
+
+            const selection = randomItem(brands);
+            const model = randomItem(selection.models);
+
+            if (brandInput) brandInput.value = selection.brand;
+            if (modelInput) modelInput.value = model;
+            if (vinInput) vinInput.value = generateVin();
+            if (plateInput) plateInput.value = generatePlate();
+
+            if (brandInput) brandInput.focus();
+        };
+    })();
+</script>
 </body>
 </html>
 

@@ -42,13 +42,14 @@
 
     <div class="dashboard-container">
         <header class="dashboard-header">
-            <div style="display: flex; justify-content: space-between; align-items: center;">
+            <div style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
                 <h1 class="dashboard-title">Manage Parts</h1>
                 <a th:href="@{/dashboard/admin/parts/add}" class="add-part-header-button">Add Part</a>
             </div>
         </header>
 
         <main class="dashboard-content">
+            <div class="global-alert success" th:if="${successMessage != null}" th:text="${successMessage}"></div>
             <div class="cards-container" th:if="${parts != null and !parts.isEmpty()}">
                 <div class="card part-card" th:each="part : ${parts}">
                     <div class="card-content">
