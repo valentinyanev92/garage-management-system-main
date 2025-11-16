@@ -33,7 +33,6 @@ public class Part {
     @Column(nullable = false)
     private BigDecimal price;
 
-    @Column(nullable = false)
     @OneToMany(mappedBy = "part")
     @JsonIgnore
     private List<UsedPart> usedParts = new ArrayList<>();
