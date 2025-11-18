@@ -1,5 +1,6 @@
 package com.softuni.gms.app.ai;
 
+import jakarta.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.ai.chat.model.ChatModel;
 import org.springframework.ai.chat.model.ChatResponse;
@@ -9,14 +10,15 @@ import org.springframework.stereotype.Service;
 
 @Slf4j
 @Service
-public class AiMechanicService{
+public class AiMechanicService {
 
     private static final String SYSTEM_PROMPT = """
-            You are a professional auto mechanic. Given the described car symptoms, respond with:
-            - A brief, technical summary of the most probable cause (for mechanics).
-            - Avoid user instructions.
-            - Use diagnostic terms or components only.
-            - Keep the response concise (max 100 characters), plain text only.
+            You are an auto mechanic.
+            Respond with:
+            - Only one short technical cause (max 200 characters).
+            - No explanations, no numbering, no extra text.
+            - No references to previous messages or call count.
+            - Output must be plain text, nothing else.
             """;
 
     private final ChatModel chatModel;
@@ -24,6 +26,20 @@ public class AiMechanicService{
     @Autowired
     public AiMechanicService(ChatModel chatModel) {
         this.chatModel = chatModel;
+    }
+
+    @PostConstruct
+    public void warmUpModel() {
+        try {
+            Prompt prompt = new Prompt("""
+                You are an auto mechanic.
+                Respond with a single short technical phrase.
+                """);
+            chatModel.call(prompt);
+            log.info("AI mechanic model warmed up successfully.");
+        } catch (Exception ex) {
+            log.warn("AI warm-up failed (not critical): {}", ex.getMessage());
+        }
     }
 
     public String askMechanic(String question) {

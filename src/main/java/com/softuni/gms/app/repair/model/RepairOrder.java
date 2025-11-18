@@ -54,7 +54,7 @@ public class RepairOrder {
     @JsonManagedReference
     private List<UsedPart> usedParts = new ArrayList<>();
 
-    @Column(nullable = false)
+    @Column(nullable = false, columnDefinition = "TEXT")
     private String problemDescription;
 
     @Column(nullable = false)
