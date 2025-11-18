@@ -15,7 +15,8 @@
         <form th:if="${answer == null}"
               th:action="@{/ai/ask}"
               method="post"
-              class="ai-question-form">
+              class="ai-question-form"
+              id="aiQuestionForm">
             <input type="hidden" name="carId" th:value="${carId}">
             <div class="form-group">
                 <label for="aiQuestion">Describe the car issue</label>
@@ -28,12 +29,19 @@
                           th:text="${question != null ? question : ''}"></textarea>
             </div>
             <div th:if="${error != null}" class="error-message" th:text="${error}"></div>
-            <button type="submit" class="ai-helper-button">Not sure what's the problem? Ask AI!</button>
+            <button type="submit" class="ai-helper-button" id="submitButton">Get answer from AI mechanic!</button>
         </form>
+
+        <div id="loadingIndicator" class="ai-loading-indicator" style="display: none;">
+            <div class="loading-spinner"></div>
+            <p class="loading-text">The AI mechanic is currently searching for the probable cause...</p>
+        </div>
 
         <div th:if="${answer != null}" class="ai-answer-section">
             <h2 class="car-details-title">AI Mechanic Suggestion</h2>
-            <div class="ai-answer-text" th:text="${answer}"></div>
+            <div class="ai-answer-container">
+                <div class="ai-answer-text" th:text="${answer}"></div>
+            </div>
             <form th:action="@{/repairs/create/{id}(id=${carId})}"
                   method="post"
                   class="ai-apply-form">
@@ -49,6 +57,25 @@
 </div>
 
 <div th:replace="fragments/footer :: footer"></div>
+<script>
+    (function() {
+        const form = document.getElementById('aiQuestionForm');
+        const loadingIndicator = document.getElementById('loadingIndicator');
+        const submitButton = document.getElementById('submitButton');
+        
+        if (form && loadingIndicator && submitButton) {
+            form.addEventListener('submit', function(e) {
+                // Show loading indicator
+                loadingIndicator.style.display = 'block';
+                form.style.display = 'none';
+                
+                // Disable submit button to prevent double submission
+                submitButton.disabled = true;
+                submitButton.textContent = 'Processing...';
+            });
+        }
+    })();
+</script>
 </body>
 </html>
 

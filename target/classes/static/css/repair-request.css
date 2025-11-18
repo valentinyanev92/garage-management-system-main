@@ -127,3 +127,64 @@
     border: 0;
 }
 
+/* AI Loading Indicator */
+.repair-request-page .ai-loading-indicator {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 15px;
+    padding: 40px 25px;
+    margin: 30px 0;
+    text-align: center;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(10px);
+}
+
+.repair-request-page .loading-spinner {
+    width: 50px;
+    height: 50px;
+    margin: 0 auto 20px;
+    border: 4px solid rgba(255, 255, 255, 0.2);
+    border-top-color: #34d399;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+.repair-request-page .loading-text {
+    color: #FFD700;
+    font-size: 18px;
+    font-weight: 500;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+    margin: 0;
+}
+
+/* AI Answer Container */
+.repair-request-page .ai-answer-container {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 15px;
+    padding: 20px;
+    margin-bottom: 25px;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(10px);
+    min-height: 150px;
+    max-height: 400px;
+    overflow-y: auto;
+}
+
+.repair-request-page .ai-answer-text {
+    color: white;
+    font-size: 16px;
+    line-height: 1.6;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+}
+
+.repair-request-page .ai-answer-section {
+    margin-top: 30px;
+}
+
