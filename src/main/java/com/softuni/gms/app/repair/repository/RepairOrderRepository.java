@@ -8,6 +8,7 @@ import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -23,4 +24,6 @@ public interface RepairOrderRepository extends JpaRepository<RepairOrder, UUID> 
 
     @EntityGraph(attributePaths = {"usedParts", "usedParts.part", "car", "user", "mechanic"})
     List<RepairOrder> findAllByStatusAndInvoiceGeneratedFalse(RepairStatus status);
+
+    List<RepairOrder> findByStatusAndIsDeletedFalseAndCreatedAtBefore(RepairStatus status, LocalDateTime date);
 }

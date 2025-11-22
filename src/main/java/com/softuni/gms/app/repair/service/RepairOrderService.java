@@ -21,6 +21,7 @@ import org.springframework.cache.CacheManager;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.interceptor.SimpleKey;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.time.Duration;
@@ -282,6 +283,30 @@ public class RepairOrderService {
 
         repairOrder.setInvoiceGenerated(true);
         repairOrderRepository.save(repairOrder);
+    }
+
+    @CacheEvict(value = {"pendingRepairs", "acceptedRepairByMechanic"}, allEntries = true)
+    @Transactional
+    public void cancelOldPendingRepairOrder(RepairOrder repairOrder) {
+
+        if (repairOrder.getStatus() != RepairStatus.PENDING) {
+            log.warn("cancelOldPendingRepairOrder(): RepairOrder with id {} is not PENDING, current status: {}",
+                    repairOrder.getId(), repairOrder.getStatus());
+            return;
+        }
+
+        eventPublisher.publishRepairStatusChanged(
+                repairOrder,
+                repairOrder.getStatus().getDisplayName(),
+                RepairStatus.CANCELED.getDisplayName()
+        );
+
+        LocalDateTime now = LocalDateTime.now();
+        repairOrder.setStatus(RepairStatus.CANCELED);
+        repairOrder.setUpdatedAt(now);
+        repairOrderRepository.save(repairOrder);
+        
+        evictPendingRepairsCache();
     }
 
     private void evictPendingRepairsCache() {

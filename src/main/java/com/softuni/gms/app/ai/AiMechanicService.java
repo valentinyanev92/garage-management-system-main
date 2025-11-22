@@ -1,6 +1,5 @@
 package com.softuni.gms.app.ai;
 
-import jakarta.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.ai.chat.model.ChatModel;
 import org.springframework.ai.chat.model.ChatResponse;
@@ -28,16 +27,16 @@ public class AiMechanicService {
         this.chatModel = chatModel;
     }
 
-    @PostConstruct
-    public void warmUpModel() {
-        try {
-            Prompt prompt = new Prompt("Hello!");
-            chatModel.call(prompt);
-            log.info("AI mechanic model warmed up successfully.");
-        } catch (Exception ex) {
-            log.warn("AI warm-up failed (not critical): {}", ex.getMessage());
-        }
-    }
+//    @PostConstruct
+//    public void warmUpModel() {
+//        try {
+//            Prompt prompt = new Prompt("Hello!");
+//            chatModel.call(prompt);
+//            log.info("AI mechanic model warmed up successfully.");
+//        } catch (Exception ex) {
+//            log.warn("AI warm-up failed (not critical): {}", ex.getMessage());
+//        }
+//    }
 
     public String askMechanic(String question) {
 
