@@ -32,14 +32,9 @@ public class OrdersController {
     public ModelAndView getOrdersPage(@AuthenticationPrincipal AuthenticationMetadata authenticationMetadata) {
 
         User user = userService.findUserById(authenticationMetadata.getUserId());
-        
-        List<RepairOrder> repairList = user.getRepairOrders().stream()
-                .filter(repairOrder -> !repairOrder.isDeleted())
-                .sorted((a, b) -> b.getCreatedAt().compareTo(a.getCreatedAt()))
-                .toList();
-        
-        ModelAndView modelAndView = new ModelAndView();
-        modelAndView.setViewName("orders");
+        List<RepairOrder> repairList = userService.findUserOrdersSorted(authenticationMetadata.getUserId());
+
+        ModelAndView modelAndView = new ModelAndView("orders");
         modelAndView.addObject("user", user);
         modelAndView.addObject("repairList", repairList);
 

@@ -7,17 +7,12 @@ import com.softuni.gms.app.client.PdfService;
 import com.softuni.gms.app.exeption.MicroserviceDontRespondException;
 import com.softuni.gms.app.part.model.Part;
 import com.softuni.gms.app.part.service.PartService;
-import com.softuni.gms.app.repair.model.RepairOrder;
-import com.softuni.gms.app.repair.model.RepairStatus;
-import com.softuni.gms.app.repair.service.RepairOrderService;
 import com.softuni.gms.app.security.AuthenticationMetadata;
 import com.softuni.gms.app.user.model.User;
 import com.softuni.gms.app.user.model.UserRole;
+import com.softuni.gms.app.user.service.AdminPanelService;
 import com.softuni.gms.app.user.service.UserService;
-import com.softuni.gms.app.web.dto.CarEditRequest;
-import com.softuni.gms.app.web.dto.PartAddRequest;
-import com.softuni.gms.app.web.dto.PartEditRequest;
-import com.softuni.gms.app.web.dto.UserAdminEditRequest;
+import com.softuni.gms.app.web.dto.*;
 import com.softuni.gms.app.web.mapper.DtoMapper;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
@@ -31,9 +26,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
-import java.time.LocalDate;
 import java.util.List;
-import java.util.Map;
 import java.util.UUID;
 
 import static com.softuni.gms.app.exeption.MicroserviceDontRespondExceptionMessages.INVOICE_SERVICE_NOT_AVAILABLE_TRY_AGAIN;
@@ -45,18 +38,18 @@ public class AdminPanelController {
     private final UserService userService;
     private final PartService partService;
     private final CarService carService;
-    private final RepairOrderService repairOrderService;
+    private final AdminPanelService adminPanelService;
     private final InvoiceHistoryService invoiceHistoryService;
     private final PdfService pdfService;
 
     @Autowired
     public AdminPanelController(UserService userService, PartService partService, CarService carService,
-                                RepairOrderService repairOrderService, InvoiceHistoryService invoiceHistoryService,
+                                AdminPanelService adminPanelService, InvoiceHistoryService invoiceHistoryService,
                                 PdfService pdfService) {
         this.userService = userService;
         this.partService = partService;
         this.carService = carService;
-        this.repairOrderService = repairOrderService;
+        this.adminPanelService = adminPanelService;
         this.invoiceHistoryService = invoiceHistoryService;
         this.pdfService = pdfService;
     }
@@ -65,34 +58,15 @@ public class AdminPanelController {
     public ModelAndView getAdminPanelPage(@AuthenticationPrincipal AuthenticationMetadata authenticationMetadata) {
 
         User admin = userService.findUserById(authenticationMetadata.getUserId());
-        LocalDate today = LocalDate.now();
+        AdminDashboardData stats = adminPanelService.generateDashboardStats();
 
-        List<User> allUsers = userService.findAllUsersUncached();
-        long totalUsers = allUsers.size();
-        long usersToday = allUsers.stream()
-                .filter(u -> u.getCreatedAt() != null && u.getCreatedAt().toLocalDate().isEqual(today))
-                .count();
-        long activeMechanics = allUsers.stream()
-                .filter(u -> u.getRole() == UserRole.MECHANIC && Boolean.TRUE.equals(u.getIsActive()))
-                .count();
-
-        List<RepairOrder> pendingOrders = repairOrderService.findPendingRepairOrders();
-        List<RepairOrder> acceptedOrders =
-                repairOrderService.findByStatus(RepairStatus.ACCEPTED);
-        long activeRepairs = pendingOrders.size() + acceptedOrders.size();
-        long repairsToday = pendingOrders.stream()
-                .filter(o -> o.getCreatedAt() != null && o.getCreatedAt().toLocalDate().isEqual(today)).count()
-                + acceptedOrders.stream()
-                .filter(o -> o.getCreatedAt() != null && o.getCreatedAt().toLocalDate().isEqual(today)).count();
-
-        ModelAndView modelAndView = new ModelAndView();
-        modelAndView.setViewName("admin-panel");
+        ModelAndView modelAndView = new ModelAndView("admin-panel");
         modelAndView.addObject("user", admin);
-        modelAndView.addObject("statsTotalUsers", totalUsers);
-        modelAndView.addObject("statsUsersToday", usersToday);
-        modelAndView.addObject("statsActiveMechanics", activeMechanics);
-        modelAndView.addObject("statsActiveRepairs", activeRepairs);
-        modelAndView.addObject("statsRepairsToday", repairsToday);
+        modelAndView.addObject("statsTotalUsers", stats.getTotalUsers());
+        modelAndView.addObject("statsUsersToday", stats.getUsersToday());
+        modelAndView.addObject("statsActiveMechanics", stats.getActiveMechanics());
+        modelAndView.addObject("statsActiveRepairs", stats.getActiveRepairs());
+        modelAndView.addObject("statsRepairsToday", stats.getRepairsToday());
 
         return modelAndView;
     }
@@ -102,24 +76,12 @@ public class AdminPanelController {
                                         @org.springframework.web.bind.annotation.RequestParam(value = "historyError", required = false) String historyError) {
 
         User admin = userService.findUserById(authenticationMetadata.getUserId());
-        List<Map<String, Object>> invoices = invoiceHistoryService.getHistory();
+        List<InvoiceHistoryData> invoices = invoiceHistoryService.getHistory();
 
-        invoices.sort((a, b) -> {
-            Object va = a.get("createdAt");
-            Object vb = b.get("createdAt");
-            if (va == null && vb == null) return 0;
-            if (va == null) return 1;
-            if (vb == null) return -1;
-            String sa = va.toString();
-            String sb = vb.toString();
-
-            return sb.compareTo(sa);
-        });
-
-        ModelAndView modelAndView = new ModelAndView();
-        modelAndView.setViewName("admin-invoices");
+        ModelAndView modelAndView = new ModelAndView("admin-invoices");
         modelAndView.addObject("user", admin);
         modelAndView.addObject("invoices", invoices);
+
         if (historyError != null) {
             modelAndView.addObject("historyErrorMessage", INVOICE_SERVICE_NOT_AVAILABLE_TRY_AGAIN);
         }
@@ -145,8 +107,7 @@ public class AdminPanelController {
         User admin = userService.findUserById(authenticationMetadata.getUserId());
         List<Car> deletedCars = carService.findAllDeletedCars();
 
-        ModelAndView modelAndView = new ModelAndView();
-        modelAndView.setViewName("admin-deleted-cars");
+        ModelAndView modelAndView = new ModelAndView("admin-deleted-cars");
         modelAndView.addObject("user", admin);
         modelAndView.addObject("cars", deletedCars);
 
@@ -167,8 +128,7 @@ public class AdminPanelController {
         User admin = userService.findUserById(authenticationMetadata.getUserId());
         Car car = carService.findCarById(id);
 
-        ModelAndView modelAndView = new ModelAndView();
-        modelAndView.setViewName("admin-deleted-car-edit");
+        ModelAndView modelAndView = new ModelAndView("admin-deleted-car-edit");
         modelAndView.addObject("user", admin);
         modelAndView.addObject("carId", id);
         modelAndView.addObject("car", car);
@@ -188,8 +148,7 @@ public class AdminPanelController {
         if (bindingResult.hasErrors()) {
             Car car = carService.findCarById(id);
 
-            ModelAndView modelAndView = new ModelAndView();
-            modelAndView.setViewName("admin-deleted-car-edit");
+            ModelAndView modelAndView = new ModelAndView("admin-deleted-car-edit");
             modelAndView.addObject("user", admin);
             modelAndView.addObject("car", car);
             modelAndView.addObject("carId", id);
@@ -208,8 +167,7 @@ public class AdminPanelController {
         User admin = userService.findUserById(authenticationMetadata.getUserId());
         List<Car> activeCars = carService.findAllActiveCars();
 
-        ModelAndView modelAndView = new ModelAndView();
-        modelAndView.setViewName("admin-cars");
+        ModelAndView modelAndView = new ModelAndView("admin-cars");
         modelAndView.addObject("user", admin);
         modelAndView.addObject("cars", activeCars);
 
@@ -223,8 +181,7 @@ public class AdminPanelController {
         User admin = userService.findUserById(authenticationMetadata.getUserId());
         Car car = carService.findCarById(id);
 
-        ModelAndView modelAndView = new ModelAndView();
-        modelAndView.setViewName("admin-car-edit");
+        ModelAndView modelAndView = new ModelAndView("admin-car-edit");
         modelAndView.addObject("user", admin);
         modelAndView.addObject("carId", id);
         modelAndView.addObject("car", car);
@@ -244,8 +201,7 @@ public class AdminPanelController {
         if (bindingResult.hasErrors()) {
             Car car = carService.findCarById(id);
 
-            ModelAndView modelAndView = new ModelAndView();
-            modelAndView.setViewName("admin-car-edit");
+            ModelAndView modelAndView = new ModelAndView("admin-car-edit");
             modelAndView.addObject("user", admin);
             modelAndView.addObject("car", car);
             modelAndView.addObject("carId", id);
@@ -271,8 +227,7 @@ public class AdminPanelController {
         User admin = userService.findUserById(authenticationMetadata.getUserId());
         List<Part> parts = partService.findAllParts();
 
-        ModelAndView modelAndView = new ModelAndView();
-        modelAndView.setViewName("admin-parts");
+        ModelAndView modelAndView = new ModelAndView("admin-parts");
         modelAndView.addObject("user", admin);
         modelAndView.addObject("parts", parts);
         if (added != null) {
@@ -287,8 +242,7 @@ public class AdminPanelController {
 
         User admin = userService.findUserById(authenticationMetadata.getUserId());
 
-        ModelAndView modelAndView = new ModelAndView();
-        modelAndView.setViewName("admin-parts-add");
+        ModelAndView modelAndView = new ModelAndView("admin-parts-add");
         modelAndView.addObject("user", admin);
         modelAndView.addObject("partAddRequest", new PartAddRequest());
 
@@ -303,8 +257,7 @@ public class AdminPanelController {
         if (bindingResult.hasErrors()) {
             User admin = userService.findUserById(authenticationMetadata.getUserId());
 
-            ModelAndView modelAndView = new ModelAndView();
-            modelAndView.setViewName("admin-parts-add");
+            ModelAndView modelAndView = new ModelAndView("admin-parts-add");
             modelAndView.addObject("user", admin);
             modelAndView.addObject("partAddRequest", partAddRequest);
 
@@ -322,8 +275,7 @@ public class AdminPanelController {
         User admin = userService.findUserById(authenticationMetadata.getUserId());
         Part part = partService.findPartById(id);
 
-        ModelAndView modelAndView = new ModelAndView();
-        modelAndView.setViewName("admin-parts-edit");
+        ModelAndView modelAndView = new ModelAndView("admin-parts-edit");
         modelAndView.addObject("user", admin);
         modelAndView.addObject("part", part);
         modelAndView.addObject("partEditRequest", DtoMapper.mapPartToPartEditRequest(part));
@@ -341,8 +293,7 @@ public class AdminPanelController {
             User admin = userService.findUserById(authenticationMetadata.getUserId());
             Part part = partService.findPartById(id);
 
-            ModelAndView modelAndView = new ModelAndView();
-            modelAndView.setViewName("admin-parts-edit");
+            ModelAndView modelAndView = new ModelAndView("admin-parts-edit");
             modelAndView.addObject("user", admin);
             modelAndView.addObject("part", part);
             modelAndView.addObject("partEditRequest", partEditRequest);
@@ -367,8 +318,7 @@ public class AdminPanelController {
         User admin = userService.findUserById(authenticationMetadata.getUserId());
         List<User> users = userService.findAllUsers();
 
-        ModelAndView modelAndView = new ModelAndView();
-        modelAndView.setViewName("admin-users");
+        ModelAndView modelAndView = new ModelAndView("admin-users");
         modelAndView.addObject("user", admin);
         modelAndView.addObject("users", users);
 
@@ -390,8 +340,7 @@ public class AdminPanelController {
         User admin = userService.findUserById(authenticationMetadata.getUserId());
         User userToEdit = userService.findUserById(id);
 
-        ModelAndView modelAndView = new ModelAndView();
-        modelAndView.setViewName("admin-users-edit");
+        ModelAndView modelAndView = new ModelAndView("admin-users-edit");
         modelAndView.addObject("user", admin);
         modelAndView.addObject("userToEdit", userToEdit);
         modelAndView.addObject("userAdminEditRequest", DtoMapper.mapUserToUserAdminEditRequest(userToEdit));
@@ -410,8 +359,7 @@ public class AdminPanelController {
             User admin = userService.findUserById(authenticationMetadata.getUserId());
             User userToEdit = userService.findUserById(id);
 
-            ModelAndView modelAndView = new ModelAndView();
-            modelAndView.setViewName("admin-users-edit");
+            ModelAndView modelAndView = new ModelAndView("admin-users-edit");
             modelAndView.addObject("user", admin);
             modelAndView.addObject("userToEdit", userToEdit);
             modelAndView.addObject("userAdminEditRequest", userAdminEditRequest);

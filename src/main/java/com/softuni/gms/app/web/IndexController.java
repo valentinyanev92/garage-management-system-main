@@ -37,8 +37,7 @@ public class IndexController {
                                      @RequestParam(required = false) String error,
                                      @RequestParam(required = false) String firstAdmin) {
 
-        ModelAndView modelAndView = new ModelAndView();
-        modelAndView.setViewName("login");
+        ModelAndView modelAndView = new ModelAndView("login");
         
         if ("true".equals(registered)) {
             modelAndView.addObject("successMessage", "Registration successful!");
@@ -56,8 +55,7 @@ public class IndexController {
     @GetMapping("/register")
     public ModelAndView getRegisterPage() {
 
-        ModelAndView modelAndView = new ModelAndView();
-        modelAndView.setViewName("register");
+        ModelAndView modelAndView = new ModelAndView("register");
         modelAndView.addObject("registerRequest", new RegisterRequest());
 
         return modelAndView;
@@ -67,8 +65,7 @@ public class IndexController {
     public ModelAndView registerUser(@Valid RegisterRequest registerRequest, BindingResult bindingResult) {
 
         if (bindingResult.hasErrors()) {
-            ModelAndView modelAndView = new ModelAndView();
-            modelAndView.setViewName("register");
+            ModelAndView modelAndView = new ModelAndView("register");
             modelAndView.addObject("registerRequest", registerRequest);
             modelAndView.addObject(org.springframework.validation.BindingResult.MODEL_KEY_PREFIX + "registerRequest", bindingResult);
             return modelAndView;
@@ -76,8 +73,7 @@ public class IndexController {
 
         userService.validateRegisterRequest(registerRequest, bindingResult);
         if (bindingResult.hasErrors()) {
-            ModelAndView modelAndView = new ModelAndView();
-            modelAndView.setViewName("register");
+            ModelAndView modelAndView = new ModelAndView("register");
             modelAndView.addObject("registerRequest", registerRequest);
             modelAndView.addObject(org.springframework.validation.BindingResult.MODEL_KEY_PREFIX + "registerRequest", bindingResult);
             return modelAndView;

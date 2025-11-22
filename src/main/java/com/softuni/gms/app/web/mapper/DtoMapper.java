@@ -11,6 +11,7 @@ import com.softuni.gms.app.web.dto.*;
 import lombok.experimental.UtilityClass;
 
 import java.math.BigDecimal;
+import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -150,5 +151,38 @@ public class DtoMapper {
                 .mechanicLastName(repairOrder.getMechanic().getLastName())
                 .phoneNumber(repairOrder.getUser().getPhoneNumber())
                 .build();
+    }
+
+    public static WorkOrderRequest mapToWorkOrderRequest(
+            String description,
+            List<UUID> partIds,
+            List<Integer> quantities) {
+
+        WorkOrderRequest request = WorkOrderRequest.builder()
+                .workDescription(description != null ? description.trim() : null)
+                .build();
+
+        if (partIds == null || quantities == null || partIds.size() != quantities.size()) {
+            return request;
+        }
+
+        List<WorkOrderRequest.PartUsageRequest> parts = new java.util.ArrayList<>();
+
+        for (int i = 0; i < partIds.size(); i++) {
+            UUID pid = partIds.get(i);
+            Integer qty = quantities.get(i);
+
+            if (pid != null && qty != null && qty > 0) {
+                parts.add(
+                        WorkOrderRequest.PartUsageRequest.builder()
+                                .partId(pid)
+                                .quantity(qty)
+                                .build()
+                );
+            }
+        }
+
+        request.setParts(parts);
+        return request;
     }
 }

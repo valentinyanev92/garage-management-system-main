@@ -43,6 +43,7 @@ public class AiMechanicController {
     @PostMapping("/ask")
     public ModelAndView askMechanic(@RequestParam UUID carId,
                                     @RequestParam String question) {
+
         String sanitizedQuestion = question == null ? "" : question.trim();
         if (sanitizedQuestion.isEmpty()) {
             String encodedError = URLEncoder.encode("Please describe the problem before asking.", StandardCharsets.UTF_8);
@@ -60,6 +61,7 @@ public class AiMechanicController {
     @PostMapping("/apply")
     public ModelAndView applyAnswer(@RequestParam UUID carId,
                                     @RequestParam String answer) {
+
         if (answer == null) {
             answer = "";
         }

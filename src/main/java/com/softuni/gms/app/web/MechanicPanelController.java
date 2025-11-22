@@ -61,11 +61,11 @@ public class MechanicPanelController {
         RepairOrder acceptedOrder = repairOrderService.findAcceptedRepairOrderByMechanic(mechanic);
         List<RepairOrder> pendingOrders = repairOrderService.findPendingRepairOrders();
 
-        ModelAndView modelAndView = new ModelAndView();
-        modelAndView.setViewName("mechanic-panel");
+        ModelAndView modelAndView = new ModelAndView("mechanic-panel");
         modelAndView.addObject("user", mechanic);
         modelAndView.addObject("acceptedOrder", acceptedOrder);
         modelAndView.addObject("pendingOrders", pendingOrders);
+
         if (notificationError != null) {
             modelAndView.addObject("notificationErrorMessage", NOTIFICATION_SERVICE_TRY_AGAIN);
         }
@@ -90,7 +90,7 @@ public class MechanicPanelController {
 
     @PostMapping("/complete/{id}")
     public ModelAndView completeRepairOrder(@PathVariable UUID id,
-                                           @AuthenticationPrincipal AuthenticationMetadata authenticationMetadata) {
+                                            @AuthenticationPrincipal AuthenticationMetadata authenticationMetadata) {
 
         User mechanic = userService.findUserById(authenticationMetadata.getUserId());
         repairOrderService.completeRepairOrder(id, mechanic);
@@ -102,7 +102,7 @@ public class MechanicPanelController {
 
     @GetMapping("/work/{id}")
     public ModelAndView getWorkOrderPage(@PathVariable UUID id,
-                                        @AuthenticationPrincipal AuthenticationMetadata authenticationMetadata) {
+                                         @AuthenticationPrincipal AuthenticationMetadata authenticationMetadata) {
 
         User mechanic = userService.findUserById(authenticationMetadata.getUserId());
         RepairOrder repairOrder = repairOrderService.findRepairOrderById(id);
@@ -113,8 +113,7 @@ public class MechanicPanelController {
 
         List<Part> parts = partService.findAllParts();
 
-        ModelAndView modelAndView = new ModelAndView();
-        modelAndView.setViewName("work-order");
+        ModelAndView modelAndView = new ModelAndView("work-order");
         modelAndView.addObject("user", mechanic);
         modelAndView.addObject("repairOrder", repairOrder);
         modelAndView.addObject("parts", parts);
@@ -125,26 +124,16 @@ public class MechanicPanelController {
 
     @PostMapping("/work/{id}")
     public ModelAndView saveWorkOrder(@PathVariable UUID id,
-                                     @AuthenticationPrincipal AuthenticationMetadata authenticationMetadata,
-                                     @RequestParam(required = false) String workDescription,
-                                     @RequestParam(required = false) List<UUID> partIds,
-                                     @RequestParam(required = false) List<Integer> quantities) {
+                                      @AuthenticationPrincipal AuthenticationMetadata authenticationMetadata,
+                                      @RequestParam(required = false) String workDescription,
+                                      @RequestParam(required = false) List<UUID> partIds,
+                                      @RequestParam(required = false) List<Integer> quantities) {
 
         User mechanic = userService.findUserById(authenticationMetadata.getUserId());
-        WorkOrderRequest workOrderRequest = DtoMapper.mapWorkDescriptionToWorkOrderRequest(workDescription);
-
-        if (partIds != null && quantities != null && partIds.size() == quantities.size()) {
-            List<WorkOrderRequest.PartUsageRequest> parts = new java.util.ArrayList<>();
-            for (int i = 0; i < partIds.size(); i++) {
-                if (partIds.get(i) != null && quantities.get(i) != null && quantities.get(i) > 0) {
-                    parts.add(DtoMapper.mapPartUsageRequestToPartUsageRequest(partIds.get(i), quantities.get(i)));
-                }
-            }
-
-            workOrderRequest.setParts(parts);
-        }
+        WorkOrderRequest workOrderRequest = DtoMapper.mapToWorkOrderRequest(workDescription, partIds, quantities);
 
         repairOrderService.addWorkToRepairOrder(id, mechanic, workOrderRequest);
+
         return new ModelAndView("redirect:/dashboard/mechanic?workSaved=true");
     }
 
@@ -154,6 +143,7 @@ public class MechanicPanelController {
         if (requestUri != null && requestUri.contains("/work/") && repairId != null) {
             return new ModelAndView("redirect:/dashboard/mechanic/work/" + repairId);
         }
+
         return new ModelAndView("redirect:/dashboard/mechanic");
     }
 

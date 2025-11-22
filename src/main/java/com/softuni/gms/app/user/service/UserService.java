@@ -1,15 +1,19 @@
 package com.softuni.gms.app.user.service;
 
-import com.softuni.gms.app.aop.NoLog;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.softuni.gms.app.aop.NoLog;
+import com.softuni.gms.app.car.model.Car;
 import com.softuni.gms.app.exeption.NotFoundException;
 import com.softuni.gms.app.exeption.UserAlreadyExistException;
+import com.softuni.gms.app.repair.model.RepairOrder;
+import com.softuni.gms.app.repair.model.RepairStatus;
 import com.softuni.gms.app.security.AuthenticationMetadata;
 import com.softuni.gms.app.user.model.User;
 import com.softuni.gms.app.user.model.UserRole;
 import com.softuni.gms.app.user.repository.UserRepository;
 import com.softuni.gms.app.web.dto.RegisterRequest;
 import com.softuni.gms.app.web.dto.UserAdminEditRequest;
+import com.softuni.gms.app.web.dto.UserDashboardData;
 import com.softuni.gms.app.web.dto.UserEditRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,6 +28,7 @@ import org.springframework.validation.BindingResult;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
@@ -201,12 +206,44 @@ public class UserService implements UserDetailsService {
     }
 
     private User ensureUserInstance(Object candidate) {
+
         if (candidate instanceof User u) {
             return u;
         }
         if (candidate instanceof java.util.Map<?, ?> map) {
             return objectMapper.convertValue(map, User.class);
         }
+
+        log.error("ensureUserInstance(): candidate is not instance of User");
         throw new IllegalStateException("Unexpected cached user type: " + candidate.getClass());
+    }
+
+    @NoLog
+    public UserDashboardData getDashboardData(UUID userId) {
+
+        User user = findUserById(userId);
+
+        List<Car> cars = user.getCars().stream()
+                .filter(car -> !car.isDeleted())
+                .toList();
+
+        List<RepairOrder> active = user.getRepairOrders().stream()
+                .filter(o -> !o.isDeleted())
+                .filter(o -> o.getStatus() == RepairStatus.PENDING
+                        || o.getStatus() == RepairStatus.ACCEPTED)
+                .toList();
+
+        return new UserDashboardData(cars, active);
+    }
+
+    @NoLog
+    public List<RepairOrder> findUserOrdersSorted(UUID userId) {
+
+        User user = findUserById(userId);
+
+        return user.getRepairOrders().stream()
+                .filter(order -> !order.isDeleted())
+                .sorted(Comparator.comparing(RepairOrder::getCreatedAt).reversed())
+                .toList();
     }
 }

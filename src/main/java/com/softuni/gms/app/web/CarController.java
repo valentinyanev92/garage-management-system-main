@@ -3,31 +3,23 @@ package com.softuni.gms.app.web;
 import com.softuni.gms.app.car.model.Car;
 import com.softuni.gms.app.car.repository.CarRepository;
 import com.softuni.gms.app.car.service.CarService;
-import com.softuni.gms.app.exeption.CarAlreadyExistsException;
 import com.softuni.gms.app.security.AuthenticationMetadata;
 import com.softuni.gms.app.user.model.User;
 import com.softuni.gms.app.user.service.UserService;
 import com.softuni.gms.app.web.dto.CarEditRequest;
 import com.softuni.gms.app.web.dto.CarRegisterRequest;
 import com.softuni.gms.app.web.mapper.DtoMapper;
-import com.softuni.gms.app.web.mapper.ServletRequestMapper;
-import com.softuni.gms.app.web.util.RequestUtils;
-import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
-import org.springframework.validation.BeanPropertyBindingResult;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.ModelAndView;
 
-import java.sql.SQLException;
 import java.util.List;
 import java.util.UUID;
 
@@ -52,8 +44,7 @@ public class CarController {
         User user = userService.findUserById(authenticationMetadata.getUserId());
         List<Car> carList = carRepository.findByOwnerAndIsDeletedFalse(user);
         
-        ModelAndView modelAndView = new ModelAndView();
-        modelAndView.setViewName("cars");
+        ModelAndView modelAndView = new ModelAndView("cars");
         modelAndView.addObject("user", user);
         modelAndView.addObject("carList", carList);
 
@@ -63,8 +54,7 @@ public class CarController {
     @GetMapping("/add")
     public ModelAndView getAddCarPage() {
 
-        ModelAndView modelAndView = new ModelAndView();
-        modelAndView.setViewName("cars-add");
+        ModelAndView modelAndView = new ModelAndView("cars-add");
         modelAndView.addObject("carRegisterRequest", new CarRegisterRequest());
 
         return modelAndView;
@@ -76,8 +66,7 @@ public class CarController {
                                BindingResult bindingResult) {
 
         if (bindingResult.hasErrors()) {
-            ModelAndView modelAndView = new ModelAndView();
-            modelAndView.setViewName("cars-add");
+            ModelAndView modelAndView = new ModelAndView("cars-add");
             modelAndView.addObject("carRegisterRequest", carRegisterRequest);
             return modelAndView;
         }
@@ -98,8 +87,7 @@ public class CarController {
             return new ModelAndView("redirect:/cars");
         }
 
-        ModelAndView modelAndView = new ModelAndView();
-        modelAndView.setViewName("cars-edit");
+        ModelAndView modelAndView = new ModelAndView("cars-edit");
         modelAndView.addObject("carEditRequest", DtoMapper.mapCarToCarEditRequest(car));
         modelAndView.addObject("carId", id);
 
@@ -119,8 +107,7 @@ public class CarController {
         }
 
         if (bindingResult.hasErrors()) {
-            ModelAndView modelAndView = new ModelAndView();
-            modelAndView.setViewName("cars-edit");
+            ModelAndView modelAndView = new ModelAndView("cars-edit");
             modelAndView.addObject("carEditRequest", carEditRequest);
             modelAndView.addObject("carId", id);
             return modelAndView;
@@ -141,89 +128,6 @@ public class CarController {
         }
 
         carService.deleteCar(id);
-        return new ModelAndView("redirect:/cars");
-    }
-
-    private void handleDuplicateConstraint(Exception ex, BindingResult bindingResult) {
-
-        if (ex instanceof CarAlreadyExistsException carEx) {
-            applyDuplicateError(bindingResult, detectDuplicateField(carEx.getMessage()));
-            return;
-        }
-
-        if (ex instanceof DataIntegrityViolationException dive && dive.getRootCause() instanceof SQLException sqlEx) {
-            if ("23000".equals(sqlEx.getSQLState()) && sqlEx.getErrorCode() == 1062) {
-                applyDuplicateError(bindingResult, detectDuplicateField(sqlEx.getMessage()));
-            } else {
-                applyDuplicateError(bindingResult, null);
-            }
-            return;
-        }
-
-        applyDuplicateError(bindingResult, null);
-    }
-
-    private String detectDuplicateField(String message) {
-
-        if (message == null) {
-            return null;
-        }
-
-        String lower = message.toLowerCase();
-        if (lower.contains("vin")) {
-            return "vin";
-        }
-        if (lower.contains("plate")) {
-            return "plateNumber";
-        }
-        return null;
-    }
-
-    private void applyDuplicateError(BindingResult bindingResult, String fieldKey) {
-
-        if ("vin".equals(fieldKey)) {
-            bindingResult.rejectValue("vin", "error.vin", "A car with this VIN already exists");
-            return;
-        }
-
-        if ("plateNumber".equals(fieldKey)) {
-            bindingResult.rejectValue("plateNumber", "error.plateNumber", "A car with this plate number already exists");
-            return;
-        }
-
-        bindingResult.reject("carDuplicationError", "Car already exists");
-    }
-
-    @ExceptionHandler({CarAlreadyExistsException.class, DataIntegrityViolationException.class})
-    public ModelAndView handleDuplicateCarSubmission(HttpServletRequest request, Exception ex) {
-
-        String uri = request.getRequestURI();
-        if (uri.endsWith("/add")) {
-            CarRegisterRequest form = ServletRequestMapper.extractCarRegisterRequest(request);
-            BeanPropertyBindingResult bindingResult = new BeanPropertyBindingResult(form, "carRegisterRequest");
-            handleDuplicateConstraint(ex, bindingResult);
-
-            ModelAndView modelAndView = new ModelAndView("cars-add");
-            modelAndView.addObject("carRegisterRequest", form);
-            modelAndView.addObject(BindingResult.MODEL_KEY_PREFIX + "carRegisterRequest", bindingResult);
-            return modelAndView;
-        }
-
-        if (uri.contains("/edit/")) {
-            CarEditRequest form = ServletRequestMapper.extractCarEditRequest(request);
-            BeanPropertyBindingResult bindingResult = new BeanPropertyBindingResult(form, "carEditRequest");
-            handleDuplicateConstraint(ex, bindingResult);
-
-            ModelAndView modelAndView = new ModelAndView("cars-edit");
-            modelAndView.addObject("carEditRequest", form);
-            UUID carId = RequestUtils.getPathVariableAsUuid(request, "id");
-            if (carId != null) {
-                modelAndView.addObject("carId", carId);
-            }
-            modelAndView.addObject(BindingResult.MODEL_KEY_PREFIX + "carEditRequest", bindingResult);
-            return modelAndView;
-        }
-
         return new ModelAndView("redirect:/cars");
     }
 }

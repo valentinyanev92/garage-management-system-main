@@ -57,9 +57,9 @@ public class RepairOrderController {
             return new ModelAndView("redirect:/dashboard");
         }
 
-        ModelAndView modelAndView = new ModelAndView();
-        modelAndView.setViewName("repair-request");
+        ModelAndView modelAndView = new ModelAndView("repair-request");
         modelAndView.addObject("car", car);
+
         if (aiSuggestion != null) {
             modelAndView.addObject("aiSuggestion", aiSuggestion);
         }
@@ -89,6 +89,7 @@ public class RepairOrderController {
 
         User user = userService.findUserById(authenticationMetadata.getUserId());
         repairOrderService.cancelRepairRequestByCarId(carId, user);
+
         return new ModelAndView("redirect:/dashboard");
     }
 
@@ -104,10 +105,10 @@ public class RepairOrderController {
             return new ModelAndView("redirect:/dashboard");
         }
 
-        ModelAndView modelAndView = new ModelAndView();
-        modelAndView.setViewName("repair-details");
+        ModelAndView modelAndView = new ModelAndView("repair-details");
         modelAndView.addObject("repairOrder", repairOrder);
         modelAndView.addObject("user", user);
+
         if (invoiceError != null) {
             String message = switch (invoiceError) {
                 case "service" -> INVOICE_SERVICE_NOT_AVAILABLE_TRY_AGAIN;
@@ -129,6 +130,7 @@ public class RepairOrderController {
 
         User user = userService.findUserById(authenticationMetadata.getUserId());
         repairOrderService.deleteRepairOrder(id, user);
+
         return new ModelAndView("redirect:/dashboard");
     }
 
