@@ -6,6 +6,7 @@ import com.softuni.gms.app.web.dto.CarRegisterRequest;
 import com.softuni.gms.app.web.mapper.ServletRequestMapper;
 import com.softuni.gms.app.web.util.RequestUtils;
 import jakarta.servlet.http.HttpServletRequest;
+import org.springframework.core.annotation.Order;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.validation.BeanPropertyBindingResult;
 import org.springframework.validation.BindingResult;
@@ -15,6 +16,7 @@ import org.springframework.web.servlet.ModelAndView;
 
 import java.util.UUID;
 
+@Order(1)
 @ControllerAdvice(assignableTypes = CarController.class)
 public class CarExceptionHandler {
 

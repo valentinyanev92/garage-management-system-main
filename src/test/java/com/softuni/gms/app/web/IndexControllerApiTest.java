@@ -33,7 +33,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @WebMvcTest(IndexController.class)
 @AutoConfigureMockMvc(addFilters = false)
-public class IndexControllerTest {
+public class IndexControllerApiTest {
 
     @MockitoBean
     private UserService userService;

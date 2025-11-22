@@ -3,6 +3,7 @@ package com.softuni.gms.app.web;
 import com.softuni.gms.app.exeption.NotFoundException;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -11,6 +12,7 @@ import org.springframework.web.servlet.NoHandlerFoundException;
 import org.springframework.web.servlet.resource.NoResourceFoundException;
 
 @Slf4j
+@Order(2)
 @ControllerAdvice
 public class GlobalExceptionHandler {
 
