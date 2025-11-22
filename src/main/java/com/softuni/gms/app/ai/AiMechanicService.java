@@ -31,10 +31,7 @@ public class AiMechanicService {
     @PostConstruct
     public void warmUpModel() {
         try {
-            Prompt prompt = new Prompt("""
-                You are an auto mechanic.
-                Respond with a single short technical phrase.
-                """);
+            Prompt prompt = new Prompt("Hello!");
             chatModel.call(prompt);
             log.info("AI mechanic model warmed up successfully.");
         } catch (Exception ex) {

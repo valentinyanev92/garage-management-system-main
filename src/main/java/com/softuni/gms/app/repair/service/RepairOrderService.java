@@ -1,5 +1,6 @@
 package com.softuni.gms.app.repair.service;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.softuni.gms.app.aop.NoLog;
 import com.softuni.gms.app.car.model.Car;
 import com.softuni.gms.app.car.service.CarService;
@@ -14,10 +15,11 @@ import com.softuni.gms.app.repair.repository.RepairOrderRepository;
 import com.softuni.gms.app.user.model.User;
 import com.softuni.gms.app.web.dto.WorkOrderRequest;
 import lombok.extern.slf4j.Slf4j;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.Cache;
+import org.springframework.cache.CacheManager;
 import org.springframework.cache.annotation.CacheEvict;
-import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.interceptor.SimpleKey;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -25,6 +27,7 @@ import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -41,20 +44,23 @@ public class RepairOrderService {
     private final UsedPartService usedPartService;
     private final RepairEventPublisher eventPublisher;
     private final ObjectMapper objectMapper;
+    private final CacheManager cacheManager;
 
     @Autowired
     public RepairOrderService(RepairOrderRepository repairOrderRepository, CarService carService,
                               PartService partService, UsedPartService usedPartService,
-                              RepairEventPublisher eventPublisher, ObjectMapper objectMapper) {
+                              RepairEventPublisher eventPublisher, ObjectMapper objectMapper,
+                              CacheManager cacheManager) {
         this.repairOrderRepository = repairOrderRepository;
         this.carService = carService;
         this.partService = partService;
         this.usedPartService = usedPartService;
         this.eventPublisher = eventPublisher;
         this.objectMapper = objectMapper;
+        this.cacheManager = cacheManager;
     }
 
-    @CacheEvict(value = {"pendingRepairs", "acceptedRepairByMechanic"}, allEntries = true)
+    @CacheEvict(value = {"acceptedRepairByMechanic"}, allEntries = true)
     public void createRepairOrder(UUID carId, User user, String problemDescription) {
 
         Car car = carService.findCarById(carId);
@@ -70,9 +76,10 @@ public class RepairOrderService {
                 .build();
 
         repairOrderRepository.save(repairOrder);
+        evictPendingRepairsCache();
     }
 
-    @CacheEvict(value = {"pendingRepairs", "acceptedRepairByMechanic"}, allEntries = true)
+    @CacheEvict(value = {"acceptedRepairByMechanic"}, allEntries = true)
     public void cancelRepairRequestByCarId(UUID carId, User user) {
 
         Car car = carService.findCarById(carId);
@@ -98,6 +105,7 @@ public class RepairOrderService {
         repairOrder.setUpdatedAt(LocalDateTime.now());
 
         repairOrderRepository.save(repairOrder);
+        evictPendingRepairsCache();
     }
 
     @NoLog
@@ -107,7 +115,7 @@ public class RepairOrderService {
                 .orElseThrow(() -> new NotFoundException(REPAIR_NOT_FOUND));
     }
 
-    @CacheEvict(value = {"pendingRepairs", "acceptedRepairByMechanic"}, allEntries = true)
+    @CacheEvict(value = {"acceptedRepairByMechanic"}, allEntries = true)
     public void deleteRepairOrder(UUID repairOrderId, User user) {
 
         RepairOrder repairOrder = findRepairOrderById(repairOrderId);
@@ -121,13 +129,34 @@ public class RepairOrderService {
         repairOrder.setUpdatedAt(LocalDateTime.now());
 
         repairOrderRepository.save(repairOrder);
+        evictPendingRepairsCache();
     }
 
     @NoLog
-    @Cacheable(value = "pendingRepairs")
     public List<RepairOrder> findPendingRepairOrders() {
 
-        return repairOrderRepository.findByStatusAndIsDeletedFalseOrderByCreatedAtDesc(RepairStatus.PENDING);
+        Cache cache = cacheManager.getCache("pendingRepairs");
+        Object cacheKey = SimpleKey.EMPTY;
+        
+        if (cache != null) {
+            Cache.ValueWrapper wrapper = cache.get(cacheKey);
+            if (wrapper != null) {
+                Object cachedValue = wrapper.get();
+                if (cachedValue instanceof List<?> cachedList) {
+
+                    return cachedList.stream()
+                            .map(this::ensureRepairOrderInstance)
+                            .distinct()
+                            .collect(Collectors.toList());
+                }
+            }
+        }
+
+        List<RepairOrder> orders = repairOrderRepository.findByStatusAndIsDeletedFalseOrderByCreatedAtDesc(RepairStatus.PENDING);
+        if (cache != null) {
+            cache.put(cacheKey, orders);
+        }
+        return orders;
     }
 
     @NoLog
@@ -136,7 +165,7 @@ public class RepairOrderService {
         return repairOrderRepository.findByStatusAndIsDeletedFalseOrderByCreatedAtDesc(status);
     }
 
-    @CacheEvict(value = {"pendingRepairs", "acceptedRepairByMechanic"}, allEntries = true)
+    @CacheEvict(value = {"acceptedRepairByMechanic"}, allEntries = true)
     public void acceptRepairOrder(UUID repairOrderId, User mechanic) {
 
         RepairOrder repairOrder = findRepairOrderById(repairOrderId);
@@ -160,6 +189,7 @@ public class RepairOrderService {
         repairOrder.setUpdatedAt(LocalDateTime.now());
 
         repairOrderRepository.save(repairOrder);
+        evictPendingRepairsCache();
     }
 
     @CacheEvict(value = {"pendingRepairs", "completedWithoutInvoice", "acceptedRepairByMechanic"}, allEntries = true)
@@ -254,14 +284,31 @@ public class RepairOrderService {
         repairOrderRepository.save(repairOrder);
     }
 
+    private void evictPendingRepairsCache() {
+
+        Cache cache = cacheManager.getCache("pendingRepairs");
+        if (cache != null) {
+            cache.clear();
+        }
+    }
+
     private RepairOrder ensureRepairOrderInstance(Object candidate) {
 
         if (candidate instanceof RepairOrder order) {
             return order;
         }
 
-        if (candidate instanceof java.util.Map<?, ?> map) {
+        if (candidate instanceof Map<?, ?> map) {
             return objectMapper.convertValue(map, RepairOrder.class);
+        }
+
+        if (candidate instanceof String jsonString) {
+            try {
+                return objectMapper.readValue(jsonString, RepairOrder.class);
+            } catch (Exception e) {
+                log.error("Failed to deserialize RepairOrder from JSON string: {}", jsonString, e);
+                throw new IllegalStateException("Failed to deserialize cached RepairOrder from JSON string", e);
+            }
         }
 
         throw new IllegalStateException("Unexpected cached repair order type: " + candidate.getClass());
