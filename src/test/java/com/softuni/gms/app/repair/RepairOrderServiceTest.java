@@ -737,27 +737,135 @@ public class RepairOrderServiceTest {
         assertSame(order, result);
     }
 
+    @Test
+    void cancelRepairOrderByAdmin_shouldCancelPendingOrder() {
 
+        UUID repairId = UUID.randomUUID();
 
+        RepairOrder repairOrder = RepairOrder.builder()
+                .id(repairId)
+                .status(RepairStatus.PENDING)
+                .createdAt(LocalDateTime.now().minusHours(1))
+                .updatedAt(LocalDateTime.now())
+                .build();
 
+        when(repairOrderRepository.findById(repairId)).thenReturn(Optional.of(repairOrder));
 
+        repairOrderService.cancelRepairOrderByAdmin(repairId);
 
+        assertEquals(RepairStatus.CANCELED, repairOrder.getStatus());
+        assertNotNull(repairOrder.getUpdatedAt());
 
+        verify(repairEventPublisher).publishRepairStatusChanged(
+                eq(repairOrder),
+                eq(RepairStatus.PENDING.getDisplayName()),
+                eq(RepairStatus.CANCELED.getDisplayName())
+        );
 
+        verify(repairOrderRepository).save(repairOrder);
+    }
 
+    @Test
+    void cancelRepairOrderByAdmin_shouldCancelAcceptedOrder() {
 
+        UUID repairId = UUID.randomUUID();
 
+        RepairOrder repairOrder = RepairOrder.builder()
+                .id(repairId)
+                .status(RepairStatus.ACCEPTED)
+                .createdAt(LocalDateTime.now().minusHours(2))
+                .updatedAt(LocalDateTime.now())
+                .build();
 
+        when(repairOrderRepository.findById(repairId)).thenReturn(Optional.of(repairOrder));
 
+        repairOrderService.cancelRepairOrderByAdmin(repairId);
 
+        assertEquals(RepairStatus.CANCELED, repairOrder.getStatus());
+        assertNotNull(repairOrder.getUpdatedAt());
 
+        verify(repairEventPublisher).publishRepairStatusChanged(
+                eq(repairOrder),
+                eq(RepairStatus.ACCEPTED.getDisplayName()),
+                eq(RepairStatus.CANCELED.getDisplayName())
+        );
 
+        verify(repairOrderRepository).save(repairOrder);
+    }
 
+    @Test
+    void cancelRepairOrderByAdmin_shouldThrow_whenOrderAlreadyCanceled() {
 
+        UUID repairId = UUID.randomUUID();
 
+        RepairOrder repairOrder = RepairOrder.builder()
+                .id(repairId)
+                .status(RepairStatus.CANCELED)
+                .build();
 
+        when(repairOrderRepository.findById(repairId)).thenReturn(Optional.of(repairOrder));
+
+        assertThrows(IllegalStateException.class, () ->
+                repairOrderService.cancelRepairOrderByAdmin(repairId));
+
+        verify(repairEventPublisher, never()).publishRepairStatusChanged(any(), any(), any());
+        verify(repairOrderRepository, never()).save(any());
+    }
+
+    @Test
+    void cancelRepairOrderByAdmin_shouldThrow_whenOrderUserCanceled() {
+
+        UUID repairId = UUID.randomUUID();
+
+        RepairOrder repairOrder = RepairOrder.builder()
+                .id(repairId)
+                .status(RepairStatus.USER_CANCELED)
+                .build();
+
+        when(repairOrderRepository.findById(repairId)).thenReturn(Optional.of(repairOrder));
+
+        assertThrows(IllegalStateException.class, () ->
+                repairOrderService.cancelRepairOrderByAdmin(repairId));
+
+        verify(repairEventPublisher, never()).publishRepairStatusChanged(any(), any(), any());
+        verify(repairOrderRepository, never()).save(any());
+    }
+
+    @Test
+    void cancelRepairOrderByAdmin_shouldThrow_whenOrderCompleted() {
+
+        UUID repairId = UUID.randomUUID();
+
+        RepairOrder repairOrder = RepairOrder.builder()
+                .id(repairId)
+                .status(RepairStatus.COMPLETED)
+                .build();
+
+        when(repairOrderRepository.findById(repairId)).thenReturn(Optional.of(repairOrder));
+
+        assertThrows(IllegalStateException.class, () ->
+                repairOrderService.cancelRepairOrderByAdmin(repairId));
+
+        verify(repairEventPublisher, never()).publishRepairStatusChanged(any(), any(), any());
+        verify(repairOrderRepository, never()).save(any());
+    }
+
+    @Test
+    void cancelRepairOrderByAdmin_shouldThrow_whenOrderNotFound() {
+
+        UUID repairId = UUID.randomUUID();
+
+        when(repairOrderRepository.findById(repairId)).thenReturn(Optional.empty());
+
+        assertThrows(NotFoundException.class, () ->
+                repairOrderService.cancelRepairOrderByAdmin(repairId));
+
+        verify(repairEventPublisher, never()).publishRepairStatusChanged(any(), any(), any());
+        verify(repairOrderRepository, never()).save(any());
+    }
 
     private BigDecimal invokeCalculatePriceForWork(RepairOrder repairOrder, User mechanic) {
+
         try {
             Method method = RepairOrderService.class
                     .getDeclaredMethod("calculatePriceForWork", RepairOrder.class, User.class);
@@ -767,9 +875,4 @@ public class RepairOrderServiceTest {
             throw new RuntimeException(e);
         }
     }
-
-
-
-
-
 }

@@ -7,6 +7,8 @@ import com.softuni.gms.app.client.PdfService;
 import com.softuni.gms.app.exeption.MicroserviceDontRespondException;
 import com.softuni.gms.app.part.model.Part;
 import com.softuni.gms.app.part.service.PartService;
+import com.softuni.gms.app.repair.model.RepairOrder;
+import com.softuni.gms.app.repair.service.RepairOrderService;
 import com.softuni.gms.app.security.AuthenticationMetadata;
 import com.softuni.gms.app.user.model.User;
 import com.softuni.gms.app.user.model.UserRole;
@@ -43,17 +45,19 @@ public class AdminPanelController {
     private final AdminPanelService adminPanelService;
     private final InvoiceHistoryService invoiceHistoryService;
     private final PdfService pdfService;
+    private final RepairOrderService repairOrderService;
 
     @Autowired
     public AdminPanelController(UserService userService, PartService partService, CarService carService,
                                 AdminPanelService adminPanelService, InvoiceHistoryService invoiceHistoryService,
-                                PdfService pdfService) {
+                                PdfService pdfService, RepairOrderService repairOrderService) {
         this.userService = userService;
         this.partService = partService;
         this.carService = carService;
         this.adminPanelService = adminPanelService;
         this.invoiceHistoryService = invoiceHistoryService;
         this.pdfService = pdfService;
+        this.repairOrderService = repairOrderService;
     }
 
     @GetMapping
@@ -372,6 +376,32 @@ public class AdminPanelController {
 
         userService.updateUserByAdmin(id, userAdminEditRequest);
         return new ModelAndView("redirect:/dashboard/admin/users");
+    }
+
+    @GetMapping("/orders")
+    public ModelAndView getOrdersPage(@AuthenticationPrincipal AuthenticationMetadata authenticationMetadata) {
+
+        User admin = userService.findUserById(authenticationMetadata.getUserId());
+        List<RepairOrder> repairOrders = repairOrderService.findAllRepairOrders();
+
+        ModelAndView modelAndView = new ModelAndView("admin-orders");
+        modelAndView.addObject("user", admin);
+        modelAndView.addObject("repairOrders", repairOrders);
+
+        return modelAndView;
+    }
+
+    @PostMapping("/orders/cancel/{id}")
+    public ModelAndView cancelOrder(@PathVariable UUID id,
+                                    @AuthenticationPrincipal AuthenticationMetadata authenticationMetadata) {
+
+        try {
+            repairOrderService.cancelRepairOrderByAdmin(id);
+            return new ModelAndView("redirect:/dashboard/admin/orders");
+        } catch (IllegalStateException e) {
+            // If order cannot be canceled, redirect back with error
+            return new ModelAndView("redirect:/dashboard/admin/orders?error=cannotCancel");
+        }
     }
 
     @ExceptionHandler(MicroserviceDontRespondException.class)

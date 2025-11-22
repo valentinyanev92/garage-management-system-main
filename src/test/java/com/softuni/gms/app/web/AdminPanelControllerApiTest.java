@@ -7,6 +7,9 @@ import com.softuni.gms.app.client.PdfService;
 import com.softuni.gms.app.exeption.MicroserviceDontRespondException;
 import com.softuni.gms.app.part.model.Part;
 import com.softuni.gms.app.part.service.PartService;
+import com.softuni.gms.app.repair.model.RepairOrder;
+import com.softuni.gms.app.repair.model.RepairStatus;
+import com.softuni.gms.app.repair.service.RepairOrderService;
 import com.softuni.gms.app.security.AuthenticationMetadata;
 import com.softuni.gms.app.user.model.User;
 import com.softuni.gms.app.user.model.UserRole;
@@ -24,9 +27,7 @@ import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilde
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.UUID;
 
 import static com.softuni.gms.app.exeption.MicroserviceDontRespondExceptionMessages.INVOICE_SERVICE_NOT_AVAILABLE_TRY_AGAIN;
@@ -59,6 +60,9 @@ public class AdminPanelControllerApiTest {
 
     @MockitoBean
     private PdfService pdfService;
+
+    @MockitoBean
+    private RepairOrderService repairOrderService;
 
     @Autowired
     private MockMvc mockMvc;
@@ -746,5 +750,84 @@ public class AdminPanelControllerApiTest {
                 .price(BigDecimal.valueOf(25.50))
                 .build();
     }
-}
 
+    @Test
+    void getOrdersPage_shouldReturnOrdersView_withOrders() throws Exception {
+
+        UUID adminId = UUID.randomUUID();
+        User admin = mockAdmin(adminId);
+        RepairOrder order1 = mockRepairOrder(UUID.randomUUID(), mockUser(UUID.randomUUID()));
+        RepairOrder order2 = mockRepairOrder(UUID.randomUUID(), mockUser(UUID.randomUUID()));
+        List<RepairOrder> orders = List.of(order1, order2);
+
+        when(userService.findUserById(adminId)).thenReturn(admin);
+        when(repairOrderService.findAllRepairOrders()).thenReturn(orders);
+
+        MockHttpServletRequestBuilder requestBuilder = get("/dashboard/admin/orders")
+                .with(user(mockAuth(adminId)));
+
+        mockMvc.perform(requestBuilder)
+                .andExpect(status().isOk())
+                .andExpect(view().name("admin-orders"))
+                .andExpect(model().attributeExists("user"))
+                .andExpect(model().attribute("repairOrders", orders));
+    }
+
+    @Test
+    void cancelOrder_shouldRedirect_whenValid() throws Exception {
+
+        UUID adminId = UUID.randomUUID();
+        UUID orderId = UUID.randomUUID();
+        User admin = mockAdmin(adminId);
+
+        when(userService.findUserById(adminId)).thenReturn(admin);
+        doNothing().when(repairOrderService).cancelRepairOrderByAdmin(orderId);
+
+        MockHttpServletRequestBuilder requestBuilder = post("/dashboard/admin/orders/cancel/" + orderId)
+                .with(user(mockAuth(adminId)))
+                .with(csrf());
+
+        mockMvc.perform(requestBuilder)
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl("/dashboard/admin/orders"));
+
+        verify(repairOrderService).cancelRepairOrderByAdmin(orderId);
+    }
+
+    @Test
+    void cancelOrder_shouldRedirectWithError_whenIllegalStateException() throws Exception {
+
+        UUID adminId = UUID.randomUUID();
+        UUID orderId = UUID.randomUUID();
+        User admin = mockAdmin(adminId);
+
+        when(userService.findUserById(adminId)).thenReturn(admin);
+        doThrow(new IllegalStateException("Cannot cancel order"))
+                .when(repairOrderService).cancelRepairOrderByAdmin(orderId);
+
+        MockHttpServletRequestBuilder requestBuilder = post("/dashboard/admin/orders/cancel/" + orderId)
+                .with(user(mockAuth(adminId)))
+                .with(csrf());
+
+        mockMvc.perform(requestBuilder)
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl("/dashboard/admin/orders?error=cannotCancel"));
+
+        verify(repairOrderService).cancelRepairOrderByAdmin(orderId);
+    }
+
+    private RepairOrder mockRepairOrder(UUID repairId, User user) {
+
+        Car car = mockCar(UUID.randomUUID(), user);
+
+        return RepairOrder.builder()
+                .id(repairId)
+                .user(user)
+                .car(car)
+                .status(RepairStatus.PENDING)
+                .problemDescription("Test problem")
+                .createdAt(LocalDateTime.now())
+                .updatedAt(LocalDateTime.now())
+                .build();
+    }
+}

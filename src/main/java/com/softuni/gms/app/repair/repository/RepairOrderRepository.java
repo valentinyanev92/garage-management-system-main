@@ -26,4 +26,6 @@ public interface RepairOrderRepository extends JpaRepository<RepairOrder, UUID> 
     List<RepairOrder> findAllByStatusAndInvoiceGeneratedFalse(RepairStatus status);
 
     List<RepairOrder> findByStatusAndIsDeletedFalseAndCreatedAtBefore(RepairStatus status, LocalDateTime date);
+
+    List<RepairOrder> findByIsDeletedFalseOrderByCreatedAtDesc();
 }

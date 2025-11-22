@@ -279,6 +279,38 @@ public class RepairOrderService {
                 .collect(Collectors.toList());
     }
 
+    @NoLog
+    public List<RepairOrder> findAllRepairOrders() {
+
+        return repairOrderRepository.findByIsDeletedFalseOrderByCreatedAtDesc();
+    }
+
+    @CacheEvict(value = {"pendingRepairs", "acceptedRepairByMechanic"}, allEntries = true)
+    @Transactional
+    public void cancelRepairOrderByAdmin(UUID repairOrderId) {
+
+        RepairOrder repairOrder = findRepairOrderById(repairOrderId);
+
+        if (repairOrder.getStatus() == RepairStatus.CANCELED ||
+            repairOrder.getStatus() == RepairStatus.USER_CANCELED ||
+            repairOrder.getStatus() == RepairStatus.COMPLETED) {
+            log.warn("cancelRepairOrderByAdmin(): Cannot cancel repair order {} with status {}", 
+                    repairOrder.getId(), repairOrder.getStatus());
+            throw new IllegalStateException("Cannot cancel repair order with status: " + repairOrder.getStatus());
+        }
+
+        eventPublisher.publishRepairStatusChanged(
+                repairOrder,
+                repairOrder.getStatus().getDisplayName(),
+                RepairStatus.CANCELED.getDisplayName()
+        );
+
+        repairOrder.setStatus(RepairStatus.CANCELED);
+        repairOrder.setUpdatedAt(LocalDateTime.now());
+        repairOrderRepository.save(repairOrder);
+        evictPendingRepairsCache();
+    }
+
     public void changeStatusForGenerateInvoice(RepairOrder repairOrder) {
 
         repairOrder.setInvoiceGenerated(true);

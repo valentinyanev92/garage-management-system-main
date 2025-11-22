@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="bg" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manage Orders - Admin Panel</title>
+    <link rel="stylesheet" th:href="@{/css/dashboard.css}">
+</head>
+<body>
+<div class="dashboard-wrapper">
+    <aside class="sidebar">
+        <nav class="sidebar-nav">
+            <a href="/dashboard" class="nav-button">
+                <span>Dashboard</span>
+            </a>
+            <a href="/profile/edit" class="nav-button">
+                <span>Edit Profile</span>
+            </a>
+            <a th:href="@{/cars}" class="nav-button">
+                <span>Manage Cars</span>
+            </a>
+            <a th:href="@{/orders}" class="nav-button">
+                <span>Manage Orders</span>
+            </a>
+            <div class="nav-spacer"></div>
+            <div class="nav-bottom-section">
+                <a th:href="@{/dashboard/mechanic}"
+                   class="nav-button mechanic-button"
+                   th:if="${user.role.name().equals('MECHANIC') or user.role.name().equals('ADMIN')}">
+                    <span>Mechanic Panel</span>
+                </a>
+                <a th:href="@{/dashboard/admin}"
+                   class="nav-button admin-button active">
+                    <span>Admin Panel</span>
+                </a>
+                <a th:href="@{/logout}" class="nav-button logout-button">
+                    <span>Logout</span>
+                </a>
+            </div>
+        </nav>
+    </aside>
+
+    <div class="dashboard-container">
+        <header class="dashboard-header">
+            <h1 class="dashboard-title">Manage Orders</h1>
+        </header>
+
+        <main class="dashboard-content">
+            <section class="section repairs-section">
+                <h2 class="section-title">All Repair Orders</h2>
+                <div class="cards-container" th:if="${repairOrders != null && !repairOrders.isEmpty()}">
+                    <div class="card repair-card" th:each="order : ${repairOrders}">
+                        <div class="card-content">
+                            <div class="card-info" style="flex: 1;">
+                                <div class="card-header">
+                                    <h3 class="card-title">Order #<span th:text="${order.id}"></span></h3>
+                                </div>
+                                <div class="card-body">
+                                    <div class="card-detail">
+                                        <span class="label">Status:</span>
+                                        <span class="value" th:text="${order.status.displayName}"></span>
+                                    </div>
+                                    <div class="card-detail">
+                                        <span class="label">Car:</span>
+                                        <span class="value" th:text="|${order.car.brand} ${order.car.model} - ${order.car.plateNumber}|"></span>
+                                    </div>
+                                    <div class="card-detail">
+                                        <span class="label">Owner:</span>
+                                        <span class="value" th:text="|${order.user.firstName} ${order.user.lastName}|"></span>
+                                    </div>
+                                    <div class="card-detail" th:if="${order.mechanic != null}">
+                                        <span class="label">Mechanic:</span>
+                                        <span class="value" th:text="|${order.mechanic.firstName} ${order.mechanic.lastName}|"></span>
+                                    </div>
+                                    <div class="card-detail">
+                                        <span class="label">Problem Description:</span>
+                                        <span class="value" th:text="${order.problemDescription}"></span>
+                                    </div>
+                                    <div class="card-detail">
+                                        <span class="label">Created At:</span>
+                                        <span class="value" th:text="${#temporals.format(order.createdAt, 'yyyy-MM-dd HH:mm')}"></span>
+                                    </div>
+                                    <div class="card-detail" th:if="${order.acceptedAt != null}">
+                                        <span class="label">Accepted At:</span>
+                                        <span class="value" th:text="${#temporals.format(order.acceptedAt, 'yyyy-MM-dd HH:mm')}"></span>
+                                    </div>
+                                    <div class="card-detail" th:if="${order.completedAt != null}">
+                                        <span class="label">Completed At:</span>
+                                        <span class="value" th:text="${#temporals.format(order.completedAt, 'yyyy-MM-dd HH:mm')}"></span>
+                                    </div>
+                                    <div class="card-detail" th:if="${order.price != null}">
+                                        <span class="label">Price:</span>
+                                        <span class="value" th:text="${#numbers.formatDecimal(order.price, 1, 2)}">0.00</span> BGN
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="card-actions" style="display: flex; flex-direction: column; gap: 10px;">
+                                <a th:href="@{/repairs/details/{id}(id=${order.id})}"
+                                   class="edit-user-button">
+                                    View Details
+                                </a>
+                                <form th:action="@{/dashboard/admin/orders/cancel/{id}(id=${order.id})}"
+                                      method="post"
+                                      style="display: inline;"
+                                      th:if="${order.status.name() != 'CANCELED' and order.status.name() != 'USER_CANCELED' and order.status.name() != 'COMPLETED'}">
+                                    <button type="submit"
+                                            class="toggle-user-button deactivate-button"
+                                            th:attr="onclick=|return confirm('Are you sure you want to cancel this order?')|">
+                                        Cancel Order
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="empty-state" th:if="${repairOrders == null || repairOrders.isEmpty()}">
+                    <p>No repair orders found.</p>
+                </div>
+            </section>
+        </main>
+    </div>
+</div>
+
+<div th:replace="fragments/footer :: footer"></div>
+</body>
+</html>
+
