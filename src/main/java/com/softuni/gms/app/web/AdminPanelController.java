@@ -20,6 +20,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
@@ -33,6 +34,7 @@ import static com.softuni.gms.app.exeption.MicroserviceDontRespondExceptionMessa
 
 @Controller
 @RequestMapping("/dashboard/admin")
+@PreAuthorize("hasRole('ADMIN')")
 public class AdminPanelController {
 
     private final UserService userService;
