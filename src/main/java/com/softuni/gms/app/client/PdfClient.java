@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 @FeignClient(name = "pdfClient", url = "http://localhost:8081/api/v1/pdf")
 public interface PdfClient {
 
-    @PostMapping(value = "/generate", consumes = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(value = "/invoices", consumes = MediaType.APPLICATION_JSON_VALUE)
     byte[] generateInvoice(@RequestBody InvoiceRequest invoiceRequest);
 
     @GetMapping(value = "/repair/{repairId}/latest", produces = MediaType.APPLICATION_PDF_VALUE)

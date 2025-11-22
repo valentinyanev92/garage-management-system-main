@@ -1,6 +1,5 @@
 package com.softuni.gms.app.repair;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.softuni.gms.app.car.model.Car;
 import com.softuni.gms.app.car.service.CarService;
 import com.softuni.gms.app.event.RepairEventPublisher;
@@ -21,6 +20,7 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.cache.CacheManager;
 
 import java.lang.reflect.Method;
 import java.math.BigDecimal;
@@ -51,11 +51,10 @@ public class RepairOrderServiceTest {
     private RepairEventPublisher repairEventPublisher;
 
     @Mock
-    private ObjectMapper objectMapper;
+    private CacheManager cacheManager;
 
     @InjectMocks
     private RepairOrderService repairOrderService;
-
 
     @Test
     void createRepairOrder_shouldCreateRepairOrder() {

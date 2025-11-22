@@ -19,11 +19,11 @@ public class PdfService {
         this.pdfClient = pdfClient;
     }
 
-    public byte[] generateInvoice(InvoiceRequest invoiceRequest) {
+    public void generateInvoice(InvoiceRequest invoiceRequest) {
 
         log.info("Invoice Request: RepairId {}", invoiceRequest.getRepairId());
         try {
-            return pdfClient.generateInvoice(invoiceRequest);
+            pdfClient.generateInvoice(invoiceRequest);
         } catch (Exception ex) {
             log.error("Failed to generate invoice for repair {}: {}", invoiceRequest.getRepairId(), ex.getMessage());
             throw new MicroserviceDontRespondException(INVOICE_SERVICE_UNAVAILABLE, ex);

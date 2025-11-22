@@ -67,7 +67,7 @@ public class IndexController {
         if (bindingResult.hasErrors()) {
             ModelAndView modelAndView = new ModelAndView("register");
             modelAndView.addObject("registerRequest", registerRequest);
-            modelAndView.addObject(org.springframework.validation.BindingResult.MODEL_KEY_PREFIX + "registerRequest", bindingResult);
+            modelAndView.addObject(BindingResult.MODEL_KEY_PREFIX + "registerRequest", bindingResult);
             return modelAndView;
         }
 
@@ -75,7 +75,7 @@ public class IndexController {
         if (bindingResult.hasErrors()) {
             ModelAndView modelAndView = new ModelAndView("register");
             modelAndView.addObject("registerRequest", registerRequest);
-            modelAndView.addObject(org.springframework.validation.BindingResult.MODEL_KEY_PREFIX + "registerRequest", bindingResult);
+            modelAndView.addObject(BindingResult.MODEL_KEY_PREFIX + "registerRequest", bindingResult);
             return modelAndView;
         }
 
