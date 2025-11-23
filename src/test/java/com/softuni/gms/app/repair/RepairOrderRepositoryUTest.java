@@ -31,7 +31,7 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 @EnableJpaRepositories("com.softuni.gms.app")
 @Import(TestJpaConfig.class)
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
-public class RepairOrderRepositoryTest {
+public class RepairOrderRepositoryUTest {
 
     @Autowired
     private TestEntityManager testEntityManager;

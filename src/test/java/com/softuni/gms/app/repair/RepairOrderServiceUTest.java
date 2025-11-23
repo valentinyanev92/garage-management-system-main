@@ -13,6 +13,7 @@ import com.softuni.gms.app.repair.repository.RepairOrderRepository;
 import com.softuni.gms.app.repair.service.RepairOrderService;
 import com.softuni.gms.app.repair.service.UsedPartService;
 import com.softuni.gms.app.user.model.User;
+import com.softuni.gms.app.user.model.UserRole;
 import com.softuni.gms.app.web.dto.WorkOrderRequest;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -33,7 +34,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
-public class RepairOrderServiceTest {
+public class RepairOrderServiceUTest {
 
     @Mock
     private RepairOrderRepository repairOrderRepository;
@@ -277,6 +278,7 @@ public class RepairOrderServiceTest {
                 .id(UUID.randomUUID())
                 .firstName("firstName")
                 .lastName("lastName")
+                .role(UserRole.MECHANIC)
                 .build();
 
         RepairOrder pendingOrder = RepairOrder.builder()
@@ -335,6 +337,7 @@ public class RepairOrderServiceTest {
 
         User mechanic = User.builder()
                 .id(UUID.randomUUID())
+                .role(UserRole.MECHANIC)
                 .build();
 
         RepairOrder pendingRepairOrder = RepairOrder.builder()

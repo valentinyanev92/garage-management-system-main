@@ -27,7 +27,7 @@ import static org.junit.jupiter.api.Assertions.*;
 @EnableJpaRepositories("com.softuni.gms.app")
 @Import(TestJpaConfig.class)
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
-public class CarRepositoryTest {
+public class CarRepositoryUTest {
 
     @Autowired
     private CarRepository carRepository;

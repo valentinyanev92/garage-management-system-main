@@ -21,7 +21,7 @@ import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
 @EntityScan(basePackages = "com.softuni.gms.app")
 @EnableJpaRepositories(basePackages = "com.softuni.gms.app")
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
-class PartRepositoryTest {
+class PartRepositoryUTest {
 
     @Autowired
     private PartRepository partRepository;

@@ -13,6 +13,7 @@ import com.softuni.gms.app.repair.model.RepairOrder;
 import com.softuni.gms.app.repair.model.RepairStatus;
 import com.softuni.gms.app.repair.repository.RepairOrderRepository;
 import com.softuni.gms.app.user.model.User;
+import com.softuni.gms.app.user.model.UserRole;
 import com.softuni.gms.app.web.dto.WorkOrderRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -171,6 +172,10 @@ public class RepairOrderService {
 
         RepairOrder repairOrder = findRepairOrderById(repairOrderId);
 
+        if (mechanic.getRole() != UserRole.MECHANIC) {
+            throw new IllegalStateException("Only mechanics can accept repair orders");
+        }
+
         if (repairOrder.getStatus() != RepairStatus.PENDING) {
             log.error("acceptRepairOrder(): RepairOrder with id {} is not pending", repairOrder.getId());
             throw new IllegalStateException("Only PENDING repair orders can be accepted");
@@ -178,7 +183,7 @@ public class RepairOrderService {
 
         RepairOrder existingAccepted = findAcceptedRepairOrderByMechanic(mechanic);
         if (existingAccepted != null) {
-            log.info("acceptRepairOrder(): Mechanic {} {} already has accepted repair order", repairOrder.getMechanic().getFirstName(), repairOrder.getMechanic().getLastName());
+            log.info("acceptRepairOrder(): Mechanic {} {} already has accepted repair order", mechanic.getFirstName(), mechanic.getLastName());
             throw new IllegalStateException("Mechanic already has an accepted repair order");
         }
 

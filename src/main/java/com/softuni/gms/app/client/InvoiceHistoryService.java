@@ -25,6 +25,7 @@ public class InvoiceHistoryService {
     }
 
     public List<InvoiceHistoryData> getHistory() {
+
         try {
             List<Map<String, Object>> raw = historyClient.getInvoiceHistory();
 
