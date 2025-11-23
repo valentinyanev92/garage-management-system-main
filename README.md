@@ -22,6 +22,7 @@ SoftUni Java Web Development Track
 ![Redis](https://img.shields.io/badge/Redis-DC382D?style=for-the-badge&logo=redis&logoColor=white)
 ![Kafka](https://img.shields.io/badge/Apache_Kafka-000000?style=for-the-badge&logo=apachekafka&logoColor=white)
 ![Docker](https://img.shields.io/badge/Docker-2496ED?style=for-the-badge&logo=docker&logoColor=white)
+![GreenAPI](https://img.shields.io/badge/GreenAPI-1A8C3A?style=for-the-badge&logo=whatsapp&logoColor=white)
 
 ---
 
