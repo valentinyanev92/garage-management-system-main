@@ -23,6 +23,7 @@ class PdfServiceUTest {
 
     @Test
     void testGenerateInvoice_success() {
+
         InvoiceRequest request = InvoiceRequest.builder()
                 .repairId(UUID.randomUUID())
                 .build();
@@ -35,6 +36,7 @@ class PdfServiceUTest {
 
     @Test
     void testGenerateInvoice_exception_shouldWrapInCustom() {
+
         InvoiceRequest request = InvoiceRequest.builder()
                 .repairId(UUID.randomUUID())
                 .build();
@@ -49,8 +51,9 @@ class PdfServiceUTest {
 
     @Test
     void testDownloadLatestInvoice_success() {
+
         UUID id = UUID.randomUUID();
-        byte[] fakePdf = new byte[]{1,2,3};
+        byte[] fakePdf = new byte[]{1, 2, 3};
 
         Mockito.when(pdfClient.downloadLatestInvoice(id))
                 .thenReturn(fakePdf);
@@ -65,6 +68,7 @@ class PdfServiceUTest {
 
     @Test
     void testDownloadLatestInvoice_exception_shouldWrapInCustom() {
+
         UUID id = UUID.randomUUID();
 
         Mockito.doThrow(new RuntimeException("Download FAIL"))

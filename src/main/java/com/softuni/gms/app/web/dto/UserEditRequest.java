@@ -33,6 +33,6 @@ public class UserEditRequest {
     @NotNull(message = "Phone number is required")
     @NotBlank(message = "Phone number cannot be blank")
     @Pattern(regexp = "^(087|088|089)\\d{7}$",
-             message = "Phone number must be a valid Bulgarian phone number (e.g. 0891234567)")
+            message = "Phone number must be a valid Bulgarian phone number (e.g. 0891234567)")
     private String phoneNumber;
 }

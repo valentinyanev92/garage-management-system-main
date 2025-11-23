@@ -133,7 +133,7 @@ public class CarServiceUTest {
 
         assertThrows(CarAlreadyExistsException.class, () ->
                 carService.registerCar(carRegisterRequest, owner)
-                );
+        );
 
         verify(carRepository, never()).save(any());
     }
@@ -159,7 +159,7 @@ public class CarServiceUTest {
 
         assertThrows(CarAlreadyExistsException.class, () ->
                 carService.registerCar(carRegisterRequest, owner)
-                );
+        );
 
         verify(carRepository, never()).save(any());
     }
@@ -295,7 +295,7 @@ public class CarServiceUTest {
 
         assertThrows(CarAlreadyExistsException.class, () ->
                 carService.updateCar(car.getId(), carEditRequest)
-                );
+        );
 
         verify(carRepository, never()).save(any());
     }

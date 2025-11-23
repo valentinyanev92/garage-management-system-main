@@ -39,8 +39,8 @@ public class ProfileController {
 
     @PostMapping("/edit")
     public ModelAndView updateProfile(@AuthenticationPrincipal AuthenticationMetadata authenticationMetadata,
-                                     @Valid UserEditRequest userDetails,
-                                     BindingResult bindingResult) {
+                                      @Valid UserEditRequest userDetails,
+                                      BindingResult bindingResult) {
 
         if (bindingResult.hasErrors()) {
             ModelAndView modelAndView = new ModelAndView("profile-edit");

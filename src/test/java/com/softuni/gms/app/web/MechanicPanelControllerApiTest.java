@@ -31,7 +31,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @WebMvcTest(MechanicPanelController.class)
 public class MechanicPanelControllerApiTest {
-    
+
     @MockitoBean
     private UserService userService;
 
@@ -43,13 +43,13 @@ public class MechanicPanelControllerApiTest {
 
     @MockitoBean
     private RepairCompletionNotificationService notificationService;
-    
+
     @Autowired
     private MockMvc mockMvc;
 
     @Test
     void getMechanicPanelPage_shouldReturnView() throws Exception {
-        
+
         UUID mechanicId = id();
         User mechanic = mockMechanic(mechanicId);
 
@@ -59,7 +59,7 @@ public class MechanicPanelControllerApiTest {
 
         MockHttpServletRequestBuilder requestBuilder = get("/dashboard/mechanic")
                 .with(user(mockAuth(mechanicId)))
-                        .with(csrf());
+                .with(csrf());
 
         mockMvc.perform(requestBuilder)
                 .andExpect(status().isOk())
@@ -79,7 +79,7 @@ public class MechanicPanelControllerApiTest {
 
         MockHttpServletRequestBuilder requestBuilder = post("/dashboard/mechanic/accept/" + repairId)
                 .with(user(mockAuth(mechanicId)))
-                        .with(csrf());
+                .with(csrf());
 
         mockMvc.perform(requestBuilder)
                 .andExpect(status().is3xxRedirection())

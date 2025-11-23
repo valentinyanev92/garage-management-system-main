@@ -17,6 +17,7 @@ import org.springframework.test.context.ActiveProfiles;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.Optional;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
@@ -34,28 +35,12 @@ public class UserRepositoryUTest {
     @Autowired
     private UserRepository userRepository;
 
-    private void createUser(String username, String email, String phone) {
-        User u = new User();
-        u.setUsername(username);
-        u.setPassword("pass123");
-        u.setFirstName("Valentin");
-        u.setLastName("Yanev");
-        u.setEmail(email);
-        u.setPhoneNumber(phone);
-        u.setRole(UserRole.USER);
-        u.setIsActive(true);
-        u.setHourlyRate(BigDecimal.ZERO);
-        u.setCreatedAt(LocalDateTime.now());
-        u.setUpdatedAt(LocalDateTime.now());
-
-        em.persistFlushFind(u);
-    }
-
     @Test
     void findByUsername_shouldReturnCorrectUser() {
+
         createUser("valyo", "v1@test.com", "359899000001");
 
-        var result = userRepository.findByUsername("valyo").orElse(null);
+        User result = userRepository.findByUsername("valyo").orElse(null);
 
         assertThat(result).isNotNull();
         Assertions.assertNotNull(result);
@@ -64,9 +49,10 @@ public class UserRepositoryUTest {
 
     @Test
     void findByEmail_shouldReturnCorrectUser() {
+
         createUser("john", "john@test.com", "359899000002");
 
-        var result = userRepository.findByEmail("john@test.com").orElse(null);
+        User result = userRepository.findByEmail("john@test.com").orElse(null);
 
         assertThat(result).isNotNull();
         Assertions.assertNotNull(result);
@@ -75,9 +61,10 @@ public class UserRepositoryUTest {
 
     @Test
     void findByPhoneNumber_shouldReturnCorrectUser() {
+
         createUser("mike", "mike@test.com", "359899000003");
 
-        var result = userRepository.findByPhoneNumber("359899000003").orElse(null);
+        User result = userRepository.findByPhoneNumber("359899000003").orElse(null);
 
         assertThat(result).isNotNull();
         Assertions.assertNotNull(result);
@@ -86,8 +73,29 @@ public class UserRepositoryUTest {
 
     @Test
     void findByUsername_shouldReturnEmptyForNonExisting() {
-        var result = userRepository.findByUsername("missing");
+
+        Optional<User> result = userRepository.findByUsername("missing");
 
         assertThat(result).isEmpty();
+    }
+
+
+    private void createUser(String username, String email, String phone) {
+
+        User user = User.builder()
+                .username(username)
+                .password("pass123")
+                .firstName("Valentin")
+                .lastName("Yanev")
+                .email(email)
+                .phoneNumber(phone)
+                .role(UserRole.USER)
+                .isActive(true)
+                .hourlyRate(BigDecimal.ZERO)
+                .createdAt(LocalDateTime.now())
+                .updatedAt(LocalDateTime.now())
+                .build();
+
+        em.persistFlushFind(user);
     }
 }

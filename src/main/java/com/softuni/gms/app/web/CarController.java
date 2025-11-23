@@ -43,7 +43,7 @@ public class CarController {
 
         User user = userService.findUserById(authenticationMetadata.getUserId());
         List<Car> carList = carRepository.findByOwnerAndIsDeletedFalse(user);
-        
+
         ModelAndView modelAndView = new ModelAndView("cars");
         modelAndView.addObject("user", user);
         modelAndView.addObject("carList", carList);
@@ -80,7 +80,7 @@ public class CarController {
     @GetMapping("/edit/{id}")
     public ModelAndView getEditCarPage(@PathVariable UUID id,
                                        @AuthenticationPrincipal AuthenticationMetadata authenticationMetadata) {
-        
+
         Car car = carService.findCarById(id);
 
         if (!car.getOwner().getId().equals(authenticationMetadata.getUserId())) {

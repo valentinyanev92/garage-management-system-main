@@ -39,53 +39,9 @@ public class RepairOrderRepositoryUTest {
     @Autowired
     private RepairOrderRepository repairOrderRepository;
 
-    private User createUser() {
-        String unique = UUID.randomUUID().toString().substring(0, 8);
-
-        User u = new User();
-        u.setUsername("user_" + unique);
-        u.setPassword("pass");
-        u.setFirstName("Valentin");
-        u.setLastName("Yanev");
-        u.setEmail(unique + "@test.com");
-        u.setPhoneNumber("3598999" + unique);  // уникален номер
-        u.setRole(UserRole.USER);
-        u.setHourlyRate(BigDecimal.ZERO);
-        u.setIsActive(true);
-        u.setCreatedAt(LocalDateTime.now());
-        u.setUpdatedAt(LocalDateTime.now());
-
-        return testEntityManager.persistFlushFind(u);
-    }
-
-    private Car createCar(User owner) {
-        Car c = new Car();
-        c.setBrand("BMW");
-        c.setModel("530d");
-        c.setVin("TESTVIN1234567");
-        c.setPlateNumber("CB1234TT");
-        c.setOwner(owner);
-        c.setPictureUrl("img.png");
-        c.setCreatedAt(LocalDateTime.now());
-        c.setUpdatedAt(LocalDateTime.now());
-        c.setDeleted(false);
-        return testEntityManager.persistFlushFind(c);
-    }
-
-    private RepairOrder createOrder(Car car, User user, RepairStatus status, int minutesAgo) {
-        RepairOrder r = new RepairOrder();
-        r.setCar(car);
-        r.setUser(user);
-        r.setStatus(status);
-        r.setCreatedAt(LocalDateTime.now().minusMinutes(minutesAgo));
-        r.setUpdatedAt(LocalDateTime.now());
-        r.setProblemDescription("Test problem");
-        r.setDeleted(false);
-        return testEntityManager.persistFlushFind(r);
-    }
-
     @Test
     void findFirstByCarAndStatusInOrderByCreatedAtDesc_shouldReturnLatestOrder() {
+
         User user = createUser();
         Car car = createCar(user);
 
@@ -106,6 +62,7 @@ public class RepairOrderRepositoryUTest {
 
     @Test
     void findByStatusAndIsDeletedFalseOrderByCreatedAtDesc_shouldReturnInCorrectOrder() {
+
         User user = createUser();
         Car car = createCar(user);
 
@@ -124,12 +81,13 @@ public class RepairOrderRepositoryUTest {
 
     @Test
     void findFirstByStatusAndMechanic_shouldReturnLatestAccepted() {
+
         User user = createUser();
         User mech = createUser();
         Car car = createCar(user);
 
-        createOrderWithMechanic(car, user, mech, RepairStatus.ACCEPTED, 30);
-        RepairOrder newer = createOrderWithMechanic(car, user, mech, RepairStatus.ACCEPTED, 5);
+        createOrderWithMechanic(car, user, mech, 30);
+        RepairOrder newer = createOrderWithMechanic(car, user, mech, 5);
 
         var result = repairOrderRepository
                 .findFirstByStatusAndMechanicAndIsDeletedFalseOrderByAcceptedAtDesc(
@@ -143,12 +101,13 @@ public class RepairOrderRepositoryUTest {
 
     @Test
     void findAllByStatusAndInvoiceGeneratedFalse_shouldReturnOnlyWithoutInvoice() {
+
         User user = createUser();
         Car car = createCar(user);
 
-        createOrderInvoice(car, user, RepairStatus.COMPLETED, false);
-        createOrderInvoice(car, user, RepairStatus.COMPLETED, false);
-        createOrderInvoice(car, user, RepairStatus.COMPLETED, true);
+        createOrderInvoice(car, user, false);
+        createOrderInvoice(car, user, false);
+        createOrderInvoice(car, user, true);
 
         List<RepairOrder> result =
                 repairOrderRepository.findAllByStatusAndInvoiceGeneratedFalse(RepairStatus.COMPLETED);
@@ -157,30 +116,88 @@ public class RepairOrderRepositoryUTest {
         Assertions.assertTrue(result.stream().noneMatch(RepairOrder::isInvoiceGenerated));
     }
 
-    private RepairOrder createOrderWithMechanic(Car car, User user, User mechanic, RepairStatus status, int minutesAgo) {
-        RepairOrder r = new RepairOrder();
-        r.setCar(car);
-        r.setUser(user);
-        r.setMechanic(mechanic);
-        r.setStatus(status);
-        r.setCreatedAt(LocalDateTime.now());
-        r.setAcceptedAt(LocalDateTime.now().minusMinutes(minutesAgo));
-        r.setUpdatedAt(LocalDateTime.now());
-        r.setProblemDescription("Test problem");
-        r.setDeleted(false);
-        return testEntityManager.persistFlushFind(r);
+    private User createUser() {
+
+        String unique = UUID.randomUUID().toString().substring(0, 8);
+        User user = User.builder()
+                .username("user_" + unique)
+                .password("pass")
+                .firstName("Valentin")
+                .lastName("Yanev")
+                .email(unique + "@test.com")
+                .phoneNumber("3598999" + unique)
+                .role(UserRole.USER)
+                .hourlyRate(BigDecimal.ZERO)
+                .isActive(true)
+                .createdAt(LocalDateTime.now())
+                .updatedAt(LocalDateTime.now())
+                .build();
+
+        return testEntityManager.persistFlushFind(user);
     }
 
-    private void createOrderInvoice(Car car, User user, RepairStatus status, boolean invoiceGenerated) {
-        RepairOrder r = new RepairOrder();
-        r.setCar(car);
-        r.setUser(user);
-        r.setStatus(status);
-        r.setCreatedAt(LocalDateTime.now());
-        r.setUpdatedAt(LocalDateTime.now());
-        r.setProblemDescription("Test invoice");
-        r.setInvoiceGenerated(invoiceGenerated);
-        r.setDeleted(false);
-        testEntityManager.persistFlushFind(r);
+    private Car createCar(User owner) {
+
+        Car car = Car.builder()
+                .brand("BMW")
+                .model("530d")
+                .vin("TESTVIN1234567")
+                .plateNumber("CB1234TT")
+                .owner(owner)
+                .pictureUrl("img.png")
+                .createdAt(LocalDateTime.now())
+                .updatedAt(LocalDateTime.now())
+                .isDeleted(false)
+                .build();
+
+        return testEntityManager.persistFlushFind(car);
+    }
+
+    private RepairOrder createOrder(Car car, User user, RepairStatus status, int minutesAgo) {
+
+        RepairOrder repairOrder = RepairOrder.builder()
+                .car(car)
+                .user(user)
+                .status(status)
+                .createdAt(LocalDateTime.now().minusMinutes(minutesAgo))
+                .updatedAt(LocalDateTime.now())
+                .problemDescription("Test problem")
+                .isDeleted(false)
+                .build();
+
+        return testEntityManager.persistFlushFind(repairOrder);
+    }
+
+    private RepairOrder createOrderWithMechanic(Car car, User user, User mechanic, int minutesAgo) {
+
+        RepairOrder repairOrder = RepairOrder.builder()
+                .car(car)
+                .user(user)
+                .mechanic(mechanic)
+                .status(RepairStatus.ACCEPTED)
+                .createdAt(LocalDateTime.now())
+                .acceptedAt(LocalDateTime.now().minusMinutes(minutesAgo))
+                .updatedAt(LocalDateTime.now())
+                .problemDescription("Test problem")
+                .isDeleted(false)
+                .build();
+
+        return testEntityManager.persistFlushFind(repairOrder);
+    }
+
+    private void createOrderInvoice(Car car, User user, boolean invoiceGenerated) {
+
+        RepairOrder repairOrder = RepairOrder.builder()
+                .car(car)
+                .user(user)
+                .status(RepairStatus.COMPLETED)
+                .createdAt(LocalDateTime.now())
+                .updatedAt(LocalDateTime.now())
+                .problemDescription("Test invoice")
+                .invoiceGenerated(invoiceGenerated)
+                .isDeleted(false)
+                .build();
+
+        testEntityManager.persistFlushFind(repairOrder);
     }
 }

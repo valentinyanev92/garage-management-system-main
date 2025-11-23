@@ -22,7 +22,7 @@ public class RepairOrderCleanupScheduler {
 
     @Autowired
     public RepairOrderCleanupScheduler(RepairOrderRepository repairOrderRepository,
-                                      RepairOrderService repairOrderService) {
+                                       RepairOrderService repairOrderService) {
         this.repairOrderRepository = repairOrderRepository;
         this.repairOrderService = repairOrderService;
     }

@@ -87,7 +87,7 @@ public class RepairOrderService {
         Car car = carService.findCarById(carId);
 
         if (!car.getOwner().getId().equals(user.getId())) {
-            log.error("cancelRepairRequestByCarId(): User with id:{}, is not owner of this car with id:{}",  user.getId(), car.getOwner().getId());
+            log.error("cancelRepairRequestByCarId(): User with id:{}, is not owner of this car with id:{}", user.getId(), car.getOwner().getId());
             throw new CarOwnershipException(USER_DONT_OWN_CAR);
         }
 
@@ -139,7 +139,7 @@ public class RepairOrderService {
 
         Cache cache = cacheManager.getCache("pendingRepairs");
         Object cacheKey = SimpleKey.EMPTY;
-        
+
         if (cache != null) {
             Cache.ValueWrapper wrapper = cache.get(cacheKey);
             if (wrapper != null) {
@@ -163,7 +163,7 @@ public class RepairOrderService {
 
     @NoLog
     public List<RepairOrder> findByStatus(RepairStatus status) {
-        
+
         return repairOrderRepository.findByStatusAndIsDeletedFalseOrderByCreatedAtDesc(status);
     }
 
@@ -297,9 +297,9 @@ public class RepairOrderService {
         RepairOrder repairOrder = findRepairOrderById(repairOrderId);
 
         if (repairOrder.getStatus() == RepairStatus.CANCELED ||
-            repairOrder.getStatus() == RepairStatus.USER_CANCELED ||
-            repairOrder.getStatus() == RepairStatus.COMPLETED) {
-            log.warn("cancelRepairOrderByAdmin(): Cannot cancel repair order {} with status {}", 
+                repairOrder.getStatus() == RepairStatus.USER_CANCELED ||
+                repairOrder.getStatus() == RepairStatus.COMPLETED) {
+            log.warn("cancelRepairOrderByAdmin(): Cannot cancel repair order {} with status {}",
                     repairOrder.getId(), repairOrder.getStatus());
             throw new IllegalStateException("Cannot cancel repair order with status: " + repairOrder.getStatus());
         }
@@ -342,7 +342,7 @@ public class RepairOrderService {
         repairOrder.setStatus(RepairStatus.CANCELED);
         repairOrder.setUpdatedAt(now);
         repairOrderRepository.save(repairOrder);
-        
+
         evictPendingRepairsCache();
     }
 

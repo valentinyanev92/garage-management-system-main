@@ -63,7 +63,7 @@ class ErrorController {
 
         String requestedPath = (String) request.getAttribute("requestedPath");
         String errorMessage = (String) request.getAttribute("errorMessage");
-        
+
         if (requestedPath == null) {
             requestedPath = request.getRequestURI();
         }

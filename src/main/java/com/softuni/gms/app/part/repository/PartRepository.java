@@ -9,6 +9,6 @@ import java.util.UUID;
 
 @Repository
 public interface PartRepository extends JpaRepository<Part, UUID> {
-    
+
     List<Part> findByIsDeletedFalse();
 }

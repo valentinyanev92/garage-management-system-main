@@ -2,7 +2,8 @@ package com.softuni.gms.app.exeption;
 
 public class MicroserviceDontRespondExceptionMessages {
 
-    private MicroserviceDontRespondExceptionMessages() {}
+    private MicroserviceDontRespondExceptionMessages() {
+    }
 
     public static final String INVOICE_SERVICE_UNAVAILABLE = "Invoice service is unavailable";
     public static final String INVOICE_SERVICE_NOT_AVAILABLE_TRY_AGAIN = "Invoice service is temporarily unavailable. Please try again later.";

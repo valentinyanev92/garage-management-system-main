@@ -35,46 +35,13 @@ public class CarRepositoryUTest {
     @Autowired
     private UserRepository userRepository;
 
-    private User createOwner() {
-        LocalDateTime now = LocalDateTime.now();
-        String unique = UUID.randomUUID().toString().substring(0, 6);
-
-        return User.builder()
-                .username("user" + UUID.randomUUID())
-                .password("pass")
-                .firstName("Test")
-                .lastName("User")
-                .email(UUID.randomUUID() + "@mail.com")
-                .phoneNumber("35989" + unique)
-                .role(UserRole.USER)
-                .isActive(true)
-                .createdAt(now)
-                .updatedAt(now)
-                .build();
-    }
-
-
-    private Car createCar(User owner, boolean deleted, String vin, String plate, LocalDateTime updatedAt) {
-        return Car.builder()
-                .owner(owner)
-                .brand("Brand")
-                .model("Model")
-                .vin(vin)
-                .plateNumber(plate)
-                .pictureUrl("picture.jpg")
-                .isDeleted(deleted)
-                .createdAt(LocalDateTime.now())
-                .updatedAt(updatedAt)
-                .build();
-    }
-
     @Test
     void findByOwnerAndIsDeletedFalse_shouldReturnOnlyOwnerActiveCars() {
         User owner = userRepository.save(createOwner());
         User otherOwner = userRepository.save(createOwner());
 
         Car c1 = createCar(owner, false, "VIN1", "PLATE1", LocalDateTime.now());
-        Car c2 = createCar(owner, true , "VIN2", "PLATE2", LocalDateTime.now());
+        Car c2 = createCar(owner, true, "VIN2", "PLATE2", LocalDateTime.now());
         Car c3 = createCar(otherOwner, false, "VIN3", "PLATE3", LocalDateTime.now());
 
         carRepository.saveAll(List.of(c1, c2, c3));
@@ -170,5 +137,37 @@ public class CarRepositoryUTest {
         assertEquals("VIN_C", result.get(0).getVin());
         assertEquals("VIN_A", result.get(1).getVin());
         assertEquals("VIN_B", result.get(2).getVin());
+    }
+
+    private User createOwner() {
+        LocalDateTime now = LocalDateTime.now();
+        String unique = UUID.randomUUID().toString().substring(0, 6);
+
+        return User.builder()
+                .username("user" + UUID.randomUUID())
+                .password("pass")
+                .firstName("Test")
+                .lastName("User")
+                .email(UUID.randomUUID() + "@mail.com")
+                .phoneNumber("35989" + unique)
+                .role(UserRole.USER)
+                .isActive(true)
+                .createdAt(now)
+                .updatedAt(now)
+                .build();
+    }
+
+    private Car createCar(User owner, boolean deleted, String vin, String plate, LocalDateTime updatedAt) {
+        return Car.builder()
+                .owner(owner)
+                .brand("Brand")
+                .model("Model")
+                .vin(vin)
+                .plateNumber(plate)
+                .pictureUrl("picture.jpg")
+                .isDeleted(deleted)
+                .createdAt(LocalDateTime.now())
+                .updatedAt(updatedAt)
+                .build();
     }
 }

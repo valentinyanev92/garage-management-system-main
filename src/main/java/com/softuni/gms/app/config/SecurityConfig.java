@@ -40,10 +40,10 @@ public class SecurityConfig {
 
                         .anyRequest().authenticated())
                 .formLogin(form -> form
-                                .loginPage("/login")
-                                .failureUrl("/login?error")
-                                .successHandler(customLoginSuccessHandler)
-                                .permitAll()
+                        .loginPage("/login")
+                        .failureUrl("/login?error")
+                        .successHandler(customLoginSuccessHandler)
+                        .permitAll()
                 )
                 .logout(logout -> logout
                         .logoutRequestMatcher(new AntPathRequestMatcher("/logout", "GET"))
@@ -65,8 +65,8 @@ public class SecurityConfig {
         return new AccessDeniedHandler() {
             @Override
             public void handle(HttpServletRequest request, HttpServletResponse response,
-                             AccessDeniedException accessDeniedException) throws ServletException, java.io.IOException {
-                
+                               AccessDeniedException accessDeniedException) throws ServletException, java.io.IOException {
+
                 request.setAttribute("requestedPath", request.getRequestURI());
                 request.setAttribute("errorMessage", "Access Denied: You do not have permission to access this resource.");
                 request.getRequestDispatcher("/error/403").forward(request, response);

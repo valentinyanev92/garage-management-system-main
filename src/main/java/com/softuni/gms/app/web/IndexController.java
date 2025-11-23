@@ -38,7 +38,7 @@ public class IndexController {
                                      @RequestParam(required = false) String firstAdmin) {
 
         ModelAndView modelAndView = new ModelAndView("login");
-        
+
         if ("true".equals(registered)) {
             modelAndView.addObject("successMessage", "Registration successful!");
         }

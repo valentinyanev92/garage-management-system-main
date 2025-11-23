@@ -18,7 +18,8 @@ public class LoggingAspect {
     }
 
     @Pointcut("@annotation(com.softuni.gms.app.aop.NoLog)")
-    public void noLogMethods() {}
+    public void noLogMethods() {
+    }
 
     @Before("allServiceMethods() && !noLogMethods()")
     public void beforeAllServiceMethods(JoinPoint joinPoint) {
@@ -40,7 +41,7 @@ public class LoggingAspect {
     }
 
     @AfterThrowing(pointcut = "allServiceMethods()", throwing = "exc")
-    public void afterThrowServiceMethods(JoinPoint joinPoint, Throwable exc){
+    public void afterThrowServiceMethods(JoinPoint joinPoint, Throwable exc) {
 
         log.info("[AOP] exception in method: {} -> {}", joinPoint.getSignature(), exc.getMessage());
     }

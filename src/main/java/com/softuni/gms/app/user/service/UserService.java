@@ -150,7 +150,7 @@ public class UserService implements UserDetailsService {
 
     @NoLog
     public List<User> findAllUsersUncached() {
-        
+
         return userRepository.findAll();
     }
 

@@ -104,7 +104,7 @@ public class AdminPanelControllerApiTest {
         UUID repairId = UUID.randomUUID();
         User admin = mockAdmin(adminId);
         LocalDateTime createdAt = LocalDateTime.now();
-        
+
         InvoiceHistoryData invoice1 = InvoiceHistoryData.builder()
                 .id(repairId.toString())
                 .fileName("invoice-1.pdf")
@@ -701,55 +701,6 @@ public class AdminPanelControllerApiTest {
                 .andExpect(redirectedUrl("/dashboard/admin/invoices?historyError=true"));
     }
 
-    private AuthenticationMetadata mockAuth(UUID id) {
-
-        return new AuthenticationMetadata(id
-                , "admin"
-                , "password"
-                , UserRole.ADMIN
-                , true);
-    }
-
-    private User mockAdmin(UUID id) {
-
-        return User.builder()
-                .id(id)
-                .username("admin")
-                .role(UserRole.ADMIN)
-                .build();
-    }
-
-    private User mockUser(UUID id) {
-
-        return User.builder()
-                .id(id)
-                .username("testUser")
-                .role(UserRole.USER)
-                .build();
-    }
-
-    private Car mockCar(UUID carId, User owner) {
-
-        return Car.builder()
-                .id(carId)
-                .brand("BMW")
-                .model("320d")
-                .vin("WBA3D3C50EK123456")
-                .plateNumber("CA1234AB")
-                .owner(owner)
-                .pictureUrl("")
-                .build();
-    }
-
-    private Part mockPart(UUID partId) {
-
-        return Part.builder()
-                .id(partId)
-                .name("Oil Filter")
-                .manufacturer("Mann")
-                .price(BigDecimal.valueOf(25.50))
-                .build();
-    }
 
     @Test
     void getOrdersPage_shouldReturnOrdersView_withOrders() throws Exception {
@@ -814,6 +765,56 @@ public class AdminPanelControllerApiTest {
                 .andExpect(redirectedUrl("/dashboard/admin/orders?error=cannotCancel"));
 
         verify(repairOrderService).cancelRepairOrderByAdmin(orderId);
+    }
+
+    private AuthenticationMetadata mockAuth(UUID id) {
+
+        return new AuthenticationMetadata(id
+                , "admin"
+                , "password"
+                , UserRole.ADMIN
+                , true);
+    }
+
+    private User mockAdmin(UUID id) {
+
+        return User.builder()
+                .id(id)
+                .username("admin")
+                .role(UserRole.ADMIN)
+                .build();
+    }
+
+    private User mockUser(UUID id) {
+
+        return User.builder()
+                .id(id)
+                .username("testUser")
+                .role(UserRole.USER)
+                .build();
+    }
+
+    private Car mockCar(UUID carId, User owner) {
+
+        return Car.builder()
+                .id(carId)
+                .brand("BMW")
+                .model("320d")
+                .vin("WBA3D3C50EK123456")
+                .plateNumber("CA1234AB")
+                .owner(owner)
+                .pictureUrl("")
+                .build();
+    }
+
+    private Part mockPart(UUID partId) {
+
+        return Part.builder()
+                .id(partId)
+                .name("Oil Filter")
+                .manufacturer("Mann")
+                .price(BigDecimal.valueOf(25.50))
+                .build();
     }
 
     private RepairOrder mockRepairOrder(UUID repairId, User user) {

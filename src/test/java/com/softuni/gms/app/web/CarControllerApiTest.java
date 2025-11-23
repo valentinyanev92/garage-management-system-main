@@ -127,7 +127,8 @@ public class CarControllerApiTest {
         UUID userId = UUID.randomUUID();
         UUID carId = UUID.randomUUID();
 
-        User user = mockUser(userId);Car car = Car.builder()
+        User user = mockUser(userId);
+        Car car = Car.builder()
                 .id(carId)
                 .owner(user)
                 .pictureUrl("")

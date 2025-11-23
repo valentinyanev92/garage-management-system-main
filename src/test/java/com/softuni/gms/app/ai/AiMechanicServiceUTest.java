@@ -41,12 +41,14 @@ class AiMechanicServiceUTest {
 
     @Test
     void testAskMechanic_nullQuestion_shouldThrow() {
+
         Assertions.assertThrows(IllegalArgumentException.class,
                 () -> service.askMechanic(null));
     }
 
     @Test
     void testAskMechanic_emptyQuestion_shouldThrow() {
+
         Assertions.assertThrows(IllegalArgumentException.class,
                 () -> service.askMechanic("   "));
     }
