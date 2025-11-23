@@ -1,6 +1,6 @@
 package com.softuni.gms.app.car;
 
-import com.softuni.gms.app.TestJpaConfig;
+import com.softuni.gms.app.config.TestJpaConfig;
 import com.softuni.gms.app.car.model.Car;
 import com.softuni.gms.app.car.repository.CarRepository;
 import com.softuni.gms.app.user.model.User;

@@ -1,4 +1,4 @@
-package com.softuni.gms.app;
+package com.softuni.gms.app.config;
 
 import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
 import org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration;

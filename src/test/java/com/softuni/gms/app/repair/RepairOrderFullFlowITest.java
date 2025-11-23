@@ -1,7 +1,7 @@
 package com.softuni.gms.app.repair;
 
-import com.softuni.gms.app.TestCacheConfig;
-import com.softuni.gms.app.TestSecurityConfig;
+import com.softuni.gms.app.config.TestCacheConfig;
+import com.softuni.gms.app.config.TestSecurityConfig;
 import com.softuni.gms.app.car.model.Car;
 import com.softuni.gms.app.car.repository.CarRepository;
 import com.softuni.gms.app.part.model.Part;

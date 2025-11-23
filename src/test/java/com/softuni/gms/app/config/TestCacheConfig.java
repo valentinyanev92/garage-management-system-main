@@ -1,4 +1,4 @@
-package com.softuni.gms.app;
+package com.softuni.gms.app.config;
 
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.cache.CacheManager;

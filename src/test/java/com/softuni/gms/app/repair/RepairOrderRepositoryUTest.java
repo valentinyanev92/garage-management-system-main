@@ -1,6 +1,6 @@
 package com.softuni.gms.app.repair;
 
-import com.softuni.gms.app.TestJpaConfig;
+import com.softuni.gms.app.config.TestJpaConfig;
 import com.softuni.gms.app.car.model.Car;
 import com.softuni.gms.app.repair.model.RepairOrder;
 import com.softuni.gms.app.repair.model.RepairStatus;

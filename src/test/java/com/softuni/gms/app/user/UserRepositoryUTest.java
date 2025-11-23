@@ -1,6 +1,6 @@
 package com.softuni.gms.app.user;
 
-import com.softuni.gms.app.TestJpaConfig;
+import com.softuni.gms.app.config.TestJpaConfig;
 import com.softuni.gms.app.user.model.User;
 import com.softuni.gms.app.user.model.UserRole;
 import com.softuni.gms.app.user.repository.UserRepository;
