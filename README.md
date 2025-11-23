@@ -98,14 +98,12 @@ Handles:
 
 ## 2.3 Domain Entities
 
-### Main Application (7 entities)
+### Main Application (5 entities)
 - User
 - Car
 - RepairOrder
 - Part
 - UsedPart
-- InvoiceLog
-- RepairLog
 
 ### Microservice (2 entities)
 - InvoiceRecord
@@ -140,17 +138,16 @@ Context path: /api/v1
 
 
 ### **POST Endpoints**
-| Endpoint                 | Description                                 |
-|--------------------------|---------------------------------------------|
-| **POST /invoices**       | Generate invoice (PDF) and store in MongoDB |
-| **POST /complete-order** | Send WhatsApp notification via GreenAPI     |
+| Endpoint                        | Description                                 |
+|---------------------------------|---------------------------------------------|
+| **POST /api/v1/invoices**       | Generate invoice (PDF) and store in MongoDB |
+| **POST /api/v1/complete-order** | Send WhatsApp notification via GreenAPI     |
 
 ### **GET Endpoints**
-| Endpoint                          | Description                       |
-|-----------------------------------|-----------------------------------|
-| **GET /history**                  | Get all invoice/notification logs |
-| **GET /history/{repairId}**       | Get logs for specific repair      |
-| **GET /repair/{repairId}/latest** | Get latest invoice/log record     |
+| Endpoint                                     | Description                       |
+|----------------------------------------------|-----------------------------------|
+| **GET /api/v1/history**                      | Get all invoice/notification logs |
+| **GET /api/v1/pdf/repair/{repairId}/latest** | Get logs for specific repair      |
 
 → Fully exceeds the requirement (2 modifying + 1 GET).  
 → Invoked by **Feign Client** from the main application.

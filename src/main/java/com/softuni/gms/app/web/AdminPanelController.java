@@ -399,7 +399,6 @@ public class AdminPanelController {
             repairOrderService.cancelRepairOrderByAdmin(id);
             return new ModelAndView("redirect:/dashboard/admin/orders");
         } catch (IllegalStateException e) {
-            // If order cannot be canceled, redirect back with error
             return new ModelAndView("redirect:/dashboard/admin/orders?error=cannotCancel");
         }
     }
