@@ -13,7 +13,6 @@ import com.softuni.gms.app.repair.model.RepairOrder;
 import com.softuni.gms.app.repair.model.RepairStatus;
 import com.softuni.gms.app.repair.repository.RepairOrderRepository;
 import com.softuni.gms.app.user.model.User;
-import com.softuni.gms.app.user.model.UserRole;
 import com.softuni.gms.app.web.dto.WorkOrderRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -171,10 +170,6 @@ public class RepairOrderService {
     public void acceptRepairOrder(UUID repairOrderId, User mechanic) {
 
         RepairOrder repairOrder = findRepairOrderById(repairOrderId);
-
-        if (mechanic.getRole() == UserRole.USER ) {
-            throw new IllegalStateException("Only mechanics can accept repair orders");
-        }
 
         if (repairOrder.getStatus() != RepairStatus.PENDING) {
             log.error("acceptRepairOrder(): RepairOrder with id {} is not pending", repairOrder.getId());
