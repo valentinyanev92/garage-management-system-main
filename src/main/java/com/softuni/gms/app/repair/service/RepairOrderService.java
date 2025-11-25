@@ -172,7 +172,7 @@ public class RepairOrderService {
 
         RepairOrder repairOrder = findRepairOrderById(repairOrderId);
 
-        if (mechanic.getRole() != UserRole.MECHANIC) {
+        if (mechanic.getRole() == UserRole.USER ) {
             throw new IllegalStateException("Only mechanics can accept repair orders");
         }
 
