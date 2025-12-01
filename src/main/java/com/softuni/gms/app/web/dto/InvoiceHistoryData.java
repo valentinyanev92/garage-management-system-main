@@ -3,30 +3,25 @@ package com.softuni.gms.app.web.dto;
 import lombok.*;
 
 import java.time.LocalDateTime;
+import java.util.UUID;
 
-@Builder
 @Getter
 @Setter
-@NoArgsConstructor
+@Builder
 @AllArgsConstructor
+@NoArgsConstructor
 public class InvoiceHistoryData {
 
-    private String id;
-    private String fileName;
-    private LocalDateTime createdAt;
-    private String userName;
-
-    public String getRepairId() {
-        return id;
-    }
-
-    public Object get(String key) {
-        return switch (key) {
-            case "repairId", "_id", "id" -> id;
-            case "fileName" -> fileName;
-            case "createdAt" -> createdAt;
-            case "userName" -> userName;
-            default -> null;
-        };
-    }
+        private String id;
+        private UUID repairId;
+        private LocalDateTime createdAt;
+        private LocalDateTime completedAt;
+        private LocalDateTime generatedAt;
+        private String customerFirstName;
+        private String customerLastName;
+        private String customerPhone;
+        private String mechanicFirstName;
+        private String mechanicLastName;
+        private String carBrand;
+        private String carModel;
 }

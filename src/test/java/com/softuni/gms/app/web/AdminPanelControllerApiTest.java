@@ -102,16 +102,28 @@ public class AdminPanelControllerApiTest {
 
         UUID adminId = UUID.randomUUID();
         UUID repairId = UUID.randomUUID();
+
         User admin = mockAdmin(adminId);
         LocalDateTime createdAt = LocalDateTime.now();
+        LocalDateTime completedAt = createdAt.plusHours(1);
+        LocalDateTime generatedAt = createdAt.plusMinutes(30);
 
-        InvoiceHistoryData invoice1 = InvoiceHistoryData.builder()
-                .id(repairId.toString())
-                .fileName("invoice-1.pdf")
+        InvoiceHistoryData invoice = InvoiceHistoryData.builder()
+                .id("inv-123")
+                .repairId(repairId)
                 .createdAt(createdAt)
-                .userName("User1")
+                .completedAt(completedAt)
+                .generatedAt(generatedAt)
+                .customerFirstName("Ivan")
+                .customerLastName("Petrov")
+                .customerPhone("+359888888888")
+                .mechanicFirstName("Gosho")
+                .mechanicLastName("Ganev")
+                .carBrand("BMW")
+                .carModel("E46")
                 .build();
-        List<InvoiceHistoryData> invoices = List.of(invoice1);
+
+        List<InvoiceHistoryData> invoices = List.of(invoice);
 
         when(userService.findUserById(adminId)).thenReturn(admin);
         when(invoiceHistoryService.getHistory()).thenReturn(invoices);
@@ -125,6 +137,7 @@ public class AdminPanelControllerApiTest {
                 .andExpect(model().attributeExists("user"))
                 .andExpect(model().attribute("invoices", invoices));
     }
+
 
     @Test
     void getInvoicesPage_shouldIncludeErrorMessage_whenHistoryError() throws Exception {

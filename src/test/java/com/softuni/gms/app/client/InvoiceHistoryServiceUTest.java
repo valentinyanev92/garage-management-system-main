@@ -14,6 +14,7 @@ import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 @ExtendWith(MockitoExtension.class)
 class InvoiceHistoryServiceUTest {
@@ -77,24 +78,47 @@ class InvoiceHistoryServiceUTest {
     @Test
     void testToDto_mappingIsCorrect() {
 
-        LocalDateTime time = LocalDateTime.now();
+        LocalDateTime created = LocalDateTime.now();
+        LocalDateTime completed = created.plusDays(1);
+        LocalDateTime generated = created.plusDays(2);
 
-        Map<String, Object> raw = Map.of(
-                "_id", "test-id",
-                "fileName", "f.pdf",
-                "createdAt", time.toString(),
-                "userName", "Ivan"
+        Map<String, Object> raw = Map.ofEntries(
+                Map.entry("id", "test-id"),
+                Map.entry("repairId", "11111111-1111-1111-1111-111111111111"),
+                Map.entry("createdAt", created.toString()),
+                Map.entry("completedAt", completed.toString()),
+                Map.entry("generatedAt", generated.toString()),
+                Map.entry("customerFirstName", "Ivan"),
+                Map.entry("customerLastName", "Petrov"),
+                Map.entry("customerPhone", "+359888888888"),
+                Map.entry("mechanicFirstName", "Gosho"),
+                Map.entry("mechanicLastName", "Ganev"),
+                Map.entry("carBrand", "BMW"),
+                Map.entry("carModel", "E46")
         );
 
-        Mockito.when(historyClient.getInvoiceHistory()).thenReturn(List.of(raw));
+        Mockito.when(historyClient.getInvoiceHistory())
+                .thenReturn(List.of(raw));
 
         List<InvoiceHistoryData> result = historyService.getHistory();
 
         InvoiceHistoryData dto = result.get(0);
 
         Assertions.assertEquals("test-id", dto.getId());
-        Assertions.assertEquals("f.pdf", dto.getFileName());
-        Assertions.assertEquals("Ivan", dto.getUserName());
-        Assertions.assertEquals(time, dto.getCreatedAt());
+        Assertions.assertEquals(UUID.fromString("11111111-1111-1111-1111-111111111111"), dto.getRepairId());
+
+        Assertions.assertEquals(created, dto.getCreatedAt());
+        Assertions.assertEquals(completed, dto.getCompletedAt());
+        Assertions.assertEquals(generated, dto.getGeneratedAt());
+
+        Assertions.assertEquals("Ivan", dto.getCustomerFirstName());
+        Assertions.assertEquals("Petrov", dto.getCustomerLastName());
+        Assertions.assertEquals("+359888888888", dto.getCustomerPhone());
+
+        Assertions.assertEquals("Gosho", dto.getMechanicFirstName());
+        Assertions.assertEquals("Ganev", dto.getMechanicLastName());
+
+        Assertions.assertEquals("BMW", dto.getCarBrand());
+        Assertions.assertEquals("E46", dto.getCarModel());
     }
 }

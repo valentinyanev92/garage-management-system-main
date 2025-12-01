@@ -56,21 +56,30 @@
                         <tr>
                             <th>#</th>
                             <th>Repair ID</th>
-                            <th>Created At</th>
-                            <th>File Name</th>
-                            <th>Actions</th>
+                            <th>Customer</th>
+                            <th>Mechanic</th>
+                            <th>Car</th>
+                            <th>Created</th>
+                            <th>Completed</th>
+                            <th>Download</th>
                         </tr>
                         </thead>
+
                         <tbody>
-                        <tr th:each="inv,iter : ${invoices}">
+                        <tr th:each="inv, iter : ${invoices}">
                             <td th:text="${iter.index + 1}">1</td>
-                            <td th:text="${inv.get('repairId')}">-</td>
-                            <td th:text="${inv.get('createdAt')}">-</td>
-                            <td th:text="${inv.get('fileName')}">-</td>
+                            <td th:text="${inv.repairId}">-</td>
                             <td>
-                                <a th:href="@{/dashboard/admin/invoices/download/{repairId}(repairId=${inv.get('repairId')})}"
-                                   class="invoice-button"
-                                   th:if="${inv.get('repairId') != null}">
+                                <div><strong th:text="${inv.customerFirstName + ' ' + inv.customerLastName}">Name</strong></div>
+                                <div th:text="${inv.customerPhone}">Phone</div>
+                            </td>
+                            <td th:text="${inv.mechanicFirstName + ' ' + inv.mechanicLastName}">Mechanic</td>
+                            <td th:text="${inv.carBrand + ' ' + inv.carModel}">Car</td>
+                            <td th:text="${#temporals.format(inv.createdAt, 'yyyy-MM-dd HH:mm')}">-</td>
+                            <td th:text="${inv.completedAt != null ? #temporals.format(inv.completedAt, 'yyyy-MM-dd HH:mm') : '-'}">-</td>
+                            <td>
+                                <a th:href="@{/dashboard/admin/invoices/download/{repairId}(repairId=${inv.repairId})}"
+                                   class="invoice-button">
                                     Download
                                 </a>
                             </td>
