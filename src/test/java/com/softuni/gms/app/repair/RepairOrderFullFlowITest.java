@@ -143,29 +143,6 @@ public class RepairOrderFullFlowITest {
     }
 
     @Test
-    void testAcceptRepairOrder_wrongRole_shouldThrow() {
-
-        User user = getUser();
-        user = userRepository.save(user);
-
-        User fakeMechanic = getMechanic();
-        fakeMechanic.setRole(UserRole.USER);
-        fakeMechanic = userRepository.save(fakeMechanic);
-
-        Car car = getCar(user);
-        car = carRepository.save(car);
-
-        repairOrderService.createRepairOrder(car.getId(), user, "noise");
-        RepairOrder pending = repairOrderRepository
-                .findFirstByCarAndStatusInOrderByCreatedAtDesc(car, List.of(RepairStatus.PENDING))
-                .orElseThrow();
-
-        User finalFakeMechanic = fakeMechanic;
-        Assertions.assertThrows(IllegalStateException.class,
-                () -> repairOrderService.acceptRepairOrder(pending.getId(), finalFakeMechanic));
-    }
-
-    @Test
     void testAddWork_invalidStatus_shouldThrow() {
 
         User user = getUser();

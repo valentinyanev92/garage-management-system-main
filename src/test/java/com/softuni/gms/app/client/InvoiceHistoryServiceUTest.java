@@ -31,38 +31,17 @@ class InvoiceHistoryServiceUTest {
         LocalDateTime t1 = LocalDateTime.now().minusDays(1);
         LocalDateTime t2 = LocalDateTime.now();
 
-        List<Map<String, Object>> raw = List.of(
-                Map.of("_id", "a1", "fileName", "invoice1.pdf", "createdAt", t1.toString(), "userName", "Pesho"),
-                Map.of("_id", "b2", "fileName", "invoice2.pdf", "createdAt", t2.toString(), "userName", "Gosho")
-        );
+        List<Map<String, Object>> raw = getMaps(t1, t2);
 
         Mockito.when(historyClient.getInvoiceHistory()).thenReturn(raw);
 
         List<InvoiceHistoryData> result = historyService.getHistory();
 
         Assertions.assertEquals(2, result.size());
-
         Assertions.assertEquals("b2", result.get(0).getId());
         Assertions.assertEquals("a1", result.get(1).getId());
-    }
-
-    @Test
-    void testGetHistory_createdAtNull_shouldNotFail() {
-
-        Map<String, Object> data = new HashMap<>();
-        data.put("_id", "a1");
-        data.put("fileName", "invoice1.pdf");
-        data.put("createdAt", null);
-        data.put("userName", "Pesho");
-
-        List<Map<String, Object>> raw = List.of(data);
-
-        Mockito.when(historyClient.getInvoiceHistory()).thenReturn(raw);
-
-        List<InvoiceHistoryData> result = historyService.getHistory();
-
-        Assertions.assertEquals(1, result.size());
-        Assertions.assertNull(result.get(0).getCreatedAt());
+        Assertions.assertEquals(t2, result.get(0).getCreatedAt());
+        Assertions.assertEquals(t1, result.get(1).getCreatedAt());
     }
 
     @Test
@@ -70,6 +49,22 @@ class InvoiceHistoryServiceUTest {
 
         Mockito.when(historyClient.getInvoiceHistory())
                 .thenThrow(new RuntimeException("Feign down"));
+
+        Assertions.assertThrows(MicroserviceDontRespondException.class,
+                () -> historyService.getHistory());
+    }
+
+    @Test
+    void testGetHistory_createdAtNull_shouldThrowException() {
+
+        Map<String, Object> data = new HashMap<>();
+        data.put("_id", "a1");
+        data.put("repairId", "11111111-1111-1111-1111-111111111111");
+        data.put("createdAt", null);
+        data.put("customerFirstName", "Pesho");
+        data.put("customerLastName", "Peshov");
+
+        Mockito.when(historyClient.getInvoiceHistory()).thenReturn(List.of(data));
 
         Assertions.assertThrows(MicroserviceDontRespondException.class,
                 () -> historyService.getHistory());
@@ -120,5 +115,28 @@ class InvoiceHistoryServiceUTest {
 
         Assertions.assertEquals("BMW", dto.getCarBrand());
         Assertions.assertEquals("E46", dto.getCarModel());
+    }
+
+    private static List<Map<String, Object>> getMaps(LocalDateTime t1, LocalDateTime t2) {
+        Map<String, Object> inv1 = new HashMap<>();
+        inv1.put("id", "a1");
+        inv1.put("repairId", "11111111-1111-1111-1111-111111111111");
+        inv1.put("createdAt", t1.toString());
+        inv1.put("completedAt", t1.toString());
+        inv1.put("generatedAt", t1.toString());
+        inv1.put("customerFirstName", "Pesho");
+        inv1.put("customerLastName", "Peshov");
+
+        Map<String, Object> inv2 = new HashMap<>();
+        inv2.put("id", "b2");
+        inv2.put("repairId", "22222222-2222-2222-2222-222222222222");
+        inv2.put("createdAt", t2.toString());
+        inv2.put("completedAt", t2.toString());
+        inv2.put("generatedAt", t2.toString());
+        inv2.put("customerFirstName", "Gosho");
+        inv2.put("customerLastName", "Goshev");
+
+        List<Map<String, Object>> raw = List.of(inv2, inv1);
+        return raw;
     }
 }
