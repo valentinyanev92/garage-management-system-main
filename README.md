@@ -28,18 +28,38 @@ SoftUni Java Web Development Track
 
 ## 1. Project Overview
 
-The **Garage Management System (GMS)** is a full-stack, multi-module platform for managing vehicles, repair orders, parts, and invoices within an auto-repair environment.
+The **Garage Management System (GMS)** is a complete two-application platform designed to digitalize the full workflow of an auto-repair service.
 
-This project strictly follows all requirements of the **SoftUni Spring Advanced – Individual Project Assignment**, including:
+The system allows customers to register their vehicles, submit repair requests, track the progress of their repairs in real time, and receive invoices and notifications when the service is completed.  
+Mechanics manage their assigned repair tasks, add used parts, update statuses, and complete jobs.  
+Administrators oversee the entire garage: manage parts, view all repair orders, and monitor the system.
 
-- One **Main Spring Boot Application** (domain, business logic, UI)
-- One **independent REST Microservice** (invoices, history, WhatsApp integration)
-- Communication via **Feign Client**
-- Asynchronous event processing via **Apache Kafka**
-- **MongoDB** for the microservice
-- **Redis caching**
-- **Spring AI + Ollama local LLM** integration
-- Fully **Dockerized infrastructure**
+To support this workflow, the platform is implemented as a distributed architecture consisting of two independent Spring Boot applications:
+
+### **1) Main Application (Customer, Mechanic & Admin Portal)**
+- Customers register cars, request repairs, and follow progress.
+- Mechanics accept orders, diagnose, update statuses, and record used parts.
+- Admins manage parts, oversee all repair orders, and maintain the system.
+- Provides full role-based UI using Thymeleaf.
+- Publishes repair-event updates and triggers invoice creation.
+
+### **2) REST Microservice (Invoices, Notifications & History)**
+- Generates PDF invoices for completed repairs.
+- Stores invoice, message, and repair logs in MongoDB.
+- Sends WhatsApp notifications via GreenAPI.
+- Provides history and log endpoints consumed by the main application.
+- Runs independently and communicates via Feign Client + Kafka events.
+
+### **Technologies & Architecture Highlights**
+- **Feign Client** for inter-service REST communication
+- **Apache Kafka** for asynchronous event streaming
+- **Redis** caching for performance optimization
+- **MongoDB** for log storage and invoice history
+- **Spring AI + Ollama** (local LLM) providing AI-based mechanic suggestions
+- **Dockerized infrastructure** including MySQL, Redis, Kafka, MongoDB & Ollama
+
+The result is a realistic, production-like service management system combining modern Spring development, microservices, asynchronous communication, AI assistance, and full UI functionality.
+
 
 ---
 
@@ -384,4 +404,3 @@ All services are started automatically via `docker compose up -d`.
 Valentin Rumenov Yanev
 
 SoftUni Java Developer Track (2024–2025)
-
