@@ -56,6 +56,10 @@
                         <p><strong>Email:</strong> <span th:text="${userToEdit.email}"></span></p>
                     </div>
 
+                    <script th:inline="javascript">
+                        const selectedRole = /*[[${userAdminEditRequest.role}]]*/ 'USER';
+                    </script>
+
                     <form th:action="@{/dashboard/admin/users/edit/{id}(id=${userToEdit.id})}"
                           th:object="${userAdminEditRequest}" method="post">
                         <div class="form-group">
@@ -73,17 +77,18 @@
                             <div th:if="${#fields.hasErrors('role')}" class="error-message" th:errors="*{role}"></div>
                         </div>
 
-                        <div class="form-group">
+                        <div class="form-group" id="hourlyRateGroup">
                             <label for="hourlyRate">Hourly Rate (BGN)</label>
                             <div class="help-text"
                                  th:classappend="${#fields.hasErrors('hourlyRate')} ? 'show-help' : ''">
-                                Hourly rate must be 0 or greater (leave empty if not applicable)
+                                Hourly rate must be greater than 0 (only for Admin/Mechanic)
                             </div>
-                            <input type="number" id="hourlyRate" th:field="*{hourlyRate}" step="0.01" min="0"
+                            <input type="number" id="hourlyRate" th:field="*{hourlyRate}" step="0.01" min="0.01"
                                    placeholder="Enter hourly rate in BGN">
                             <div th:if="${#fields.hasErrors('hourlyRate')}" class="error-message"
                                  th:errors="*{hourlyRate}"></div>
                         </div>
+
 
                         <button type="submit" class="profile-edit-button">Save Changes</button>
                     </form>
@@ -99,4 +104,30 @@
 <div th:replace="fragments/footer :: footer"></div>
 </body>
 </html>
+
+<script>
+    document.addEventListener("DOMContentLoaded", () => {
+        const roleSelect = document.getElementById("role");
+        const hourlyRateGroup = document.getElementById("hourlyRateGroup");
+        const hourlyRateInput = document.getElementById("hourlyRate");
+
+        function updateHourlyRateVisibility() {
+            const role = roleSelect.value;
+
+            if (role === "ADMIN" || role === "MECHANIC") {
+                hourlyRateGroup.style.display = "block";
+                hourlyRateInput.required = true;
+                hourlyRateInput.min = "0.01";
+            } else {
+                hourlyRateGroup.style.display = "none";
+                hourlyRateInput.required = false;
+                hourlyRateInput.value = "";
+            }
+        }
+
+        updateHourlyRateVisibility();
+
+        roleSelect.addEventListener("change", updateHourlyRateVisibility);
+    });
+</script>
 

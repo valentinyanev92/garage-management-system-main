@@ -73,7 +73,7 @@
                                     </div>
                                     <div class="card-detail">
                                         <span class="label">Last Updated:</span>
-                                        <span class="value" th:text="${car.updatedAt}"></span>
+                                        <span class="value" th:text="${#temporals.format(car.updatedAt, 'yyyy-MM-dd HH:mm')}"></span>
                                     </div>
                                 </div>
                             </div>

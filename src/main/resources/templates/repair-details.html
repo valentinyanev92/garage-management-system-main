@@ -107,15 +107,15 @@
                                 </div>
                                 <div class="detail-item">
                                     <span class="detail-label">Created on:</span>
-                                    <span class="detail-value" th:text="${repairOrder.createdAt}"></span>
+                                    <span class="detail-value" th:text="${#temporals.format(repairOrder.createdAt, 'yyyy-MM-dd HH:mm')}"></span>
                                 </div>
                                 <div class="detail-item" th:if="${repairOrder.acceptedAt != null}">
                                     <span class="detail-label">Accepted on:</span>
-                                    <span class="detail-value" th:text="${repairOrder.acceptedAt}"></span>
+                                    <span class="detail-value" th:text="${#temporals.format(repairOrder.acceptedAt, 'yyyy-MM-dd HH:mm')}"></span>
                                 </div>
                                 <div class="detail-item" th:if="${repairOrder.completedAt != null}">
                                     <span class="detail-label">Completed on:</span>
-                                    <span class="detail-value" th:text="${repairOrder.completedAt}"></span>
+                                    <span class="detail-value" th:text="${#temporals.format(repairOrder.completedAt, 'yyyy-MM-dd HH:mm')}"></span>
                                 </div>
                                 <div class="detail-item" th:if="${repairOrder.price != null}">
                                     <span class="detail-label">Service Fee:</span>

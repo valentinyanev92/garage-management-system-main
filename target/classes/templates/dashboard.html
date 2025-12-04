@@ -178,15 +178,15 @@
                                     </div>
                                     <div class="card-detail">
                                         <span class="label">Created on:</span>
-                                        <span class="value" th:text="${repair.createdAt}"></span>
+                                        <span class="value" th:text="${#temporals.format(repair.createdAt, 'yyyy-MM-dd HH:mm')}"></span>
                                     </div>
                                     <div class="card-detail" th:if="${repair.acceptedAt != null}">
                                         <span class="label">Accepted on:</span>
-                                        <span class="value" th:text="${repair.acceptedAt}"></span>
+                                        <span class="value" th:text="${#temporals.format(repair.acceptedAt, 'yyyy-MM-dd HH:mm')}"></span>
                                     </div>
                                     <div class="card-detail" th:if="${repair.completedAt != null}">
                                         <span class="label">Completed on:</span>
-                                        <span class="value" th:text="${repair.completedAt}"></span>
+                                        <span class="value" th:text="${#temporals.format(repair.completedAt, 'yyyy-MM-dd HH:mm')}"></span>
                                     </div>
                                 </div>
                             </div>

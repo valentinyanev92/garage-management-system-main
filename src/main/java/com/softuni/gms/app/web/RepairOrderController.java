@@ -10,6 +10,7 @@ import com.softuni.gms.app.repair.model.RepairOrder;
 import com.softuni.gms.app.repair.service.RepairOrderService;
 import com.softuni.gms.app.security.AuthenticationMetadata;
 import com.softuni.gms.app.user.model.User;
+import com.softuni.gms.app.user.model.UserRole;
 import com.softuni.gms.app.user.service.UserService;
 import com.softuni.gms.app.web.util.RequestUtils;
 import jakarta.servlet.http.HttpServletRequest;
@@ -101,7 +102,9 @@ public class RepairOrderController {
         User user = userService.findUserById(authenticationMetadata.getUserId());
         RepairOrder repairOrder = repairOrderService.findRepairOrderById(id);
 
-        if (!repairOrder.getUser().getId().equals(user.getId())) {
+        if (!repairOrder.getUser().getId().equals(user.getId())
+                && !user.getRole().equals(UserRole.ADMIN)
+                && !user.getRole().equals(UserRole.MECHANIC)) {
             return new ModelAndView("redirect:/dashboard");
         }
 
