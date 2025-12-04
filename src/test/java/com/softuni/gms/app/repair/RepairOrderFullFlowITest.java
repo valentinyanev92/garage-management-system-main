@@ -1,9 +1,10 @@
 package com.softuni.gms.app.repair;
 
-import com.softuni.gms.app.config.TestCacheConfig;
-import com.softuni.gms.app.config.TestSecurityConfig;
 import com.softuni.gms.app.car.model.Car;
 import com.softuni.gms.app.car.repository.CarRepository;
+import com.softuni.gms.app.config.TestCacheConfig;
+import com.softuni.gms.app.config.TestSecurityConfig;
+import com.softuni.gms.app.kafka.KafkaProducerService;
 import com.softuni.gms.app.part.model.Part;
 import com.softuni.gms.app.part.repository.PartRepository;
 import com.softuni.gms.app.repair.model.RepairOrder;
@@ -20,6 +21,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
@@ -46,6 +48,9 @@ public class RepairOrderFullFlowITest {
 
     @Autowired
     private PartRepository partRepository;
+
+    @MockitoBean
+    private KafkaProducerService kafkaProducerService;
 
     @Test
     void testFullRepairOrder_happyPath() {
