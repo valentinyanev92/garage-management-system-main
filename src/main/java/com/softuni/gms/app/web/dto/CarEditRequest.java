@@ -38,4 +38,3 @@ public class CarEditRequest {
     @URL(message = "Picture should be URL!")
     private String pictureUrl;
 }
-

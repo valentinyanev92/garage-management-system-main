@@ -69,5 +69,4 @@ public class User {
     @OneToMany(mappedBy = "mechanic", fetch = FetchType.EAGER)
     @JsonIgnore
     private List<RepairOrder> mechanicOrders = new ArrayList<>();
-
 }

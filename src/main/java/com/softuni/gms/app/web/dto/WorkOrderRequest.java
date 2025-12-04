@@ -34,4 +34,3 @@ public class WorkOrderRequest {
         private Integer quantity;
     }
 }
-

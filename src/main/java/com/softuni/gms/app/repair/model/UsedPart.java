@@ -35,5 +35,4 @@ public class UsedPart {
 
     @Column(nullable = false)
     private BigDecimal totalPrice;
-
 }

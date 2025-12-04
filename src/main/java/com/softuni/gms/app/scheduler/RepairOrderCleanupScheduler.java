@@ -56,4 +56,3 @@ public class RepairOrderCleanupScheduler {
         log.info("Successfully canceled {} old pending repair orders", oldPendingOrders.size());
     }
 }
-

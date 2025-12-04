@@ -12,4 +12,3 @@ public interface InvoiceHistoryClient {
     @GetMapping("/history")
     List<Map<String, Object>> getInvoiceHistory();
 }
-

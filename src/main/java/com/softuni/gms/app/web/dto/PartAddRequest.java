@@ -24,4 +24,3 @@ public class PartAddRequest {
     @DecimalMin(value = "0.01", message = "Price must be greater than 0")
     private BigDecimal price;
 }
-

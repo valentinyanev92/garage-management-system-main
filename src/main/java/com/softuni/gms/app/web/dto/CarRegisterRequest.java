@@ -33,5 +33,4 @@ public class CarRegisterRequest {
     @NotBlank(message = "Plate number cannot be blank")
     @Size(min = 4, max = 20, message = "Plate number must be between 4 and 20 characters")
     private String plateNumber;
-
 }

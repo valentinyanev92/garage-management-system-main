@@ -6,4 +6,3 @@ public class CarAlreadyExistsException extends RuntimeException {
         super(message);
     }
 }
-

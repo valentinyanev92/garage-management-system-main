@@ -20,4 +20,3 @@ public class UserAdminEditRequest {
     @DecimalMin(value = "0.0", message = "Hourly rate must be 0 or greater", inclusive = true)
     private BigDecimal hourlyRate;
 }
-
