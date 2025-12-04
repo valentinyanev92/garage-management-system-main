@@ -5,14 +5,16 @@ import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpStatus;
-import org.springframework.stereotype.Controller;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.NoHandlerFoundException;
 import org.springframework.web.servlet.resource.NoResourceFoundException;
+
+import java.util.HashMap;
+import java.util.Map;
 
 @Slf4j
 @Order(2)
@@ -51,31 +53,16 @@ public class GlobalExceptionHandler {
         modelAndView.addObject("errorMessage", ex.getMessage());
         return modelAndView;
     }
-}
 
-@Slf4j
-@Controller
-@RequestMapping("/error")
-class ErrorController {
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ResponseEntity<Map<String, String>> handleValidationErrors(MethodArgumentNotValidException ex) {
 
-    @GetMapping("/error/403")
-    public ModelAndView handle403(HttpServletRequest request) {
+        Map<String, String> errors = new HashMap<>();
 
-        String requestedPath = (String) request.getAttribute("requestedPath");
-        String errorMessage = (String) request.getAttribute("errorMessage");
+        ex.getBindingResult().getFieldErrors().forEach(error ->
+                errors.put(error.getField(), error.getDefaultMessage())
+        );
 
-        if (requestedPath == null) {
-            requestedPath = request.getRequestURI();
-        }
-        if (errorMessage == null) {
-            errorMessage = "Access Denied: You do not have permission to access this resource.";
-        }
-
-        log.warn("Access denied for path: {}", requestedPath);
-        ModelAndView modelAndView = new ModelAndView("error/general-error");
-        modelAndView.setStatus(HttpStatus.FORBIDDEN);
-        modelAndView.addObject("requestedPath", requestedPath);
-        modelAndView.addObject("errorMessage", errorMessage);
-        return modelAndView;
+        return ResponseEntity.badRequest().body(errors);
     }
 }
