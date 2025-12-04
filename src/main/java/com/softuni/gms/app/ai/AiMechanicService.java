@@ -1,8 +1,63 @@
+//package com.softuni.gms.app.ai;
+//
+//import lombok.extern.slf4j.Slf4j;
+//import org.springframework.ai.chat.model.ChatModel;
+//import org.springframework.ai.chat.model.ChatResponse;
+//import org.springframework.ai.chat.prompt.Prompt;
+//import org.springframework.beans.factory.annotation.Autowired;
+//import org.springframework.stereotype.Service;
+//
+//@Slf4j
+//@Service
+//public class AiMechanicService {
+//
+//    private static final String SYSTEM_PROMPT = """
+//            You are an auto mechanic.
+//            Respond with:
+//            - Only one short technical cause (max 200 characters).
+//            - No explanations, no numbering, no extra text.
+//            - No references to previous messages or call count.
+//            - Output must be plain text, nothing else.
+//            """;
+//
+//    private final ChatModel chatModel;
+//
+//    @Autowired
+//    public AiMechanicService(ChatModel chatModel) {
+//        this.chatModel = chatModel;
+//    }
+//
+//    public String askMechanic(String question) {
+//
+//        if (question == null || question.trim().isEmpty()) {
+//            log.error("askMechanic(): Question is null or empty");
+//            throw new IllegalArgumentException("Question must not be empty");
+//        }
+//
+//        Prompt prompt = new Prompt(SYSTEM_PROMPT + "\n\nUser description:\n" + question.trim());
+//        ChatResponse response = chatModel.call(prompt);
+//        if (response == null || response.getResult() == null || response.getResult().getOutput() == null) {
+//            log.error("askMechanic(): Response is null or empty");
+//            throw new IllegalStateException("AI model returned no response");
+//        }
+//
+//        String text = response.getResult().getOutput().getText();
+//        if (text == null || text.isBlank()) {
+//            log.error("askMechanic(): Text is null or empty");
+//            throw new IllegalStateException("AI model returned an empty response");
+//        }
+//
+//        return text.trim();
+//    }
+//}
+
 package com.softuni.gms.app.ai;
+
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.ai.chat.model.ChatModel;
 import org.springframework.ai.chat.model.ChatResponse;
+import org.springframework.ai.chat.prompt.ChatOptions;
 import org.springframework.ai.chat.prompt.Prompt;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -13,11 +68,10 @@ public class AiMechanicService {
 
     private static final String SYSTEM_PROMPT = """
             You are an auto mechanic.
-            Respond with:
-            - Only one short technical cause (max 200 characters).
-            - No explanations, no numbering, no extra text.
-            - No references to previous messages or call count.
-            - Output must be plain text, nothing else.
+            Respond with ONLY one short technical cause.
+            Max 140 characters.
+            No explanations, no lists, no extra text.
+            Plain text only.
             """;
 
     private final ChatModel chatModel;
@@ -27,37 +81,39 @@ public class AiMechanicService {
         this.chatModel = chatModel;
     }
 
-//    @PostConstruct
-//    public void warmUpModel() {
-//        try {
-//            Prompt prompt = new Prompt("Hello!");
-//            chatModel.call(prompt);
-//            log.info("AI mechanic model warmed up successfully.");
-//        } catch (Exception ex) {
-//            log.warn("AI warm-up failed (not critical): {}", ex.getMessage());
-//        }
-//    }
-
     public String askMechanic(String question) {
 
         if (question == null || question.trim().isEmpty()) {
-            log.error("askMechanic(): Question is null or empty");
             throw new IllegalArgumentException("Question must not be empty");
         }
 
-        Prompt prompt = new Prompt(SYSTEM_PROMPT + "\n\nUser description:\n" + question.trim());
+        ChatOptions options = ChatOptions.builder()
+                .maxTokens(50)
+                .temperature(0.2)
+                .build();
+
+        Prompt prompt = new Prompt(
+                SYSTEM_PROMPT + "\nUser description: " + question.trim(),
+                options
+        );
+
         ChatResponse response = chatModel.call(prompt);
+
         if (response == null || response.getResult() == null || response.getResult().getOutput() == null) {
-            log.error("askMechanic(): Response is null or empty");
-            throw new IllegalStateException("AI model returned no response");
+            throw new IllegalStateException("AI model returned empty response");
         }
 
         String text = response.getResult().getOutput().getText();
+
         if (text == null || text.isBlank()) {
-            log.error("askMechanic(): Text is null or empty");
-            throw new IllegalStateException("AI model returned an empty response");
+            throw new IllegalStateException("AI model returned empty text");
         }
 
-        return text.trim();
+        text = text.trim();
+        if (text.length() > 200) {
+            text = text.substring(0, 200);
+        }
+
+        return text;
     }
 }
